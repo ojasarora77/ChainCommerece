@@ -1,80 +1,147 @@
-# 🏗 Scaffold-ETH 2
+# AI-Powered Decentralized Marketplace
 
-<h4 align="center">
-  <a href="https://docs.scaffoldeth.io">Documentation</a> |
-  <a href="https://scaffoldeth.io">Website</a>
-</h4>
+> **Chromion Chainlink Hackathon Entry** - Solving trust, personalization, and cross-chain fragmentation in e-commerce
 
-🧪 An open-source, up-to-date toolkit for building decentralized applications (dapps) on the Ethereum blockchain. It's designed to make it easier for developers to create and deploy smart contracts and build user interfaces that interact with those contracts.
+## 🎯 The Problem
 
-⚙️ Built using NextJS, RainbowKit, Hardhat, Wagmi, Viem, and Typescript.
+Current e-commerce platforms suffer from three critical issues:
+- **Generic AI recommendations** based solely on purchase history, ignoring user values (sustainability, ethics, budget)
+- **Trust gaps** with fake reviews, opaque pricing, and centralized dispute resolution
+- **Cross-chain fragmentation** limiting liquidity and user choice across different blockchain networks
 
-- ✅ **Contract Hot Reload**: Your frontend auto-adapts to your smart contract as you edit it.
-- 🪝 **[Custom hooks](https://docs.scaffoldeth.io/hooks/)**: Collection of React hooks wrapper around [wagmi](https://wagmi.sh/) to simplify interactions with smart contracts with typescript autocompletion.
-- 🧱 [**Components**](https://docs.scaffoldeth.io/components/): Collection of common web3 components to quickly build your frontend.
-- 🔥 **Burner Wallet & Local Faucet**: Quickly test your application with a burner wallet and local faucet.
-- 🔐 **Integration with Wallet Providers**: Connect to different wallet providers and interact with the Ethereum network.
+## 💡 Our Solution
 
-![Debug Contracts tab](https://github.com/scaffold-eth/scaffold-eth-2/assets/55535804/b237af0c-5027-4849-a5c1-2e31495cccb1)
+A decentralized marketplace that combines ethical AI-driven recommendations with trustless smart contract escrow, enabling seamless cross-chain commerce.
 
-## Requirements
+### Core Features
 
-Before you begin, you need to install the following tools:
+| Feature | Chainlink Service | Real-World Impact |
+|---------|------------------|------------------|
+| **Ethical AI Recommendations** | Functions + AWS Bedrock | Personalized matching based on values, not just history |
+| **Cross-Chain Product Discovery** | CCIP | Unified liquidity across Avalanche & Ethereum |
+| **Trustless Escrow** | VRF + Automation | Eliminates payment fraud and dispute delays |
+| **Dynamic Pricing** | Data Streams | Real-time price adjustments for crypto volatility |
+| **Fraud-Resistant Reviews** | VRF + Proof of Reserve | Cryptographically secure reputation system |
 
-- [Node (>= v20.18.3)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
+## 🏗️ Technical Architecture
 
-## Quickstart
+### Smart Contracts
+- **ProductRegistry.sol** (Avalanche) - Product listings with metadata
+- **AIEscrow.sol** (Ethereum) - Stablecoin escrow with automated release
+- **CrossChainBridge.sol** - CCIP integration for cross-chain visibility
+- **ReputationSystem.sol** - VRF-based review validation
 
-To get started with Scaffold-ETH 2, follow the steps below:
+### AI Integration
+- **AWS Bedrock** for recommendation engine
+- **Chainlink Functions** to bridge on-chain preferences with AI models
+- **Real-time data feeds** for carbon footprint, supply chain transparency
 
-1. Install dependencies if it was skipped in CLI:
+### User Flow
+1. **Setup**: User sets preferences (sustainability focus, budget, delivery speed)
+2. **Discovery**: AI recommends products across all chains based on values + real-time data
+3. **Purchase**: Cross-chain transaction via CCIP, funds locked in escrow
+4. **Delivery**: Chainlink Automation monitors shipping APIs, auto-releases on delivery
+5. **Review**: VRF randomly selects verified purchasers for tamper-proof reviews
 
-```
-cd my-dapp-example
-yarn install
-```
+## 🏆 Target Bounties & Strategy
 
-2. Run a local network in the first terminal:
+### Primary Targets (Maximum Prize Potential: $35,000)
 
-```
-yarn chain
-```
+#### 1. **Chainlink Services Integration Prize** - $15,000
+- **Requirements**: Use 4+ Chainlink services with state-changing interactions
+- **Our Integration**: 
+  - ✅ **Functions**: AI recommendation calls to AWS Bedrock
+  - ✅ **CCIP**: Cross-chain product listings and payments
+  - ✅ **VRF**: Random arbiter selection for disputes
+  - ✅ **Automation**: Automated escrow release on delivery
+  - ✅ **Data Streams**: Real-time pricing feeds
+  - ✅ **Proof of Reserve**: Seller inventory validation
+- **Bonus Points**: 6 services = maximum scoring
 
-This command starts a local Ethereum network using Hardhat. The network runs on your local machine and can be used for testing and development. You can customize the network configuration in `packages/hardhat/hardhat.config.ts`.
+#### 2. **Cross-Chain Solutions Track** - $10,000
+- **Focus**: CCIP-powered unified marketplace across Avalanche & Ethereum
+- **Demo**: Ethereum buyer purchasing from Avalanche seller with automatic settlement
 
-3. On a second terminal, deploy the test contract:
+#### 3. **AWS x AI Track** - $10,000
+- **Integration**: Direct AWS Bedrock calls via Chainlink Functions
+- **Differentiation**: Values-based recommendations, not just purchase history
 
-```
-yarn deploy
-```
+### Secondary Opportunities
 
-This command deploys a test smart contract to the local network. The contract is located in `packages/hardhat/contracts` and can be modified to suit your needs. The `yarn deploy` command uses the deploy script located in `packages/hardhat/deploy` to deploy the contract to the network. You can also customize the deploy script.
+#### **Onchain Finance Track** - $7,500
+- Stablecoin escrow system with automated dispute resolution
 
-4. On a third terminal, start your NextJS app:
+#### **Best Overall Hack** - $25,000
+- Technical excellence + real-world utility + compelling demo
 
-```
-yarn start
-```
+## 🚀 Competitive Advantages
 
-Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the `Debug Contracts` page. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
+### Technical Innovation
+- **First marketplace** to use cryptographic randomness (VRF) for review authenticity
+- **Ethical AI filtering** addresses growing ESG compliance needs
+- **Cross-chain native** design vs. bridge-dependent competitors
 
-Run smart contract test with `yarn hardhat:test`
+### Market Opportunity
+- **$6.3T global e-commerce market** with 15% annual growth
+- **Growing demand** for values-based purchasing (40% of consumers prioritize sustainability)
+- **Web3 commerce** still in early stages with massive potential
 
-- Edit your smart contracts in `packages/hardhat/contracts`
-- Edit your frontend homepage at `packages/nextjs/app/page.tsx`. For guidance on [routing](https://nextjs.org/docs/app/building-your-application/routing/defining-routes) and configuring [pages/layouts](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts) checkout the Next.js documentation.
-- Edit your deployment scripts in `packages/hardhat/deploy`
+### Post-Hackathon Potential
+- **Partnership opportunities** with sustainability-focused brands
+- **Integration with existing marketplaces** as middleware solution
+- **DAO governance** for community-driven curation
 
+## 🛠️ Tech Stack
 
-## Documentation
+- **Smart Contracts**: Solidity, Hardhat, Scaffold-ETH 2
+- **Frontend**: Next.js, TypeScript, TailwindCSS, RainbowKit
+- **Blockchain**: Ethereum Sepolia, Avalanche Fuji testnets
+- **AI**: AWS Bedrock (Claude/Llama models)
+- **Oracles**: Chainlink Functions, CCIP, VRF, Automation, Data Streams
+- **Storage**: IPFS for metadata, encrypted on-chain preferences
 
-Visit our [docs](https://docs.scaffoldeth.io) to learn how to start building with Scaffold-ETH 2.
+## 📊 Success Metrics
 
-To know more about its features, check out our [website](https://scaffoldeth.io).
+### Demo KPIs
+- **AI Accuracy**: >80% relevance in recommendations
+- **Cross-Chain Speed**: <5 minute settlement via CCIP
+- **Dispute Resolution**: <2 hours vs. 14 days traditional
+- **Trust Score**: VRF-verified review authenticity
 
-## Contributing to Scaffold-ETH 2
+### Monetization Model
+- **Transaction fees**: 0.5% on successful purchases
+- **Premium tier**: AI-powered "ethical score" audits for brands
+- **Validator rewards**: Community members earn for maintaining quality
 
-We welcome contributions to Scaffold-ETH 2!
+## 🎬 Demo Narrative
 
-Please see [CONTRIBUTING.MD](https://github.com/scaffold-eth/scaffold-eth-2/blob/main/CONTRIBUTING.md) for more information and guidelines for contributing to Scaffold-ETH 2.
+**"The Trust Problem"**
+> Traditional marketplaces: fake reviews, generic recommendations, payment disputes
+
+**"The AI Solution"**
+> Two users with different values (sustainability vs. price) get completely different recommendations for the same search
+
+**"The Cross-Chain Magic"**
+> Live demo: Ethereum buyer purchasing from Avalanche seller with instant USDC settlement
+
+**"The Future of Commerce"**
+> Values-driven, trustless, and truly decentralized
+
+## 📈 20-Day Development Plan
+
+- **Days 1-7**: Core contracts + Chainlink Functions integration
+- **Days 8-14**: CCIP cross-chain functionality + VRF disputes
+- **Days 15-20**: UI polish, demo preparation, pitch deck
+
+## 🎯 Why We'll Win
+
+1. **Maximum Chainlink Integration**: 6 services = bonus points
+2. **Real Problem Solving**: Addresses actual e-commerce pain points
+3. **Technical Depth**: Complex but functional architecture
+4. **Demo Appeal**: Clear value proposition with live cross-chain transactions
+5. **Market Readiness**: Post-hackathon commercialization path
+
+---
+
+**Built for Chromion Chainlink Hackathon 2025**  
+*Solving trust, personalization, and cross-chain fragmentation in the next generation of e-commerce*
