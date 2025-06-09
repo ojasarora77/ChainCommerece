@@ -135,6 +135,10 @@ const config: HardhatUserConfig = {
         },
       },
     },
+    avalancheFuji: {                                              // Avalanche C-Chain
+      url: "https://api.avax-test.network/ext/bc/C/rpc",
+      accounts: [deployerPrivateKey],
+    },
     scrollSepolia: {
       url: "https://sepolia-rpc.scroll.io",
       accounts: [deployerPrivateKey],
