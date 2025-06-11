@@ -52,17 +52,42 @@ export async function askShoppingAssistant(
   return response;
 }
 
-// Direct Claude Model Invocation for Quick Queries
+// Direct Model Invocation for Quick Queries - Smart fallback system
+export async function invokeAI(prompt: string) {
+  // Try Claude first, fallback to Titan if not available
+  try {
+    console.log("Attempting Claude model invocation...");
+    return await invokeClaude(prompt);
+  } catch (error: any) {
+    console.log("Claude not available, attempting Titan model...", error.message);
+    try {
+      return await invokeTitan(prompt);
+    } catch (titanError: any) {
+      console.error("Both Claude and Titan failed:", titanError.message);
+      // Return structured mock response for development
+      return {
+        content: [{
+          text: `AI Response (Mock): Based on your query "${prompt.substring(0, 50)}...", here's a helpful response. This is mock data - configure AWS credentials for real AI responses.`
+        }]
+      };
+    }
+  }
+}
+
+// Claude Model (for regions where available) - Following AWS official patterns
 export async function invokeClaude(prompt: string) {
   const command = new InvokeModelCommand({
-    modelId: "anthropic.claude-3-haiku-20240307-v1:0", // Using Haiku for cost efficiency
+    modelId: "anthropic.claude-3-haiku-20240307-v1:0",
     contentType: "application/json",
     accept: "application/json",
     body: JSON.stringify({
       anthropic_version: "bedrock-2023-05-31",
       messages: [{
         role: "user",
-        content: prompt
+        content: [{
+          type: "text",
+          text: prompt
+        }]
       }],
       max_tokens: 1000,
       temperature: 0.7
@@ -71,5 +96,40 @@ export async function invokeClaude(prompt: string) {
 
   const response = await runtimeClient.send(command);
   const responseBody = new TextDecoder().decode(response.body);
-  return JSON.parse(responseBody);
+  const result = JSON.parse(responseBody);
+
+  // Extract text from Claude response format
+  return {
+    content: [{
+      text: result.content[0].text
+    }]
+  };
+}
+
+// Titan Model (widely available alternative)
+export async function invokeTitan(prompt: string) {
+  const command = new InvokeModelCommand({
+    modelId: "amazon.titan-text-express-v1",
+    contentType: "application/json",
+    accept: "application/json",
+    body: JSON.stringify({
+      inputText: prompt,
+      textGenerationConfig: {
+        maxTokenCount: 1000,
+        temperature: 0.7,
+        topP: 0.9
+      }
+    })
+  });
+
+  const response = await runtimeClient.send(command);
+  const responseBody = new TextDecoder().decode(response.body);
+  const result = JSON.parse(responseBody);
+
+  // Convert Titan response format to match Claude format
+  return {
+    content: [{
+      text: result.results[0].outputText
+    }]
+  };
 }

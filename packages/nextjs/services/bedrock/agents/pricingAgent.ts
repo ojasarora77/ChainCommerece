@@ -1,4 +1,4 @@
-import { invokeClaude } from "../index";
+import { invokeAI } from "../index";
 
 export class PricingAgent {
   async optimizePrice(
@@ -21,7 +21,7 @@ export class PricingAgent {
     `;
 
     try {
-      const response = await invokeClaude(prompt);
+      const response = await invokeAI(prompt);
       return this.parsePricingStrategy(response);
     } catch (error) {
       // Return mock data if AWS not configured

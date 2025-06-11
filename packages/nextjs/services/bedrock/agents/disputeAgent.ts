@@ -1,4 +1,4 @@
-import { invokeClaude } from "../index";
+import { invokeAI } from "../index";
 import { DisputeCase } from "~~/types/bedrock";
 
 export class DisputeResolutionAgent {
@@ -19,7 +19,7 @@ export class DisputeResolutionAgent {
     `;
 
     try {
-      const response = await invokeClaude(prompt);
+      const response = await invokeAI(prompt);
       return this.parseResolution(response);
     } catch (error) {
       // Return mock resolution if AWS not configured
