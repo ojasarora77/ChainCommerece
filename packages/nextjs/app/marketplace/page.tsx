@@ -16,6 +16,9 @@ import {
 } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { AIShoppingAssistant } from "~~/components/ai/AIShoppingAssistant";
+import { PricingOptimizer } from "~~/components/ai/PricingOptimizer";
+import { DisputeResolver } from "~~/components/ai/DisputeResolver";
 
 // Mock product data (replace with actual contract calls)
 const mockProducts = [
@@ -272,6 +275,21 @@ const Marketplace: NextPage = () => {
                   <span>Connect your wallet to get personalized AI recommendations!</span>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+
+        {/* Amazon Bedrock AI Components */}
+        <div className="mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <AIShoppingAssistant />
+
+            <div className="space-y-4">
+              <h2 className="text-2xl font-bold">Seller AI Tools</h2>
+              <PricingOptimizer productId="demo-product-123" currentPrice={99.99} />
+
+              {/* AI Dispute Resolution */}
+              <DisputeResolver />
             </div>
           </div>
         </div>
