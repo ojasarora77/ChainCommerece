@@ -52,24 +52,29 @@ export async function askShoppingAssistant(
   return response;
 }
 
-// Direct Model Invocation for Quick Queries - Smart fallback system
+// Direct Model Invocation for Quick Queries - Optimized for available models
 export async function invokeAI(prompt: string) {
-  // Try Claude first, fallback to Titan if not available
+  // Use Titan as primary since it's available and cost-effective
   try {
-    console.log("Attempting Claude model invocation...");
-    return await invokeClaude(prompt);
-  } catch (error: any) {
-    console.log("Claude not available, attempting Titan model...", error.message);
+    console.log("Using Amazon Titan Text Express model...");
+    return await invokeTitan(prompt);
+  } catch (titanError: any) {
+    console.log("Titan failed, trying Mistral...", titanError.message);
     try {
-      return await invokeTitan(prompt);
-    } catch (titanError: any) {
-      console.error("Both Claude and Titan failed:", titanError.message);
-      // Return structured mock response for development
-      return {
-        content: [{
-          text: `AI Response (Mock): Based on your query "${prompt.substring(0, 50)}...", here's a helpful response. This is mock data - configure AWS credentials for real AI responses.`
-        }]
-      };
+      return await invokeMistral(prompt);
+    } catch (mistralError: any) {
+      console.log("Mistral failed, trying Meta Llama...", mistralError.message);
+      try {
+        return await invokeLlama(prompt);
+      } catch (llamaError: any) {
+        console.error("All models failed:", llamaError.message);
+        // Return structured mock response for development
+        return {
+          content: [{
+            text: `AI Response (Mock): Based on your query "${prompt.substring(0, 50)}...", here's a helpful response. This is mock data - configure AWS credentials for real AI responses.`
+          }]
+        };
+      }
     }
   }
 }
@@ -106,7 +111,7 @@ export async function invokeClaude(prompt: string) {
   };
 }
 
-// Titan Model (widely available alternative)
+// Titan Model (Primary choice - cost-effective and reliable)
 export async function invokeTitan(prompt: string) {
   const command = new InvokeModelCommand({
     modelId: "amazon.titan-text-express-v1",
@@ -117,7 +122,8 @@ export async function invokeTitan(prompt: string) {
       textGenerationConfig: {
         maxTokenCount: 1000,
         temperature: 0.7,
-        topP: 0.9
+        topP: 0.9,
+        stopSequences: []
       }
     })
   });
@@ -126,10 +132,63 @@ export async function invokeTitan(prompt: string) {
   const responseBody = new TextDecoder().decode(response.body);
   const result = JSON.parse(responseBody);
 
-  // Convert Titan response format to match Claude format
+  // Convert Titan response format to match standard format
   return {
     content: [{
       text: result.results[0].outputText
+    }]
+  };
+}
+
+// Mistral AI Model (Good for creative and multilingual tasks)
+export async function invokeMistral(prompt: string) {
+  const command = new InvokeModelCommand({
+    modelId: "mistral.mistral-7b-instruct-v0:2",
+    contentType: "application/json",
+    accept: "application/json",
+    body: JSON.stringify({
+      prompt: `<s>[INST] ${prompt} [/INST]`,
+      max_tokens: 1000,
+      temperature: 0.7,
+      top_p: 0.9,
+      top_k: 50
+    })
+  });
+
+  const response = await runtimeClient.send(command);
+  const responseBody = new TextDecoder().decode(response.body);
+  const result = JSON.parse(responseBody);
+
+  // Convert Mistral response format
+  return {
+    content: [{
+      text: result.outputs[0].text
+    }]
+  };
+}
+
+// Meta Llama Model (Backup option for complex reasoning)
+export async function invokeLlama(prompt: string) {
+  const command = new InvokeModelCommand({
+    modelId: "meta.llama2-13b-chat-v1", // or "meta.llama3-8b-instruct-v1:0"
+    contentType: "application/json",
+    accept: "application/json",
+    body: JSON.stringify({
+      prompt: `[INST] ${prompt} [/INST]`,
+      max_gen_len: 1000,
+      temperature: 0.7,
+      top_p: 0.9
+    })
+  });
+
+  const response = await runtimeClient.send(command);
+  const responseBody = new TextDecoder().decode(response.body);
+  const result = JSON.parse(responseBody);
+
+  // Convert Llama response format
+  return {
+    content: [{
+      text: result.generation
     }]
   };
 }
