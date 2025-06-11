@@ -19,6 +19,7 @@ import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaf
 import { AIShoppingAssistant } from "~~/components/ai/AIShoppingAssistant";
 import { PricingOptimizer } from "~~/components/ai/PricingOptimizer";
 import { DisputeResolver } from "~~/components/ai/DisputeResolver";
+import { AddProductForm } from "~~/components/marketplace/AddProductForm";
 
 // Mock product data (replace with actual contract calls)
 const mockProducts = [
@@ -123,11 +124,21 @@ const Marketplace: NextPage = () => {
     args: ["Sports"],
   });
 
-  // 🔥 REAL CONTRACT CALLS - Get batch product details
+  // 🔥 REAL CONTRACT CALLS - Get batch product details (dynamically fetch all products)
+  const { data: totalProducts } = useScaffoldReadContract({
+    contractName: "ProductRegistry",
+    functionName: "totalProducts",
+  });
+
+  // Generate array of product IDs to fetch
+  const productIdsToFetch = totalProducts 
+    ? Array.from({ length: Number(totalProducts) }, (_, i) => BigInt(i + 1))
+    : [1n, 2n, 3n, 4n, 5n]; // Fallback to first 5
+
   const { data: batchProducts } = useScaffoldReadContract({
     contractName: "ProductRegistry",
     functionName: "getBatchProducts",
-    args: [[1n, 2n, 3n, 4n, 5n]], // Get first 5 products
+    args: [productIdsToFetch],
   });
 
   // 🔥 REAL CONTRACT CALLS - Read latest AI recommendations
@@ -145,18 +156,26 @@ const Marketplace: NextPage = () => {
   // 🔥 REAL DATA - Update products when contract data loads
   useEffect(() => {
     if (batchProducts && batchProducts.length > 0) {
-      const realProducts = batchProducts.map((product: any, index: number) => ({
-        id: Number(product.id),
-        name: product.name,
-        category: product.category,
-        price: `${(Number(product.price) / 1e18).toFixed(3)} ETH`,
-        rating: Number(product.averageRating) / 100 || 4.5, // Convert from scaled rating
-        image: getProductEmoji(product.category),
-        description: product.description,
-        seller: product.seller,
-        isRecommended: false
-      }));
-      setProducts(realProducts);
+      const realProducts = batchProducts
+        .filter((product: any) => product.id && Number(product.id) > 0 && product.name) // Filter out empty/invalid products
+        .map((product: any, index: number) => ({
+          id: Number(product.id),
+          name: product.name,
+          category: product.category,
+          price: `${(Number(product.price) / 1e18).toFixed(3)} ETH`,
+          rating: Number(product.averageRating) / 100 || 4.5, // Convert from scaled rating
+          image: getProductEmoji(product.category),
+          description: product.description,
+          seller: product.seller,
+          isRecommended: false
+        }));
+      
+      // Ensure unique IDs by removing duplicates
+      const uniqueProducts = realProducts.filter((product, index, self) => 
+        index === self.findIndex(p => p.id === product.id)
+      );
+      
+      setProducts(uniqueProducts);
     }
   }, [batchProducts]);
 
@@ -241,7 +260,8 @@ const Marketplace: NextPage = () => {
                   <UserIcon className="h-5 w-5" />
                 </div>
                 <ul className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-                  <li><a>Profile</a></li>
+                  <li><Link href="/preferences">Profile & Preferences</Link></li>
+                  <li><Link href="/admin">Admin Panel</Link></li>
                   <li><a>My Products</a></li>
                   <li><a>Settings</a></li>
                 </ul>
@@ -304,8 +324,8 @@ const Marketplace: NextPage = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-              {recommendedProducts.map((product) => (
-                <div key={product.id} className="card bg-base-100 shadow-xl border-2 border-primary">
+              {recommendedProducts.map((product, index) => (
+                <div key={`recommended-${product.id}-${index}`} className="card bg-base-100 shadow-xl border-2 border-primary">
                   <div className="card-body p-4">
                     <div className="flex justify-between items-start mb-2">
                       <div className="text-4xl">{product.image}</div>
@@ -334,22 +354,27 @@ const Marketplace: NextPage = () => {
         )}
 
         {/* Category Filter */}
-        <div className="flex gap-2 mb-6 flex-wrap">
-          {categories.map((category) => (
-            <button
-              key={category}
-              className={`btn ${selectedCategory === category ? 'btn-primary' : 'btn-outline'}`}
-              onClick={() => setSelectedCategory(category)}
-            >
-              {category}
-            </button>
-          ))}
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex gap-2 flex-wrap">
+            {categories.map((category) => (
+              <button
+                key={category}
+                className={`btn ${selectedCategory === category ? 'btn-primary' : 'btn-outline'}`}
+                onClick={() => setSelectedCategory(category)}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+          
+          {/* Add Product Button */}
+          {connectedAddress && <AddProductForm />}
         </div>
 
         {/* Products Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
-            <div key={product.id} className={`card bg-base-100 shadow-xl hover:shadow-2xl transition-all ${product.isRecommended ? 'ring-2 ring-primary' : ''}`}>
+          {filteredProducts.map((product, index) => (
+            <div key={`product-${product.id}-${index}`} className={`card bg-base-100 shadow-xl hover:shadow-2xl transition-all ${product.isRecommended ? 'ring-2 ring-primary' : ''}`}>
               <div className="card-body">
                 <div className="flex justify-between items-start mb-2">
                   <div className="text-6xl">{product.image}</div>
