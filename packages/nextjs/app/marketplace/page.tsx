@@ -157,7 +157,12 @@ const Marketplace: NextPage = () => {
   useEffect(() => {
     if (batchProducts && batchProducts.length > 0) {
       const realProducts = batchProducts
-        .filter((product: any) => product.id && Number(product.id) > 0 && product.name) // Filter out empty/invalid products
+        .filter((product: any) => 
+          product.id && 
+          Number(product.id) > 0 && 
+          product.name && 
+          product.isActive // ✅ Only show active products
+        )
         .map((product: any, index: number) => ({
           id: Number(product.id),
           name: product.name,
@@ -170,11 +175,12 @@ const Marketplace: NextPage = () => {
           isRecommended: false
         }));
       
-      // Ensure unique IDs by removing duplicates
+      // Ensure unique IDs by removing duplicates (extra safety)
       const uniqueProducts = realProducts.filter((product, index, self) => 
         index === self.findIndex(p => p.id === product.id)
       );
       
+      console.log("🔥 Loaded products from contract:", uniqueProducts.length);
       setProducts(uniqueProducts);
     }
   }, [batchProducts]);
