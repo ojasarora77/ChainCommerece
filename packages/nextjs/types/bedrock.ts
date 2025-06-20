@@ -30,5 +30,6 @@ export interface DisputeCase {
   seller: string;
   issue: string;
   evidence: string[];
+  orderValue?: number;
   suggestedResolution?: string;
 }

@@ -9,7 +9,8 @@ export const DisputeResolver = () => {
     buyer: "",
     seller: "",
     issue: "",
-    evidence: []
+    evidence: [],
+    orderValue: undefined
   });
 
   const analyzeDispute = async () => {
@@ -101,6 +102,25 @@ export const DisputeResolver = () => {
               onChange={(e) => setDispute(prev => ({ ...prev, seller: e.target.value }))}
               placeholder="0x..."
               className="input input-bordered"
+            />
+          </div>
+
+          {/* Order Value */}
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Order Value (USD)</span>
+            </label>
+            <input
+              type="number"
+              value={dispute.orderValue || ""}
+              onChange={(e) => setDispute(prev => ({ 
+                ...prev, 
+                orderValue: e.target.value ? parseFloat(e.target.value) : undefined 
+              }))}
+              placeholder="Enter order value"
+              className="input input-bordered"
+              min="0"
+              step="0.01"
             />
           </div>
 
