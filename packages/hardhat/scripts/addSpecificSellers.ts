@@ -10,7 +10,7 @@ async function main() {
 
   // Get the contract instance
   const ProductRegistry = await ethers.getContractFactory("ProductRegistry");
-  const productRegistry = ProductRegistry.attach(PRODUCT_REGISTRY_ADDRESS);
+  const productRegistry = ProductRegistry.attach(PRODUCT_REGISTRY_ADDRESS) as any;
 
   // Define specific sellers with their private keys
   // NOTE: These are test private keys - DO NOT use real private keys with funds!
@@ -68,7 +68,7 @@ async function main() {
     }
 
     // Connect to contract with this seller's wallet
-    const sellerProductRegistry = productRegistry.connect(wallet);
+    const sellerProductRegistry = productRegistry.connect(wallet) as any;
 
     // Register seller
     try {

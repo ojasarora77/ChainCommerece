@@ -7,7 +7,7 @@ async function main() {
 
   const PRODUCT_REGISTRY_ADDRESS = "0x328118233e846e9c629480F4DE1444cbE7b7189e";
   const ProductRegistry = await ethers.getContractFactory("ProductRegistry");
-  const productRegistry = ProductRegistry.attach(PRODUCT_REGISTRY_ADDRESS);
+  const productRegistry = ProductRegistry.attach(PRODUCT_REGISTRY_ADDRESS) as any;
 
   try {
     // Get marketplace stats

@@ -10,7 +10,7 @@ async function main() {
 
   // Get the contract instance
   const ProductRegistry = await ethers.getContractFactory("ProductRegistry");
-  const productRegistry = ProductRegistry.attach(PRODUCT_REGISTRY_ADDRESS);
+  const productRegistry = ProductRegistry.attach(PRODUCT_REGISTRY_ADDRESS) as any;
 
   // Get deployer account
   const [deployer] = await ethers.getSigners();

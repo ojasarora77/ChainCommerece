@@ -6,7 +6,7 @@ async function main() {
   // Get the deployed contract address from the deployment
   const productRegistryAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; // From your deployment output
   const ProductRegistry = await ethers.getContractFactory("ProductRegistry");
-  const productRegistry = ProductRegistry.attach(productRegistryAddress);
+  const productRegistry = ProductRegistry.attach(productRegistryAddress) as any;
 
   // Sample products to add
   const products = [

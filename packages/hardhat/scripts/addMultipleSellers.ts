@@ -10,7 +10,7 @@ async function main() {
 
   // Get the contract instance
   const ProductRegistry = await ethers.getContractFactory("ProductRegistry");
-  const productRegistry = ProductRegistry.attach(PRODUCT_REGISTRY_ADDRESS);
+  const productRegistry = ProductRegistry.attach(PRODUCT_REGISTRY_ADDRESS) as any;
 
   // Get multiple accounts (or you can use specific private keys)
   const accounts = await ethers.getSigners();
@@ -114,7 +114,7 @@ async function main() {
     console.log(`💰 Balance: ${ethers.formatEther(balance)} AVAX`);
 
     // Connect to contract with this seller's signer
-    const sellerProductRegistry = productRegistry.connect(seller.signer);
+    const sellerProductRegistry = productRegistry.connect(seller.signer) as any;
 
     // Register seller if not already registered
     try {

@@ -10,7 +10,7 @@ async function main() {
 
   // Get the contract instance
   const ProductRegistry = await ethers.getContractFactory("ProductRegistry");
-  const productRegistry = ProductRegistry.attach(PRODUCT_REGISTRY_ADDRESS);
+  const productRegistry = ProductRegistry.attach(PRODUCT_REGISTRY_ADDRESS) as any;
 
   // Get the deployer account
   const [deployer] = await ethers.getSigners();
@@ -120,7 +120,7 @@ async function main() {
     }
 
     // Connect to contract with this seller's wallet
-    const sellerProductRegistry = productRegistry.connect(seller.wallet);
+    const sellerProductRegistry = productRegistry.connect(seller.wallet) as any;
 
     // Register seller if not already registered
     try {

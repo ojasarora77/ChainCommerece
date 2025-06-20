@@ -74,7 +74,6 @@ contract ProductRegistry {
 
     // Access control
     address public owner;
-    address public marketplace; // Authorized marketplace contract
     mapping(address => bool) public moderators;
 
     // Modifiers
@@ -85,11 +84,6 @@ contract ProductRegistry {
 
     modifier onlyModerator() {
         require(moderators[msg.sender] || msg.sender == owner, "Not authorized");
-        _;
-    }
-
-    modifier onlyMarketplace() {
-        require(msg.sender == marketplace || msg.sender == owner, "Not authorized marketplace");
         _;
     }
 
@@ -207,12 +201,12 @@ contract ProductRegistry {
     }
 
     /**
-     * @dev Purchase a product (called by marketplace contract)
+     * @dev Purchase a product (called by escrow contract)
      */
     function purchaseProduct(
         uint256 _productId,
         address _buyer
-    ) external onlyMarketplace validProduct(_productId) {
+    ) external validProduct(_productId) {
         Product storage product = products[_productId];
         
         // Increment sales counters
@@ -222,13 +216,6 @@ contract ProductRegistry {
         emit ProductPurchased(_productId, _buyer, product.seller, product.price);
         
         console.log("Product purchased:", _productId, "by:", _buyer);
-    }
-
-    /**
-     * @dev Set marketplace contract address (owner only)
-     */
-    function setMarketplace(address _marketplace) external onlyOwner {
-        marketplace = _marketplace;
     }
 
     /**
