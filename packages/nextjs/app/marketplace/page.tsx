@@ -20,6 +20,7 @@ import { AIShoppingAssistant } from "~~/components/ai/AIShoppingAssistant";
 import { PricingOptimizer } from "~~/components/ai/PricingOptimizer";
 import { DisputeResolver } from "~~/components/ai/DisputeResolver";
 import { AddProductForm } from "~~/components/marketplace/AddProductForm";
+import MarketplaceSidebar from "~~/components/marketplace-sidebar";
 
 // Mock product data (replace with actual contract calls)
 const mockProducts = [
@@ -86,6 +87,7 @@ const Marketplace: NextPage = () => {
   const [recommendations, setRecommendations] = useState<number[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [isGettingRecommendations, setIsGettingRecommendations] = useState(false);
+  const [activeSection, setActiveSection] = useState("overview");
 
   // 🔥 REAL CONTRACT CALLS - Get marketplace stats
   const { data: marketplaceStats } = useScaffoldReadContract({
@@ -245,212 +247,129 @@ const Marketplace: NextPage = () => {
 
   const recommendedProducts = products.filter(p => p.isRecommended);
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-base-200 to-base-300">
-      {/* Header */}
-      <div className="navbar bg-base-100 shadow-lg">
-        <div className="flex-1">
-          <Link href="/" className="btn btn-ghost text-xl">
-            <SparklesIcon className="h-6 w-6 text-primary" />
-            AI Marketplace
-          </Link>
-        </div>
-        <div className="flex-none gap-2">
-          {connectedAddress && (
-            <>
-              <button className="btn btn-ghost btn-circle">
-                <ShoppingBagIcon className="h-5 w-5" />
-              </button>
-              <div className="dropdown dropdown-end">
-                <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
-                  <UserIcon className="h-5 w-5" />
-                </div>
-                <ul className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-                  <li><Link href="/preferences">Profile & Preferences</Link></li>
-                  <li><Link href="/admin">Admin Panel</Link></li>
-                  <li><a>My Products</a></li>
-                  <li><a>Settings</a></li>
-                </ul>
+  const renderSection = () => {
+    switch (activeSection) {
+      case "overview":
+        return (
+          <div className="space-y-8">
+            {/* Hero Section */}
+            <div className="relative hero min-h-[300px] bg-gradient-to-br from-primary via-secondary to-accent rounded-3xl overflow-hidden">
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-10 left-10 w-20 h-20 bg-white rounded-full animate-pulse"></div>
+                <div className="absolute top-32 right-20 w-16 h-16 bg-white rounded-full animate-pulse delay-1000"></div>
+                <div className="absolute bottom-20 left-32 w-12 h-12 bg-white rounded-full animate-pulse delay-2000"></div>
+                <div className="absolute bottom-32 right-10 w-24 h-24 bg-white rounded-full animate-pulse delay-500"></div>
               </div>
-            </>
-          )}
-        </div>
-      </div>
 
-      <div className="container mx-auto px-4 py-8">
-        {/* Hero Section */}
-        <div className="hero min-h-[300px] bg-gradient-to-r from-primary to-secondary rounded-3xl mb-8">
-          <div className="hero-content text-center text-primary-content">
-            <div className="max-w-md">
-              <SparklesIcon className="h-16 w-16 mx-auto mb-4" />
-              <h1 className="text-5xl font-bold">AI-Powered Shopping</h1>
-              <p className="py-6">
-                Discover products tailored just for you using advanced AI recommendations on the blockchain
-              </p>
-              {connectedAddress ? (
-                <button 
-                  className={`btn btn-accent btn-lg ${isGettingRecommendations ? 'loading' : ''}`}
-                  onClick={handleGetAIRecommendations}
-                  disabled={isGettingRecommendations}
-                >
-                  {isGettingRecommendations ? 'Getting AI Recommendations...' : 'Get My AI Recommendations'}
-                  <SparklesIcon className="h-5 w-5 ml-2" />
-                </button>
-              ) : (
-                <div className="alert alert-info">
-                  <span>Connect your wallet to get personalized AI recommendations!</span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Amazon Bedrock AI Components */}
-        <div className="mb-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <AIShoppingAssistant />
-
-            <div className="space-y-4">
-              <h2 className="text-2xl font-bold">Seller AI Tools</h2>
-              <PricingOptimizer productId="demo-product-123" currentPrice={99.99} />
-
-              {/* AI Dispute Resolution */}
-              <DisputeResolver />
-            </div>
-          </div>
-        </div>
-
-        {/* AI Recommendations Section */}
-        {connectedAddress && recommendedProducts.length > 0 && (
-          <div className="mb-8">
-            <div className="flex items-center gap-2 mb-4">
-              <SparklesIcon className="h-6 w-6 text-primary" />
-              <h2 className="text-2xl font-bold">AI Recommendations for You</h2>
-              <div className="badge badge-primary">Powered by Chainlink Functions</div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-              {recommendedProducts.map((product, index) => (
-                <div key={`recommended-${product.id}-${index}`} className="card bg-base-100 shadow-xl border-2 border-primary">
-                  <div className="card-body p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="text-4xl">{product.image}</div>
-                      <div className="badge badge-primary">
-                        <FireIcon className="h-3 w-3 mr-1" />
-                        AI Pick
-                      </div>
-                    </div>
-                    <h3 className="card-title text-sm">{product.name}</h3>
-                    <p className="text-xs opacity-70">{product.description}</p>
-                    <div className="flex items-center gap-1 my-2">
-                      <StarIcon className="h-4 w-4 text-yellow-400 fill-current" />
-                      <span className="text-sm">{product.rating}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="font-bold text-primary">{product.price}</span>
-                      <button className="btn btn-primary btn-sm">
-                        Buy Now
-                      </button>
+              <div className="hero-content text-center text-primary-content relative z-10">
+                <div className="max-w-2xl">
+                  <div className="flex justify-center mb-6">
+                    <div className="p-4 bg-white/20 rounded-full backdrop-blur-sm">
+                      <SparklesIcon className="h-16 w-16 animate-pulse" />
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
-        {/* Category Filter */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex gap-2 flex-wrap">
-            {categories.map((category) => (
-              <button
-                key={category}
-                className={`btn ${selectedCategory === category ? 'btn-primary' : 'btn-outline'}`}
-                onClick={() => setSelectedCategory(category)}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-          
-          {/* Add Product Button */}
-          {connectedAddress && <AddProductForm />}
-        </div>
+                  <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+                    AI-Powered Shopping
+                  </h1>
+                  <p className="text-lg mb-6 text-white/90 max-w-lg mx-auto">
+                    Discover products tailored just for you using advanced AI recommendations on the blockchain
+                  </p>
 
-        {/* Products Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map((product, index) => (
-            <div key={`product-${product.id}-${index}`} className={`card bg-base-100 shadow-xl hover:shadow-2xl transition-all ${product.isRecommended ? 'ring-2 ring-primary' : ''}`}>
-              <div className="card-body">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="text-6xl">{product.image}</div>
-                  {product.isRecommended && (
-                    <div className="badge badge-primary">
-                      <SparklesIcon className="h-3 w-3 mr-1" />
-                      AI
-                    </div>
-                  )}
-                </div>
-                
-                <h2 className="card-title">{product.name}</h2>
-                <div className="badge badge-outline">{product.category}</div>
-                <p className="text-sm opacity-70">{product.description}</p>
-                
-                <div className="flex items-center gap-1 my-2">
-                  <StarIcon className="h-4 w-4 text-yellow-400 fill-current" />
-                  <span>{product.rating}</span>
-                </div>
-                
-                <div className="text-xs mb-2">
-                  Seller: <Address address={product.seller} size="xs" />
-                </div>
-                
-                <div className="card-actions justify-between items-center">
-                  <span className="text-xl font-bold text-primary">{product.price}</span>
-                  <button className="btn btn-primary">
-                    Buy Now
-                    <ArrowRightIcon className="h-4 w-4" />
-                  </button>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    {connectedAddress ? (
+                      <>
+                        <button
+                          className={`btn btn-accent btn-lg shadow-lg hover:shadow-xl transition-all ${isGettingRecommendations ? 'loading' : ''}`}
+                          onClick={handleGetAIRecommendations}
+                          disabled={isGettingRecommendations}
+                        >
+                          {isGettingRecommendations ? (
+                            <>
+                              <span className="loading loading-spinner loading-sm"></span>
+                              Getting AI Recommendations...
+                            </>
+                          ) : (
+                            <>
+                              Get My AI Recommendations
+                              <SparklesIcon className="h-5 w-5 ml-2" />
+                            </>
+                          )}
+                        </button>
+                        <div className="stats bg-white/20 backdrop-blur-sm">
+                          <div className="stat text-center">
+                            <div className="stat-value text-white text-lg">{recommendedProducts.length}</div>
+                            <div className="stat-desc text-white/80">AI Recommendations</div>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="alert alert-info bg-white/20 backdrop-blur-sm border-white/30 text-white">
+                        <SparklesIcon className="h-6 w-6" />
+                        <span>Connect your wallet to get personalized AI recommendations!</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
 
-        {/* Stats Section - REAL DATA */}
-        <div className="stats shadow w-full mt-12">
-          <div className="stat">
-            <div className="stat-figure text-primary">
-              <SparklesIcon className="h-8 w-8" />
-            </div>
-            <div className="stat-title">AI Recommendations</div>
-            <div className="stat-value text-primary">{recommendedProducts.length}</div>
-            <div className="stat-desc">Personalized for you</div>
-          </div>
-          
-          <div className="stat">
-            <div className="stat-figure text-secondary">
-              <ShoppingBagIcon className="h-8 w-8" />
-            </div>
-            <div className="stat-title">Total Products</div>
-            <div className="stat-value text-secondary">
-              {marketplaceStats ? Number(marketplaceStats[0]) : products.length}
-            </div>
-            <div className="stat-desc">Available in marketplace</div>
-          </div>
+            {/* Stats Section */}
+            <div className="stats shadow w-full bg-slate-900">
+              <div className="stat">
+                <div className="stat-figure text-primary">
+                  <SparklesIcon className="h-8 w-8" />
+                </div>
+                <div className="stat-title text-slate-300">AI Recommendations</div>
+                <div className="stat-value text-primary">{recommendedProducts.length}</div>
+                <div className="stat-desc text-slate-400">Personalized for you</div>
+              </div>
 
-          <div className="stat">
-            <div className="stat-figure text-accent">
-              <UserIcon className="h-8 w-8" />
+              <div className="stat">
+                <div className="stat-figure text-secondary">
+                  <ShoppingBagIcon className="h-8 w-8" />
+                </div>
+                <div className="stat-title text-slate-300">Total Products</div>
+                <div className="stat-value text-secondary">
+                  {marketplaceStats ? Number(marketplaceStats[0]) : products.length}
+                </div>
+                <div className="stat-desc text-slate-400">Available in marketplace</div>
+              </div>
+
+              <div className="stat">
+                <div className="stat-figure text-accent">
+                  <UserIcon className="h-8 w-8" />
+                </div>
+                <div className="stat-title text-slate-300">Total Sellers</div>
+                <div className="stat-value text-accent">
+                  {marketplaceStats ? Number(marketplaceStats[1]) : "5+"}
+                </div>
+                <div className="stat-desc text-slate-400">Active sellers</div>
+              </div>
             </div>
-            <div className="stat-title">Total Sellers</div>
-            <div className="stat-value text-accent">
-              {marketplaceStats ? Number(marketplaceStats[1]) : "5+"}
-            </div>
-            <div className="stat-desc">Active sellers</div>
           </div>
+        );
+      case "ai-assistant":
+        return <AIShoppingAssistant />;
+      case "pricing-optimizer":
+        return <PricingOptimizer productId="demo-product-123" currentPrice={99.99} />;
+      case "dispute-resolution":
+        return <DisputeResolver />;
+      default:
+        return <div className="p-8 text-center text-white">Section under development</div>;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-950 pt-24">
+      <MarketplaceSidebar
+        activeSection={activeSection}
+        onSectionChange={setActiveSection}
+      >
+        <div className="p-6">
+          {renderSection()}
         </div>
-      </div>
+      </MarketplaceSidebar>
     </div>
   );
 };
