@@ -23,6 +23,12 @@ if (isIpfs) {
   nextConfig.trailingSlash = true;
   nextConfig.images = {
     unoptimized: true,
+    domains: ['images.unsplash.com'],
+  };
+} else {
+  nextConfig.images = {
+    domains: ['images.unsplash.com'],
+    unoptimized: false,
   };
 }
 

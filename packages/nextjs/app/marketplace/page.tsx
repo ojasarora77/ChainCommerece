@@ -103,7 +103,7 @@ const Marketplace: NextPage = () => {
           category: product.category,
           price: `${(Number(product.price) / 1e18).toFixed(3)} ETH`,
           rating: Number(product.averageRating) / 100 || 4.5, // Convert from scaled rating
-          image: getProductEmoji(product.category),
+          image: getProductImage(product.category),
           description: product.description,
           seller: product.seller,
           isRecommended: false
@@ -115,25 +115,26 @@ const Marketplace: NextPage = () => {
       );
       
       console.log("🔥 Loaded products from contract:", uniqueProducts.length);
+      console.log("🖼️ Product images:", uniqueProducts.map(p => ({ name: p.name, category: p.category, image: p.image })));
       setProducts(uniqueProducts);
     }
   }, [batchProducts]);
 
 
 
-  // Helper function to get emoji based on category
-  const getProductEmoji = (category: string) => {
-    const emojiMap: { [key: string]: string } = {
-      "Electronics": "📱",
-      "Clothing": "👕", 
-      "Digital": "📚",
-      "Sports": "⚽",
-      "Books": "📖",
-      "Home & Garden": "🏡",
-      "Beauty": "💄",
-      "Automotive": "🚗"
+  // Helper function to get image source based on category
+  const getProductImage = (category: string) => {
+    const imageMap: { [key: string]: string } = {
+      "Electronics": "https://images.unsplash.com/photo-1498049794561-7780e7231661?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", // Electronics image URL
+      "Clothing": "https://images.unsplash.com/photo-1523381294911-8d3cead13475?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "Digital": "https://plus.unsplash.com/premium_photo-1687558246422-e94f0864d467?q=80&w=1065&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", // Fill in your digital products image URL
+      "Sports": "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", // Fill in your sports image URL
+      "Books": "https://images.unsplash.com/photo-1577627444534-b38e16c9d796?q=80&w=1036&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", // Fill in your books image URL
+      "Home & Garden": "https://plus.unsplash.com/premium_photo-1678836292816-fdf0ac484cf1?q=80&w=1703&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", // Fill in your home & garden image URL
+      "Beauty": "https://plus.unsplash.com/premium_photo-1684407616442-8d5a1b7c978e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", // Fill in your beauty image URL
+      "Automotive": "https://images.unsplash.com/photo-1624602482469-3cd73308e649?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" // Fill in your automotive image URL
     };
-    return emojiMap[category] || "📦";
+    return imageMap[category] || ""; // Default empty if category not found
   };
 
 
@@ -150,87 +151,58 @@ const Marketplace: NextPage = () => {
       case "overview":
       case "products":
         return (
-          <div className="space-y-8">
-            {/* Hero Section */}
-            <div className="relative hero min-h-[300px] bg-gradient-to-br from-primary via-secondary to-accent rounded-3xl overflow-hidden">
-              <div className="absolute inset-0 opacity-10">
-                <div className="absolute top-10 left-10 w-20 h-20 bg-white rounded-full animate-pulse"></div>
-                <div className="absolute top-32 right-20 w-16 h-16 bg-white rounded-full animate-pulse delay-1000"></div>
-                <div className="absolute bottom-20 left-32 w-12 h-12 bg-white rounded-full animate-pulse delay-2000"></div>
-                <div className="absolute bottom-32 right-10 w-24 h-24 bg-white rounded-full animate-pulse delay-500"></div>
-              </div>
+          <div className="space-y-6">
+            {/* Compact Header with Quick Actions */}
+            <div className="bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 rounded-2xl p-6 border border-primary/20">
+              <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
+                {/* Left side - Branding & Info */}
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-primary/20 rounded-xl">
+                      <SparklesIcon className="h-8 w-8 text-primary" />
+                    </div>
+                    <div>
+                      <h1 className="text-2xl font-bold text-slate-900 dark:text-white">ChainCommerce</h1>
+                      <p className="text-sm text-slate-600 dark:text-slate-300">Blockchain Marketplace</p>
+                    </div>
+                  </div>
+                </div>
 
-              <div className="hero-content text-center text-primary-content relative z-10">
-                <div className="max-w-2xl">
-                  <div className="flex justify-center mb-6">
-                    <div className="p-4 bg-white/20 rounded-full backdrop-blur-sm">
-                      <SparklesIcon className="h-16 w-16 animate-pulse" />
+                {/* Right side - Quick Stats & Actions */}
+                <div className="flex items-center gap-4">
+                  {/* Quick Stats */}
+                  <div className="hidden md:flex items-center gap-6">
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-primary">
+                        {marketplaceStats ? Number(marketplaceStats[0]) : products.length}
+                      </div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400">Products</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-secondary">
+                        {marketplaceStats ? Number(marketplaceStats[1]) : "0"}
+                      </div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400">Sellers</div>
                     </div>
                   </div>
 
-                    <div className="flex justify-center mb-4">
-                    <img 
-                      src="/chaincommerce_logo.png" 
-                      alt="ChainCommerce" 
-                      className="h-16 md:h-20"
-                    />
-                    </div>
-                  <p className="text-lg mb-6 text-white/90 max-w-lg mx-auto">
-                    Buy and sell products on the blockchain with complete transparency and security
-                  </p>
-
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                  {/* Connection Status */}
+                  <div className="flex items-center gap-2">
                     {connectedAddress ? (
-                      <div className="alert alert-success bg-white/20 backdrop-blur-sm border-white/30 text-white">
-                        <SparklesIcon className="h-6 w-6" />
-                        <span>Wallet connected! Start exploring the marketplace.</span>
+                      <div className="flex items-center gap-2 bg-green-500/20 text-green-700 dark:text-green-300 px-3 py-2 rounded-full text-sm font-medium">
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        Connected
                       </div>
                     ) : (
-                      <div className="alert alert-info bg-white/20 backdrop-blur-sm border-white/30 text-white">
-                        <SparklesIcon className="h-6 w-6" />
-                        <span>Connect your wallet to start buying and selling!</span>
+                      <div className="flex items-center gap-2 bg-orange-500/20 text-orange-700 dark:text-orange-300 px-3 py-2 rounded-full text-sm font-medium">
+                        <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                        Connect Wallet
                       </div>
                     )}
                   </div>
                 </div>
               </div>
             </div>
-
-            {/* Stats Section */}
-            <div className="stats shadow w-full bg-slate-900">
-              <div className="stat">
-                <div className="stat-figure text-primary">
-                  <ShoppingBagIcon className="h-8 w-8" />
-                </div>
-                <div className="stat-title text-slate-300">Total Products</div>
-                <div className="stat-value text-primary">
-                  {marketplaceStats ? Number(marketplaceStats[0]) : products.length}
-                </div>
-                <div className="stat-desc text-slate-400">Available in marketplace</div>
-              </div>
-
-              <div className="stat">
-                <div className="stat-figure text-secondary">
-                  <UserIcon className="h-8 w-8" />
-                </div>
-                <div className="stat-title text-slate-300">Total Sellers</div>
-                <div className="stat-value text-secondary">
-                  {marketplaceStats ? Number(marketplaceStats[1]) : "0"}
-                </div>
-                <div className="stat-desc text-slate-400">Active sellers</div>
-              </div>
-
-              <div className="stat">
-                <div className="stat-figure text-accent">
-                  <SparklesIcon className="h-8 w-8" />
-                </div>
-                <div className="stat-title text-slate-300">Blockchain Powered</div>
-                <div className="stat-value text-accent">100%</div>
-                <div className="stat-desc text-slate-400">Decentralized & secure</div>
-              </div>
-            </div>
-
-
 
             {/* Category Filter */}
             <div className="flex justify-between items-center mb-6">
@@ -250,32 +222,71 @@ const Marketplace: NextPage = () => {
               {connectedAddress && <AddProductForm />}
             </div>
 
-            {/* Products Grid */}
+            {/* Products Grid - Uniform Size */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredProducts.map((product, index) => (
-                <div key={`product-${product.id}-${index}`} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all">
-                  <div className="card-body">
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="text-6xl">{product.image}</div>
+                <div 
+                  key={`product-${product.id}-${index}`} 
+                  className="group bg-white dark:bg-slate-800 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 dark:border-slate-700 hover:border-primary/50"
+                >
+                  {/* Product Image Section */}
+                  <div className="relative h-48 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-600">
+                    {product.image && product.image.trim() !== "" ? (
+                      <img 
+                        src={product.image} 
+                        alt={`${product.category} product`}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        crossOrigin="anonymous"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                        <span className="text-4xl opacity-50">📦</span>
+                      </div>
+                    )}
+                    
+                    {/* Category Badge - Top Left */}
+                    <div className="absolute top-3 left-3">
+                      <span className="px-3 py-1 bg-primary text-white text-xs font-bold rounded-full shadow-lg">
+                        {product.category}
+                      </span>
+                    </div>
 
+                    {/* Rating Badge - Top Right */}
+                    <div className="absolute top-3 right-3">
+                      <div className="flex items-center gap-1 bg-black/70 backdrop-blur-sm rounded-full px-2 py-1">
+                        <StarIcon className="h-3 w-3 text-yellow-400 fill-current" />
+                        <span className="text-xs text-white font-medium">{product.rating}</span>
+                      </div>
                     </div>
+                  </div>
+
+                  {/* Product Info Section */}
+                  <div className="p-4 space-y-3">
+                    {/* Product Name */}
+                    <h3 className="font-bold text-lg text-slate-900 dark:text-white group-hover:text-primary transition-colors line-clamp-2">
+                      {product.name}
+                    </h3>
                     
-                    <h2 className="card-title">{product.name}</h2>
-                    <div className="badge badge-outline">{product.category}</div>
-                    <p className="text-sm opacity-70">{product.description}</p>
+                    {/* Description */}
+                    <p className="text-sm text-slate-600 dark:text-slate-300 line-clamp-2">
+                      {product.description}
+                    </p>
                     
-                    <div className="flex items-center gap-1 my-2">
-                      <StarIcon className="h-4 w-4 text-yellow-400 fill-current" />
-                      <span>{product.rating}</span>
-                    </div>
-                    
-                    <div className="text-xs mb-2">
+                    {/* Seller Info */}
+                    <div className="text-xs text-slate-500 dark:text-slate-400">
                       Seller: <Address address={product.seller} size="xs" />
                     </div>
                     
-                    <div className="card-actions justify-between items-center">
-                      <span className="text-xl font-bold text-primary">{product.price}</span>
-                      <button className="btn btn-primary">
+                    {/* Price and Buy Button */}
+                    <div className="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-slate-600">
+                      <div className="flex flex-col">
+                        <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Price</span>
+                        <span className="text-2xl font-black text-white bg-primary px-2 py-1 rounded-lg">
+                          {product.price}
+                        </span>
+                      </div>
+                      <button className="btn btn-primary hover:btn-secondary transition-all group-hover:scale-105 shadow-lg">
                         Buy Now
                         <ArrowRightIcon className="h-4 w-4" />
                       </button>
