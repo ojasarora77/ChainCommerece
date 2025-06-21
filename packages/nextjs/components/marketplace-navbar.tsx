@@ -5,18 +5,15 @@ import {
   NavItems,
   MobileNav,
   NavbarLogo,
-  NavbarButton,
   MobileNavHeader,
   MobileNavToggle,
   MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
 import { useState } from "react";
-import { useAccount } from "wagmi";
 import { usePathname } from "next/navigation";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 
 export default function MarketplaceNavbar() {
-  const { address: connectedAddress } = useAccount();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
@@ -46,21 +43,14 @@ export default function MarketplaceNavbar() {
     <div className="relative w-full">
       <Navbar className="fixed top-0 z-50 w-full">
         {/* Desktop Navigation */}
-        <NavBody className="min-w-0 max-w-none">
+        <NavBody className="min-w-0 max-w-none relative">
           <NavbarLogo />
-          <NavItems items={navItems} />
-          <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-shrink-0">
+          <NavItems items={navItems} className="flex-shrink min-w-0" />
+          <div className="absolute right-0 flex items-center gap-2 min-w-fit flex-shrink-0">
             {!isHomepage && (
-              <>
-                <div className="flex-shrink-0">
-                  <RainbowKitCustomConnectButton />
-                </div>
-                {connectedAddress && (
-                  <NavbarButton variant="gradient" className="hidden sm:flex ml-1">
-                    Dashboard
-                  </NavbarButton>
-                )}
-              </>
+              <div className="flex-shrink-0 min-w-fit">
+                <RainbowKitCustomConnectButton />
+              </div>
             )}
           </div>
         </NavBody>
@@ -94,15 +84,6 @@ export default function MarketplaceNavbar() {
                 <div className="w-full flex justify-center">
                   <RainbowKitCustomConnectButton />
                 </div>
-                {connectedAddress && (
-                  <NavbarButton
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    variant="gradient"
-                    className="w-full max-w-xs mx-auto"
-                  >
-                    Dashboard
-                  </NavbarButton>
-                )}
               </div>
             )}
           </MobileNavMenu>
