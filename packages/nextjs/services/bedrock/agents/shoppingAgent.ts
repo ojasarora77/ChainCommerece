@@ -1,61 +1,167 @@
 import { invokeAI } from "../index";
 import { ProductRecommendation, UserPreferences } from "~~/types/bedrock";
+import { ContractProductService, ContractProduct } from "~~/services/marketplace/contractProductService";
 
 export class ShoppingAgent {
   private sessionId: string;
   private userPreferences: UserPreferences;
+  private contractService: ContractProductService;
 
   constructor(userId: string, preferences: UserPreferences) {
     this.sessionId = `shopping-${userId}-${Date.now()}`;
     this.userPreferences = preferences;
+    this.contractService = new ContractProductService();
   }
 
   async findProducts(query: string): Promise<ProductRecommendation[]> {
     try {
-      // Enhanced AI prompt for production-ready product search
-      const prompt = `You are an expert AI shopping assistant for a sustainable e-commerce marketplace. Analyze this product search request and provide detailed recommendations.
+      console.log(`🔍 Hybrid search for: "${query}"`);
+
+      // Step 1: Get real products from smart contract
+      const realProducts = await this.contractService.searchProducts(query);
+      console.log(`📦 Found ${realProducts.length} real marketplace products`);
+
+      // Step 2: AI analyzes real inventory + suggests additions
+      const aiRecommendations = await this.getAIRecommendations(query, realProducts);
+      console.log(`🤖 Generated ${aiRecommendations.length} AI recommendations`);
+
+      // Step 3: Combine and return hybrid results
+      const hybridResults = this.combineResults(realProducts, aiRecommendations);
+      console.log(`✅ Returning ${hybridResults.length} hybrid results`);
+
+      return hybridResults;
+
+    } catch (error) {
+      console.error("❌ Hybrid search error:", error);
+      // Fallback to AI-only recommendations
+      return this.getAIOnlyRecommendations(query);
+    }
+  }
+
+  private async getAIRecommendations(query: string, realProducts: ContractProduct[]): Promise<ProductRecommendation[]> {
+    const prompt = `You are an expert AI shopping assistant for a sustainable e-commerce marketplace.
 
 SEARCH QUERY: "${query}"
 
-USER CONTEXT:
+REAL MARKETPLACE INVENTORY (${realProducts.length} products):
+${realProducts.map(p => `
+- ${p.name}: $${p.priceUSD} (${p.price} ETH)
+  Category: ${p.category}
+  Sustainability: ${p.sustainabilityScore || 'N/A'}%
+  Rating: ${p.averageRating}/5
+  Description: ${p.description}
+  Seller: ${p.seller}
+`).join('')}
+
+USER PREFERENCES:
 - Sustainability Threshold: ${this.userPreferences.sustainabilityMin}% minimum
 - Budget Limit: $${this.userPreferences.budgetMax}
-- Preferred Blockchain: ${this.userPreferences.preferredChain || 'Ethereum/Avalanche'}
-- Product Categories: ${this.userPreferences.categories.join(', ')}
+- Preferred Blockchain: ${this.userPreferences.preferredChain || 'Any'}
+- Categories: ${this.userPreferences.categories.join(', ')}
 - Ethical Priorities: ${this.userPreferences.ethicalConcerns.join(', ')}
 
-TASK: Recommend exactly 3 products that match the search criteria. For each product, provide:
-
-1. PRODUCT_NAME: [Specific, realistic product name]
-2. DESCRIPTION: [Detailed description emphasizing sustainability features, materials, and benefits]
-3. PRICE: [Realistic market price in USD, within budget]
-4. SUSTAINABILITY_SCORE: [Score 0-100 based on environmental impact, materials, manufacturing]
-5. CERTIFICATIONS: [Relevant eco-certifications like Fair Trade, Carbon Neutral, ENERGY STAR, etc.]
-6. CARBON_FOOTPRINT: [Estimated CO2 impact in kg]
-7. SELLER_CHAIN: [Recommend Ethereum or Avalanche based on product type]
-8. KEY_FEATURES: [3-4 bullet points of main product features]
+TASK:
+1. PRIORITY: If real inventory has ANY matches for the search query, ALWAYS recommend those first
+2. For search "${query}": Look for products containing these keywords in name/description
+3. If real inventory has good matches, recommend ALL matching real products (up to 4)
+4. Only suggest NEW products if real inventory has NO matches or very few matches
+5. NEVER suggest products similar to existing real inventory
+6. For suggested products, make them realistic and different from existing inventory
 
 REQUIREMENTS:
-- All products must meet or exceed the ${this.userPreferences.sustainabilityMin}% sustainability threshold
-- All prices must be under $${this.userPreferences.budgetMax}
-- Focus on real, purchasable products that exist in the market
-- Prioritize products with verified sustainability credentials
-- Consider regional availability and shipping impact
+- Meet sustainability threshold (${this.userPreferences.sustainabilityMin}%+)
+- Stay within budget ($${this.userPreferences.budgetMax})
+- Provide realistic pricing and details
+- Mark clearly if recommending real vs suggested products
 
-Format as structured recommendations with clear product details.`;
+Format each recommendation with:
+PRODUCT_NAME: [name]
+DESCRIPTION: [detailed description]
+PRICE: [USD price]
+SUSTAINABILITY_SCORE: [0-100]
+CERTIFICATIONS: [list]
+CARBON_FOOTPRINT: [kg CO2]
+SOURCE: [REAL_INVENTORY or AI_SUGGESTION]
+SELLER: [address if real, or "Suggested Addition"]`;
 
+    try {
       const response = await invokeAI(prompt);
-
-      if (!response || !response.content || !response.content[0]?.text) {
-        throw new Error("Invalid AI response format");
+      if (!response?.content?.[0]?.text) {
+        throw new Error("Invalid AI response");
       }
 
-      // Parse the AI response into structured product data
-      return this.parseAdvancedAIResponse(response.content[0].text, query);
-
+      return this.parseHybridAIResponse(response.content[0].text, query, realProducts);
     } catch (error) {
-      console.error("AI Shopping Assistant temporarily unavailable:", error);
-      throw new Error("AI Shopping Assistant is temporarily unavailable. Please try again in a moment.");
+      console.error("AI recommendation error:", error);
+      return [];
+    }
+  }
+
+  private combineResults(realProducts: ContractProduct[], aiRecommendations: ProductRecommendation[]): ProductRecommendation[] {
+    console.log(`🔄 Combining ${realProducts.length} real products with ${aiRecommendations.length} AI recommendations`);
+
+    // Convert real products to ProductRecommendation format
+    const realProductRecommendations: ProductRecommendation[] = realProducts.map(product => ({
+      id: `real-${product.id}`,
+      name: product.name,
+      description: product.description,
+      sustainabilityScore: product.sustainabilityScore || 75,
+      price: product.priceUSD,
+      chain: product.chain,
+      sellerAddress: product.seller,
+      certifications: product.certifications || ["Marketplace Verified"],
+      carbonFootprint: product.carbonFootprint || 2.0,
+      isRealProduct: true, // Flag to identify real products
+      averageRating: product.averageRating,
+      ethPrice: product.price
+    }));
+
+    // Filter out AI recommendations that duplicate real products
+    const filteredAIRecommendations = aiRecommendations.filter(aiRec =>
+      !realProducts.some(realProd =>
+        realProd.name.toLowerCase().includes(aiRec.name.toLowerCase()) ||
+        aiRec.name.toLowerCase().includes(realProd.name.toLowerCase())
+      )
+    );
+
+    console.log(`📦 Real products: ${realProductRecommendations.length}`);
+    console.log(`🤖 Filtered AI suggestions: ${filteredAIRecommendations.length}`);
+
+    // Combine real products first, then AI suggestions
+    const combined = [...realProductRecommendations, ...filteredAIRecommendations];
+
+    // Remove any remaining duplicates by name
+    const uniqueProducts = combined.filter((product, index, array) =>
+      array.findIndex(p => p.name.toLowerCase() === product.name.toLowerCase()) === index
+    );
+
+    console.log(`✅ Final unique results: ${uniqueProducts.length}`);
+
+    // Limit to 6 total results (prioritize real products)
+    return uniqueProducts.slice(0, 6);
+  }
+
+  private async getAIOnlyRecommendations(query: string): Promise<ProductRecommendation[]> {
+    console.log("🔄 Falling back to AI-only recommendations");
+
+    const prompt = `You are an expert AI shopping assistant. The marketplace inventory is temporarily unavailable.
+
+SEARCH QUERY: "${query}"
+USER PREFERENCES: Sustainability ${this.userPreferences.sustainabilityMin}%+, Budget $${this.userPreferences.budgetMax}
+
+Provide 3 realistic product recommendations that would be perfect for this marketplace.
+Focus on sustainable, eco-friendly products with detailed specifications.`;
+
+    try {
+      const response = await invokeAI(prompt);
+      if (!response?.content?.[0]?.text) {
+        return this.getMockProducts(query);
+      }
+
+      return this.parseAdvancedAIResponse(response.content[0].text, query);
+    } catch (error) {
+      console.error("AI-only fallback error:", error);
+      return this.getMockProducts(query);
     }
   }
 
@@ -65,6 +171,111 @@ Format as structured recommendations with clear product details.`;
       const newProducts = await this.findProducts("new sustainable products listed today");
       // Check against user preferences and notify
     }, 3600000); // Check every hour
+  }
+
+  private parseHybridAIResponse(aiText: string, query: string, realProducts: ContractProduct[]): ProductRecommendation[] {
+    try {
+      console.log("🤖 Parsing hybrid AI response");
+
+      // Parse AI response and identify real vs suggested products
+      const products: ProductRecommendation[] = [];
+      const sections = this.extractProductSections(aiText);
+
+      for (let i = 0; i < Math.min(sections.length, 4); i++) {
+        const section = sections[i];
+        const product = this.parseHybridProductSection(section, i + 1, realProducts);
+        if (product) {
+          products.push(product);
+        }
+      }
+
+      console.log(`✅ Parsed ${products.length} hybrid recommendations`);
+      return products;
+
+    } catch (error) {
+      console.error("❌ Error parsing hybrid AI response:", error);
+      return [];
+    }
+  }
+
+  private parseHybridProductSection(section: string, index: number, realProducts: ContractProduct[]): ProductRecommendation | null {
+    try {
+      const name = this.extractField(section, ['PRODUCT_NAME:', 'Product:', 'Name:']) ||
+                   this.extractFirstLine(section) ||
+                   `AI Product ${index}`;
+
+      // Check if this refers to a real product
+      const realProduct = realProducts.find(p =>
+        p.name.toLowerCase().includes(name.toLowerCase()) ||
+        name.toLowerCase().includes(p.name.toLowerCase())
+      );
+
+      if (realProduct) {
+        // Return real product data
+        return {
+          id: `real-${realProduct.id}`,
+          name: realProduct.name,
+          description: realProduct.description,
+          sustainabilityScore: realProduct.sustainabilityScore || 75,
+          price: realProduct.priceUSD,
+          chain: realProduct.chain,
+          sellerAddress: realProduct.seller,
+          certifications: realProduct.certifications || ["Marketplace Verified"],
+          carbonFootprint: realProduct.carbonFootprint || 2.0,
+          isRealProduct: true,
+          averageRating: realProduct.averageRating,
+          ethPrice: realProduct.price
+        };
+      } else {
+        // Parse as AI suggestion
+        const description = this.extractField(section, ['DESCRIPTION:', 'Description:']) ||
+                           this.extractLongestSentence(section) ||
+                           "AI-suggested sustainable product";
+
+        const priceMatch = section.match(/\$(\d+(?:\.\d{2})?)/);
+        const price = priceMatch ? parseFloat(priceMatch[1]) : this.generateReasonablePrice();
+
+        const sustainabilityMatch = section.match(/(\d+)%?\s*(?:sustainability|score)/i);
+        const sustainabilityScore = sustainabilityMatch ?
+          Math.min(100, Math.max(this.userPreferences.sustainabilityMin, parseInt(sustainabilityMatch[1]))) :
+          this.generateSustainabilityScore();
+
+        return {
+          id: `ai-suggestion-${Date.now()}-${index}`,
+          name: name.substring(0, 100),
+          description: description.substring(0, 300),
+          sustainabilityScore,
+          price,
+          chain: this.determineOptimalChain(section, name),
+          sellerAddress: "Suggested Addition",
+          certifications: this.extractCertifications(section),
+          carbonFootprint: this.extractCarbonFootprint(section),
+          isRealProduct: false
+        };
+      }
+
+    } catch (error) {
+      console.error(`Error parsing hybrid section ${index}:`, error);
+      return null;
+    }
+  }
+
+  private getMockProducts(query: string): ProductRecommendation[] {
+    // Fallback mock products when everything fails
+    return [
+      {
+        id: `mock-${Date.now()}-1`,
+        name: `Sustainable ${query.split(' ')[0] || 'Product'}`,
+        description: "Eco-friendly product with sustainable materials",
+        sustainabilityScore: this.userPreferences.sustainabilityMin + 10,
+        price: this.generateReasonablePrice(),
+        chain: "ethereum" as const,
+        sellerAddress: "0x0000000000000000000000000000000000000000",
+        certifications: ["Eco-Certified"],
+        carbonFootprint: 2.0,
+        isRealProduct: false
+      }
+    ];
   }
 
   private parseAdvancedAIResponse(aiText: string, query: string): ProductRecommendation[] {

@@ -114,7 +114,7 @@ const AdminPage = () => {
 
   if (!address) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
         <div className="alert alert-warning">
           <span>Please connect your wallet to access admin functions</span>
         </div>
@@ -123,7 +123,7 @@ const AdminPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-base-200 p-8">
+    <div className="min-h-screen bg-slate-950 p-8 pt-24">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-4xl font-bold mb-8 text-center">
           <CogIcon className="h-8 w-8 inline mr-2" />

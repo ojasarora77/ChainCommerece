@@ -20,6 +20,7 @@ import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaf
 import { AddProductForm } from "~~/components/marketplace/AddProductForm";
 import { MarketplaceSettings } from "~~/components/marketplace/MarketplaceSettings";
 import MarketplaceSidebar from "~~/components/marketplace-sidebar";
+import { AIShoppingAssistant } from "~~/components/ai/AIShoppingAssistant";
 
 
 
@@ -304,7 +305,7 @@ const Marketplace: NextPage = () => {
           </div>
         );
       case "ai-assistant":
-        return <div className="p-8 text-center text-white">AI Shopping Assistant - Coming Soon</div>;
+        return <AIShoppingAssistant />;
       case "ai-recommendations":
         return <div className="p-8 text-center text-white">AI Recommendations - Coming Soon</div>;
       case "pricing-optimizer":

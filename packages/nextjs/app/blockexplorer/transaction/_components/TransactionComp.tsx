@@ -38,14 +38,15 @@ const TransactionComp = ({ txHash }: { txHash: Hash }) => {
   }, [client, txHash]);
 
   return (
-    <div className="container mx-auto mt-10 mb-20 px-10 md:px-0">
-      <button className="btn btn-sm btn-primary" onClick={() => router.back()}>
-        Back
-      </button>
-      {transaction ? (
-        <div className="overflow-x-auto">
-          <h2 className="text-3xl font-bold mb-4 text-center text-primary-content">Transaction Details</h2>{" "}
-          <table className="table rounded-lg bg-base-100 w-full shadow-lg md:table-lg table-md">
+    <div className="min-h-screen bg-slate-950 pt-24">
+      <div className="container mx-auto mt-10 mb-20 px-10 md:px-0">
+        <button className="btn btn-sm btn-primary" onClick={() => router.back()}>
+          Back
+        </button>
+        {transaction ? (
+          <div className="overflow-x-auto">
+            <h2 className="text-3xl font-bold mb-4 text-center text-white">Transaction Details</h2>{" "}
+            <table className="table rounded-lg bg-slate-800 w-full shadow-lg md:table-lg table-md text-white">
             <tbody>
               <tr>
                 <td>
@@ -121,7 +122,7 @@ const TransactionComp = ({ txHash }: { txHash: Hash }) => {
                   <textarea
                     readOnly
                     value={transaction.input}
-                    className="p-0 w-full textarea-primary bg-inherit h-[150px]"
+                    className="p-0 w-full textarea-primary bg-slate-700 text-white h-[150px]"
                   />
                 </td>
               </tr>
@@ -143,8 +144,9 @@ const TransactionComp = ({ txHash }: { txHash: Hash }) => {
           </table>
         </div>
       ) : (
-        <p className="text-2xl text-base-content">Loading...</p>
+        <p className="text-2xl text-white">Loading...</p>
       )}
+      </div>
     </div>
   );
 };

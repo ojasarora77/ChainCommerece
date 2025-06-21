@@ -58,6 +58,8 @@
     "node": ">=20.18.3"
   },
   "dependencies": {
+    "@aws-sdk/client-bedrock-agent-runtime": "^3.830.0",
+    "@aws-sdk/client-bedrock-runtime": "^3.830.0",
     "@chainlink/contracts": "^1.4.0",
     "@next/swc-darwin-arm64": "^15.3.4"
   }

@@ -121,7 +121,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-bedrock-agent-runtime@npm:^3.826.0":
+"@aws-sdk/client-bedrock-agent-runtime@npm:^3.826.0, @aws-sdk/client-bedrock-agent-runtime@npm:^3.830.0":
   version: 3.830.0
   resolution: "@aws-sdk/client-bedrock-agent-runtime@npm:3.830.0"
   dependencies:
@@ -220,7 +220,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-bedrock-runtime@npm:^3.826.0":
+"@aws-sdk/client-bedrock-runtime@npm:^3.826.0, @aws-sdk/client-bedrock-runtime@npm:^3.830.0":
   version: 3.830.0
   resolution: "@aws-sdk/client-bedrock-runtime@npm:3.830.0"
   dependencies:
@@ -4175,7 +4175,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oclif/core@npm:^4, @oclif/core@npm:^4.3.3":
+"@oclif/core@npm:^4, @oclif/core@npm:^4.4.0":
   version: 4.4.0
   resolution: "@oclif/core@npm:4.4.0"
   dependencies:
@@ -4211,10 +4211,10 @@ __metadata:
   linkType: hard
 
 "@oclif/plugin-plugins@npm:^5":
-  version: 5.4.41
-  resolution: "@oclif/plugin-plugins@npm:5.4.41"
+  version: 5.4.42
+  resolution: "@oclif/plugin-plugins@npm:5.4.42"
   dependencies:
-    "@oclif/core": ^4.3.3
+    "@oclif/core": ^4.4.0
     ansis: ^3.17.0
     debug: ^4.4.0
     npm: ^10.9.2
@@ -4225,7 +4225,7 @@ __metadata:
     validate-npm-package-name: ^5.0.1
     which: ^4.0.0
     yarn: ^1.22.22
-  checksum: f490b3c51a59fcc8b7f8a72626725b78fb5b6f35b1b833addf3ad5ad5a2abbcd00c39885b70f116221eceb9ae2c6ff1c5be6837cf0dd7d47b11d957113c6c2b6
+  checksum: 9817d2c0ed27a0daa16a59a54be1aca06f7d5dece5082dfe16163316bcb7d85b128851ccd6bd34bbc340324659d00b80e125846eaa262ce0218d5041fd23349f
   languageName: node
   linkType: hard
 
@@ -7700,7 +7700,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"array-includes@npm:^3.1.6, array-includes@npm:^3.1.8":
+"array-includes@npm:^3.1.6, array-includes@npm:^3.1.8, array-includes@npm:^3.1.9":
   version: 3.1.9
   resolution: "array-includes@npm:3.1.9"
   dependencies:
@@ -7737,7 +7737,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"array.prototype.findlastindex@npm:^1.2.5":
+"array.prototype.findlastindex@npm:^1.2.6":
   version: 1.2.6
   resolution: "array.prototype.findlastindex@npm:1.2.6"
   dependencies:
@@ -7752,7 +7752,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"array.prototype.flat@npm:^1.3.1, array.prototype.flat@npm:^1.3.2":
+"array.prototype.flat@npm:^1.3.1, array.prototype.flat@npm:^1.3.3":
   version: 1.3.3
   resolution: "array.prototype.flat@npm:1.3.3"
   dependencies:
@@ -10241,7 +10241,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-module-utils@npm:^2.12.0":
+"eslint-module-utils@npm:^2.12.1":
   version: 2.12.1
   resolution: "eslint-module-utils@npm:2.12.1"
   dependencies:
@@ -10254,31 +10254,31 @@ __metadata:
   linkType: hard
 
 "eslint-plugin-import@npm:^2.31.0":
-  version: 2.31.0
-  resolution: "eslint-plugin-import@npm:2.31.0"
+  version: 2.32.0
+  resolution: "eslint-plugin-import@npm:2.32.0"
   dependencies:
     "@rtsao/scc": ^1.1.0
-    array-includes: ^3.1.8
-    array.prototype.findlastindex: ^1.2.5
-    array.prototype.flat: ^1.3.2
-    array.prototype.flatmap: ^1.3.2
+    array-includes: ^3.1.9
+    array.prototype.findlastindex: ^1.2.6
+    array.prototype.flat: ^1.3.3
+    array.prototype.flatmap: ^1.3.3
     debug: ^3.2.7
     doctrine: ^2.1.0
     eslint-import-resolver-node: ^0.3.9
-    eslint-module-utils: ^2.12.0
+    eslint-module-utils: ^2.12.1
     hasown: ^2.0.2
-    is-core-module: ^2.15.1
+    is-core-module: ^2.16.1
     is-glob: ^4.0.3
     minimatch: ^3.1.2
     object.fromentries: ^2.0.8
     object.groupby: ^1.0.3
-    object.values: ^1.2.0
+    object.values: ^1.2.1
     semver: ^6.3.1
-    string.prototype.trimend: ^1.0.8
+    string.prototype.trimend: ^1.0.9
     tsconfig-paths: ^3.15.0
   peerDependencies:
     eslint: ^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8 || ^9
-  checksum: b1d2ac268b3582ff1af2a72a2c476eae4d250c100f2e335b6e102036e4a35efa530b80ec578dfc36761fabb34a635b9bf5ab071abe9d4404a4bb054fdf22d415
+  checksum: 8cd40595b5e4346d3698eb577014b4b6d0ba57b7b9edf975be4f052a89330ec202d0cc5c3861d37ebeafa151b6264821410243889b0c31710911a6b625bcf76b
   languageName: node
   linkType: hard
 
@@ -12617,7 +12617,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-core-module@npm:^2.13.0, is-core-module@npm:^2.15.1, is-core-module@npm:^2.16.0":
+"is-core-module@npm:^2.13.0, is-core-module@npm:^2.16.0, is-core-module@npm:^2.16.1":
   version: 2.16.1
   resolution: "is-core-module@npm:2.16.1"
   dependencies:
@@ -15229,7 +15229,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"object.values@npm:^1.1.6, object.values@npm:^1.2.0, object.values@npm:^1.2.1":
+"object.values@npm:^1.1.6, object.values@npm:^1.2.1":
   version: 1.2.1
   resolution: "object.values@npm:1.2.1"
   dependencies:
@@ -17001,6 +17001,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "se-2@workspace:."
   dependencies:
+    "@aws-sdk/client-bedrock-agent-runtime": ^3.830.0
+    "@aws-sdk/client-bedrock-runtime": ^3.830.0
     "@chainlink/contracts": ^1.4.0
     "@next/swc-darwin-arm64": ^15.3.4
     husky: ~9.1.6
@@ -17848,7 +17850,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"string.prototype.trimend@npm:^1.0.8, string.prototype.trimend@npm:^1.0.9":
+"string.prototype.trimend@npm:^1.0.9":
   version: 1.0.9
   resolution: "string.prototype.trimend@npm:1.0.9"
   dependencies:
@@ -19249,8 +19251,8 @@ __metadata:
   linkType: hard
 
 "viem@npm:>=2.23.11, viem@npm:^2.1.1, viem@npm:^2.27.0":
-  version: 2.31.3
-  resolution: "viem@npm:2.31.3"
+  version: 2.31.4
+  resolution: "viem@npm:2.31.4"
   dependencies:
     "@noble/curves": 1.9.2
     "@noble/hashes": 1.8.0
@@ -19265,7 +19267,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 4f00717a723b03036d60917d8aac5431c791e7bbae9cfd3806704b12ec21f481163265cb76ea0141a92f464861f6ac746201e2c7e9d756402579f7365195c970
+  checksum: 08213d77f40e4d28a5062d3df5dca767025ef15e947379995152d5bfd5ff9d0da96c30fb0e17fda0ccbb20e257cf9650d018eb25a7e76f73db73b68bd84c8184
   languageName: node
   linkType: hard
 
