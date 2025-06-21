@@ -166,9 +166,13 @@ const Marketplace: NextPage = () => {
                     </div>
                   </div>
 
-                  <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
-                    Decentralized Marketplace
-                  </h1>
+                    <div className="flex justify-center mb-4">
+                    <img 
+                      src="/chaincommerce_logo.png" 
+                      alt="ChainCommerce" 
+                      className="h-16 md:h-20"
+                    />
+                    </div>
                   <p className="text-lg mb-6 text-white/90 max-w-lg mx-auto">
                     Buy and sell products on the blockchain with complete transparency and security
                   </p>

@@ -267,9 +267,11 @@ export const NavbarLogo = () => {
           />
         </svg>
       </div>
-      <span className="font-bold text-black dark:text-white bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-        AI Marketplace
-      </span>
+      <img 
+        src="/chaincommerce_logo.png" 
+        alt="ChainCommerce Logo" 
+        className="h-8"
+      />
     </a>
   );
 };

@@ -1,6 +1,7 @@
 "use client";
 
 import type { NextPage } from "next";
+import Image from "next/image";
 import LampDemo from "@/components/lamp-demo";
 import BentoGridDemo from "@/components/bento-grid-demo";
 
@@ -8,6 +9,15 @@ const Home: NextPage = () => {
 
   return (
     <>
+      <div className="flex justify-center py-8 bg-slate-950">
+        <Image
+          src="/chaincommerce_logo.png"
+          alt="ChainCommerce Logo"
+          width={300}
+          height={100}
+          priority
+        />
+      </div>
       <LampDemo />
       <div className="py-20 px-4 bg-slate-950">
         <div className="max-w-7xl mx-auto">
