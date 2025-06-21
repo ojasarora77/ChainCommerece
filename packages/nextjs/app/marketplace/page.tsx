@@ -19,6 +19,7 @@ import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaf
 
 import { AddProductForm } from "~~/components/marketplace/AddProductForm";
 import { MarketplaceSettings } from "~~/components/marketplace/MarketplaceSettings";
+import { SellerManagement } from "~~/components/marketplace/SellerManagement";
 import MarketplaceSidebar from "~~/components/marketplace-sidebar";
 import { AIShoppingAssistant } from "~~/components/ai/AIShoppingAssistant";
 
@@ -317,7 +318,7 @@ const Marketplace: NextPage = () => {
       case "reviews":
         return <div className="p-8 text-center text-white">Product Reviews - Coming Soon</div>;
       case "sellers":
-        return <div className="p-8 text-center text-white">Seller Management - Coming Soon</div>;
+        return <SellerManagement />;
       case "security":
         return <div className="p-8 text-center text-white">Security & Trust - Coming Soon</div>;
       case "settings":
