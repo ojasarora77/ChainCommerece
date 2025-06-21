@@ -16,7 +16,7 @@ const Home: NextPage = () => {
               Explore Our Features
             </h2>
             <p className="text-lg text-slate-300 max-w-2xl mx-auto">
-              Discover the power of AI-driven marketplace technology and innovative shopping experiences
+              Discover the power of blockchain technology and innovative decentralized shopping experiences
             </p>
           </div>
           <BentoGridDemo />

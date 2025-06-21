@@ -37,13 +37,13 @@ export default function MarketplaceSidebar({
       section: "overview"
     },
     {
-      label: "AI Shopping Assistant",
+      label: "Shopping Assistant",
       href: "#ai-assistant",
       icon: <IconBrain className="h-5 w-5 shrink-0 text-blue-500" />,
       section: "ai-assistant"
     },
     {
-      label: "AI Recommendations",
+      label: "Product Recommendations",
       href: "#ai-recommendations",
       icon: <IconSparkles className="h-5 w-5 shrink-0 text-purple-500" />,
       section: "ai-recommendations"
@@ -124,11 +124,11 @@ export default function MarketplaceSidebar({
           <div>
             <SidebarLink
               link={{
-                label: "AI Marketplace",
+                label: "Marketplace",
                 href: "#",
                 icon: (
                   <div className="h-7 w-7 shrink-0 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center">
-                    <IconSparkles className="h-4 w-4 text-white" />
+                    <IconShoppingCart className="h-4 w-4 text-white" />
                   </div>
                 ),
               }}
@@ -155,7 +155,7 @@ export const MarketplaceLogo = () => {
         animate={{ opacity: 1 }}
         className="font-bold whitespace-pre text-white"
       >
-        AI Marketplace
+        Marketplace
       </motion.span>
     </a>
   );

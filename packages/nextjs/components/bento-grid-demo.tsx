@@ -48,20 +48,20 @@ const DefaultGradient = () => (
 );
 const items = [
   {
-    title: "AI-Powered Recommendations",
-    description: "Get personalized product suggestions powered by advanced machine learning algorithms.",
+    title: "Smart Product Discovery",
+    description: "Advanced search and filtering to help you find exactly what you're looking for.",
     header: <AIGradient />,
     icon: <IconBrain className="h-4 w-4 text-blue-500" />,
   },
   {
-    title: "Smart Shopping Experience",
-    description: "Seamless marketplace with intelligent search and discovery features.",
+    title: "Seamless Shopping Experience",
+    description: "Intuitive marketplace interface with smooth browsing and purchasing flow.",
     header: <ShoppingGradient />,
     icon: <IconShoppingCart className="h-4 w-4 text-green-500" />,
   },
   {
     title: "Real-time Analytics",
-    description: "Track market trends and optimize your shopping decisions with live data.",
+    description: "Track market trends and monitor your transactions with live blockchain data.",
     header: <AnalyticsGradient />,
     icon: <IconChartBar className="h-4 w-4 text-orange-500" />,
   },
@@ -85,8 +85,8 @@ const items = [
     icon: <IconUsers className="h-4 w-4 text-cyan-500" />,
   },
   {
-    title: "Premium Quality Assurance",
-    description: "AI-verified product quality and seller ratings ensure you get the best value.",
+    title: "Quality Assurance",
+    description: "Verified product quality and seller ratings ensure you get the best value.",
     header: <DefaultGradient />,
     icon: <IconStar className="h-4 w-4 text-yellow-500" />,
   },
