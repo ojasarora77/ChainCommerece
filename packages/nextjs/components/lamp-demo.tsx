@@ -2,6 +2,7 @@
 import React from "react";
 import { motion } from "motion/react";
 import { LampContainer } from "@/components/ui/lamp";
+import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 
 export default function LampDemo() {
   return (
@@ -18,6 +19,21 @@ export default function LampDemo() {
       >
         Building the future <br /> of shopping
       </motion.h1>
+      
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{
+          delay: 0.8,
+          duration: 0.6,
+          ease: "easeInOut",
+        }}
+        className="mt-12 flex justify-center"
+      >
+        <div className="scale-125 hover:scale-150 transition-transform duration-300">
+          <RainbowKitCustomConnectButton />
+        </div>
+      </motion.div>
     </LampContainer>
   );
 }

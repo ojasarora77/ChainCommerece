@@ -11,13 +11,14 @@ import {
   UserIcon, 
   Cog6ToothIcon,
   ArrowRightIcon,
-  FireIcon,
+
   StarIcon 
 } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 import { AddProductForm } from "~~/components/marketplace/AddProductForm";
+import { MarketplaceSettings } from "~~/components/marketplace/MarketplaceSettings";
 import MarketplaceSidebar from "~~/components/marketplace-sidebar";
 
 
@@ -145,6 +146,7 @@ const Marketplace: NextPage = () => {
   const renderSection = () => {
     switch (activeSection) {
       case "overview":
+      case "products":
         return (
           <div className="space-y-8">
             {/* Hero Section */}
@@ -221,6 +223,80 @@ const Marketplace: NextPage = () => {
                 <div className="stat-desc text-slate-400">Decentralized & secure</div>
               </div>
             </div>
+
+
+
+            {/* Category Filter */}
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex gap-2 flex-wrap">
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    className={`btn ${selectedCategory === category ? 'btn-primary' : 'btn-outline btn-primary'}`}
+                    onClick={() => setSelectedCategory(category)}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+              
+              {/* Add Product Button */}
+              {connectedAddress && <AddProductForm />}
+            </div>
+
+            {/* Products Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredProducts.map((product, index) => (
+                <div key={`product-${product.id}-${index}`} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all">
+                  <div className="card-body">
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="text-6xl">{product.image}</div>
+
+                    </div>
+                    
+                    <h2 className="card-title">{product.name}</h2>
+                    <div className="badge badge-outline">{product.category}</div>
+                    <p className="text-sm opacity-70">{product.description}</p>
+                    
+                    <div className="flex items-center gap-1 my-2">
+                      <StarIcon className="h-4 w-4 text-yellow-400 fill-current" />
+                      <span>{product.rating}</span>
+                    </div>
+                    
+                    <div className="text-xs mb-2">
+                      Seller: <Address address={product.seller} size="xs" />
+                    </div>
+                    
+                    <div className="card-actions justify-between items-center">
+                      <span className="text-xl font-bold text-primary">{product.price}</span>
+                      <button className="btn btn-primary">
+                        Buy Now
+                        <ArrowRightIcon className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* No Products Message */}
+            {filteredProducts.length === 0 && (
+              <div className="text-center py-12">
+                <ShoppingBagIcon className="h-16 w-16 mx-auto text-slate-400 mb-4" />
+                <h3 className="text-xl font-semibold text-slate-300 mb-2">No products found</h3>
+                <p className="text-slate-400">
+                  {selectedCategory === "All" 
+                    ? "No products available yet. Be the first to list a product!" 
+                    : `No products found in the ${selectedCategory} category.`
+                  }
+                </p>
+                {connectedAddress && (
+                  <div className="mt-4">
+                    <AddProductForm />
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         );
       case "ai-assistant":
@@ -240,19 +316,19 @@ const Marketplace: NextPage = () => {
       case "security":
         return <div className="p-8 text-center text-white">Security & Trust - Coming Soon</div>;
       case "settings":
-        return <div className="p-8 text-center text-white">Settings - Coming Soon</div>;
+        return <MarketplaceSettings />;
       default:
         return <div className="p-8 text-center text-white">Section under development</div>;
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 pt-24">
+    <div className="min-h-screen bg-slate-950 pt-20 sm:pt-24">
       <MarketplaceSidebar
         activeSection={activeSection}
         onSectionChange={setActiveSection}
       >
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {renderSection()}
         </div>
       </MarketplaceSidebar>

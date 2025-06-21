@@ -31,9 +31,9 @@ export default function MarketplaceSidebar({
 
   const marketplaceLinks = [
     {
-      label: "Overview",
+      label: "Marketplace",
       href: "#overview",
-      icon: <IconShoppingCart className="h-5 w-5 shrink-0 text-slate-300" />,
+      icon: <IconShoppingCart className="h-5 w-5 shrink-0 text-emerald-500" />,
       section: "overview"
     },
     {
