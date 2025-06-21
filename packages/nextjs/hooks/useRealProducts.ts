@@ -9,7 +9,7 @@ export const useRealProducts = () => {
   });
 
   // Get all product IDs (assuming they start from 1)
-  const productIds = totalProducts ? Array.from({ length: Number(totalProducts) }, (_, i) => i + 1) : [];
+  const productIds = totalProducts ? Array.from({ length: Number(totalProducts) }, (_, i) => BigInt(i + 1)) : [];
 
   // Get batch products data
   const { data: rawProducts, isLoading } = useScaffoldReadContract({

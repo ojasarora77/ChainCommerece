@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ShoppingAgent } from "~~/services/bedrock/agents/shoppingAgent";
 import { FraudDetectionAgent } from "~~/services/bedrock/agents/fraudDetectionAgent";
+import { ProductRecommendation } from "~~/types/bedrock";
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,13 +21,13 @@ export async function POST(request: NextRequest) {
     const recommendations = await agent.findProducts(query);
     
     // Optional: Get personalized recommendations if requested
-    let personalizedRecommendations = [];
+    let personalizedRecommendations: ProductRecommendation[] = [];
     if (includePersonalized) {
       try {
-        // Check if method exists before calling
-        if (typeof agent.getPersonalizedRecommendations === 'function') {
-          personalizedRecommendations = await agent.getPersonalizedRecommendations(userId, preferences) || [];
-        }
+        // Get personalized recommendations based on user preferences
+        personalizedRecommendations = await agent.findProducts(`products for ${preferences.categories.join(', ')} enthusiast`) || [];
+        // Limit to top 3 personalized recommendations
+        personalizedRecommendations = personalizedRecommendations.slice(0, 3);
       } catch (error) {
         console.warn("Personalized recommendations failed:", error);
       }
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
             amount: rec.price,
             timestamp: Date.now(),
             productDetails: {
-              category: rec.category || "Unknown",
+              category: "Unknown", // Default category since it's not available in ProductRecommendation
               isNewListing: true,
               priceComparedToMarket: 1.0
             }

@@ -16,8 +16,8 @@ export const useScaffoldProducts = () => {
   const { data: rawProducts, isLoading: loadingProducts } = useScaffoldReadContract({
     contractName: "ProductRegistry",
     functionName: "getBatchProducts",
-    args: productIds.length > 0 ? [productIds] : undefined,
-    enabled: productIds.length > 0,
+    args: productIds.length > 0 ? [[...productIds] as const] : [undefined],
+    watch: productIds.length > 0,
   });
 
   // Convert raw contract data to ContractProduct format

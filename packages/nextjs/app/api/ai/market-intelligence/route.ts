@@ -202,7 +202,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Filter by category if specified
-    if (category && type === "products") {
+    if (category && type === "products" && trendingData) {
       trendingData = trendingData.filter((item: any) => 
         item.category?.toLowerCase() === category.toLowerCase()
       );

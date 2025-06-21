@@ -148,7 +148,7 @@ export class BlockchainProductFetcher {
           imageHash: product.imageHash,
           metadataHash: product.metadataHash
         };
-      }).filter(product => product.isActive); // Only return active products
+      }).filter((product: { isActive: any; }) => product.isActive); // Only return active products
 
       console.log(`✅ Successfully fetched ${products.length} active products`);
       products.forEach(p => console.log(`   - ${p.name} (${p.price} ETH) by ${p.seller.slice(0, 6)}...`));
