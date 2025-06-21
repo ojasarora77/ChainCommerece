@@ -20,6 +20,7 @@ import { AIShoppingAssistant } from "~~/components/ai/AIShoppingAssistant";
 import { PricingOptimizer } from "~~/components/ai/PricingOptimizer";
 import { DisputeResolver } from "~~/components/ai/DisputeResolver";
 import { AddProductForm } from "~~/components/marketplace/AddProductForm";
+import { MarketplaceSettings } from "~~/components/marketplace/MarketplaceSettings";
 import MarketplaceSidebar from "~~/components/marketplace-sidebar";
 
 // Mock product data (replace with actual contract calls)
@@ -472,18 +473,20 @@ const Marketplace: NextPage = () => {
         return <PricingOptimizer productId="demo-product-123" currentPrice={99.99} />;
       case "dispute-resolution":
         return <DisputeResolver />;
+      case "settings":
+        return <MarketplaceSettings />;
       default:
         return <div className="p-8 text-center text-white">Section under development</div>;
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 pt-24">
+    <div className="min-h-screen bg-slate-950 pt-20 sm:pt-24">
       <MarketplaceSidebar
         activeSection={activeSection}
         onSectionChange={setActiveSection}
       >
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {renderSection()}
         </div>
       </MarketplaceSidebar>
