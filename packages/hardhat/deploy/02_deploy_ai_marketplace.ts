@@ -8,7 +8,9 @@ const deployAIMarketplace: DeployFunction = async function (hre: HardhatRuntimeE
   // Get Chainlink Functions router address for the network
   const routerAddress = {
     sepolia: "0xb83E47C2bC239B3bf370bc41e1459A34b41238D0",
-    avalancheFuji: "0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0"
+    avalancheFuji: "0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0",
+    polygon: "0xdc2AAF042Aeff2E68B3e8E33F19e4B9fA7C73F10",
+    polygonAmoy: "0xC22a79eBA640940ABB6dF0f7982cc119578E11De"
   }[hre.network.name] || "";
 
   if (!routerAddress) {

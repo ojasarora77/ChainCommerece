@@ -33,6 +33,10 @@ const deployAIRecommendations: DeployFunction = async function (hre: HardhatRunt
     avalancheFuji: "0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0",
     // Ethereum Sepolia testnet  
     sepolia: "0xb83E47C2bC239B3bf370bc41e1459A34b41238D0",
+    // Polygon mainnet
+    polygon: "0xdc2AAF042Aeff2E68B3e8E33F19e4B9fA7C73F10",
+    // Polygon Amoy testnet
+    polygonAmoy: "0xC22a79eBA640940ABB6dF0f7982cc119578E11De",
     // For local development, use a mock address
     localhost: "0x0000000000000000000000000000000000000001",
     hardhat: "0x0000000000000000000000000000000000000001"

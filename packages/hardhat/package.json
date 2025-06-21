@@ -19,7 +19,11 @@
     "lint": "eslint",
     "lint-staged": "eslint",
     "test": "REPORT_GAS=true hardhat test --network hardhat",
-    "verify": "hardhat etherscan-verify"
+    "verify": "hardhat etherscan-verify",
+    "polygon:fund-sellers": "hardhat run scripts/fundSellersPolygonAmoy.ts --network polygonAmoy",
+    "polygon:add-sellers": "hardhat run scripts/addSellersPolygonAmoy.ts --network polygonAmoy",
+    "polygon:add-brands": "hardhat run scripts/addBrandsPolygonAmoy.ts --network polygonAmoy",
+    "polygon:deploy": "hardhat deploy --network polygonAmoy"
   },
   "dependencies": {
     "@chainlink/contracts": "^1.4.0",
