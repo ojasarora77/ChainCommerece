@@ -1,8 +1,8 @@
-# 🤖 Chromion: AI-Powered Decentralized Marketplace
+# ChainCommerce: AI-Powered Decentralized Marketplace, the future of Shopping
 
-> **Chainlink Hackathon Entry** - Amazon Bedrock AI integration for sustainable, cross-chain e-commerce
+**Chainlink Hackathon Entry** - Amazon Bedrock AI integration for sustainable, cross-chain e-commerce
 
-## 🎉 **NEW: Complete Amazon Bedrock Integration Implemented!**
+##  Complete Amazon Bedrock Integration Implemented!
 
 ✅ **AI Shopping Assistant** - Personalized product recommendations
 ✅ **Pricing Optimizer** - Dynamic pricing strategies for sellers
@@ -10,7 +10,6 @@
 ✅ **Smart Contract Integration** - Chainlink Functions + AWS Bedrock
 ✅ **Production Ready** - Full UI, API routes, and documentation
 
-**🔗 Live Demo**: `http://localhost:3000/marketplace` (after `yarn start`)
 
 ## 🎯 The Problem
 
@@ -23,7 +22,7 @@ Current e-commerce platforms suffer from three critical issues:
 
 A decentralized marketplace that combines ethical AI-driven recommendations with trustless smart contract escrow, enabling seamless cross-chain commerce.
 
-### Core Features
+### Core Features(POC)
 
 | Feature | Chainlink Service | Real-World Impact |
 |---------|------------------|------------------|
@@ -41,50 +40,77 @@ A decentralized marketplace that combines ethical AI-driven recommendations with
 - **CrossChainBridge.sol** - CCIP integration for cross-chain visibility
 - **ReputationSystem.sol** - VRF-based review validation
 
-### AI Integration (✅ IMPLEMENTED)
+### AI Integration
 - **AWS Bedrock Claude Models** - Natural language product search and recommendations
 - **Chainlink Functions** - Bridge on-chain preferences with AI models
 - **Smart Pricing** - AI-powered dynamic pricing optimization
 - **Dispute Resolution** - Automated analysis with fair resolution recommendations
 - **Real-time data feeds** - Carbon footprint and supply chain transparency
 
-### User Flow
-1. **Setup**: User sets preferences (sustainability focus, budget, delivery speed)
-2. **Discovery**: AI recommends products across all chains based on values + real-time data
-3. **Purchase**: Cross-chain transaction via CCIP, funds locked in escrow
-4. **Delivery**: Chainlink Automation monitors shipping APIs, auto-releases on delivery
-5. **Review**: VRF randomly selects verified purchasers for tamper-proof reviews
+## 🔄 User Flow(POC)
 
-## 🏆 Target Bounties & Strategy
+![User Flow Diagram](./userflow.png)
 
-### Primary Targets (Maximum Prize Potential: $35,000)
+### Complete Shopping Journey
 
-#### 1. **Chainlink Services Integration Prize** - $15,000
-- **Requirements**: Use 4+ Chainlink services with state-changing interactions
-- **Our Integration**: 
-  - ✅ **Functions**: AI recommendation calls to AWS Bedrock
-  - ✅ **CCIP**: Cross-chain product listings and payments
-  - ✅ **VRF**: Random arbiter selection for disputes
-  - ✅ **Automation**: Automated escrow release on delivery
-  - ✅ **Data Streams**: Real-time pricing feeds
-  - ✅ **Proof of Reserve**: Seller inventory validation
-- **Bonus Points**: 6 services = maximum scoring
+#### 1. **User Onboarding & Preferences** 🎯
+- **Account Creation**: Connect wallet (MetaMask, WalletConnect)
+- **Preference Setup**: Define values (sustainability, budget range, delivery speed)
+- **AI Profile**: Machine learning model learns from initial questionnaire
+- **Cross-Chain Setup**: Automatic detection of supported networks (Ethereum, Avalanche)
 
-#### 2. **Cross-Chain Solutions Track** - $10,000
-- **Focus**: CCIP-powered unified marketplace across Avalanche & Ethereum
-- **Demo**: Ethereum buyer purchasing from Avalanche seller with automatic settlement
+#### 2. **Smart Discovery** 🔍
+- **Natural Language Search**: "Find eco-friendly headphones under $200"
+- **AI Recommendation Engine**: AWS Bedrock analyzes preferences + real-time data
+- **Cross-Chain Results**: Products aggregated from all supported networks
+- **Ethical Scoring**: Carbon footprint, labor practices, supply chain transparency
+- **Dynamic Filtering**: Price volatility adjustments via Chainlink Data Streams
 
-#### 3. **AWS x AI Track** - $10,000
-- **Integration**: Direct AWS Bedrock calls via Chainlink Functions
-- **Differentiation**: Values-based recommendations, not just purchase history
+#### 3. **Intelligent Purchase Flow** 💳
+- **Product Selection**: Detailed view with AI-generated compatibility scores
+- **Cross-Chain Transaction**: CCIP handles network bridging automatically
+- **Smart Escrow**: Funds locked in trustless contract pending delivery
+- **Payment Options**: USDC, USDT, ETH with automatic conversion
+- **Dispute Protection**: Built-in arbitration system ready if needed
 
-### Secondary Opportunities
+#### 4. **Automated Fulfillment** 📦
+- **Seller Notification**: Instant on-chain order confirmation
+- **Shipping Integration**: Chainlink Automation monitors tracking APIs
+- **Milestone Payments**: Partial releases at pickup, transit, delivery
+- **Delivery Verification**: GPS + signature confirmation triggers final payment
+- **Real-time Updates**: Push notifications via web3 infrastructure
 
-#### **Onchain Finance Track** - $7,500
-- Stablecoin escrow system with automated dispute resolution
+#### 5. **Trust & Reputation System** ⭐
+- **Verified Reviews**: Only confirmed purchasers can review (VRF verification)
+- **Anti-Gaming**: Cryptographic randomness prevents fake review campaigns
+- **Reputation Staking**: Sellers stake tokens, lose reputation for poor service
+- **Community Moderation**: Decentralized dispute resolution with token incentives
+- **Long-term Trust**: Immutable history builds seller credibility over time
 
-#### **Best Overall Hack** - $25,000
-- Technical excellence + real-world utility + compelling demo
+### Key Differentiators
+
+| Traditional E-commerce | ChainCommerce AI Marketplace |
+|------------------------|-------------------------|
+| Generic recommendations | Values-based AI matching |
+| Platform lock-in | Cross-chain freedom |
+| Centralized disputes | Cryptographic arbitration |
+| Fake review problem | VRF-verified authenticity |
+| Static pricing | Dynamic market pricing |
+| Payment risk | Trustless escrow |
+
+### Technical Flow (Under the Hood)
+
+```mermaid
+graph TD
+    A[User Sets Preferences] --> B[Chainlink Functions → AWS Bedrock]
+    B --> C[AI Generates Recommendations]
+    C --> D[Cross-Chain Product Discovery via CCIP]
+    D --> E[User Selects Product]
+    E --> F[Smart Contract Escrow Activated]
+    F --> G[Chainlink Automation Monitors Delivery]
+    G --> H[Funds Released on Confirmation]
+    H --> I[VRF Selects Review Eligibility]
+```
 
 ## 🚀 Competitive Advantages
 
@@ -119,26 +145,49 @@ A decentralized marketplace that combines ethical AI-driven recommendations with
 yarn install
 
 # Start development server
-cd packages/nextjs
 yarn start
 
 # Visit the AI-powered marketplace
-open http://localhost:3000/marketplace
+open http://localhost:3000
 ```
 
 ## 📁 Project Structure
-
 ```
 packages/
-├── nextjs/
-│   ├── services/bedrock/          # AI service layer
-│   ├── components/ai/             # AI UI components
-│   ├── app/api/ai/               # AI API endpoints
-│   ├── hooks/bedrock/            # React hooks
-│   └── types/bedrock.ts          # TypeScript interfaces
-├── hardhat/
-│   ├── contracts/AIMarketplace.sol # Smart contract
-│   └── deploy/                   # Deployment scripts
+├── nextjs/                        # Frontend Application
+│   ├── services/
+│   │   ├── bedrock/              # ✅ AWS Bedrock AI integration
+│   │   ├── blockchain/           # Web3 blockchain services
+│   │   ├── marketplace/          # Core marketplace logic
+│   │   └── web3/                # Wallet & contract interactions
+│   ├── components/
+│   │   ├── ai/                   # ✅ AI-specific UI components
+│   │   ├── marketplace/          # Marketplace UI components
+│   │   ├── chainlink/           # Chainlink-specific components
+│   │   └── ui/                  # Reusable UI components
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── ai/              # ✅ AI API endpoints (Bedrock)
+│   │   │   ├── test-aws/        # AWS testing endpoints
+│   │   │   └── test-blockchain/ # Blockchain testing
+│   │   ├── marketplace/         # Main marketplace pages
+│   │   ├── admin/              # Admin dashboard
+│   │   ├── orders/             # Order management
+│   │   ├── sellers/            # Seller management
+│   │   └── preferences/        # User preferences
+│   ├── hooks/                   # React hooks (likely includes bedrock)
+│   └── types/                   # TypeScript definitions
+├── hardhat/                     # Smart Contract Layer
+│   ├── contracts/
+│   │   ├── AIMarketplace.sol    # ✅ Main marketplace contract
+│   │   ├── chainlink/          # Chainlink integration contracts
+│   │   └── core/               # Core contract utilities
+│   ├── deploy/                  # Deployment scripts
+│   ├── scripts/                # Utility scripts
+│   ├── deployments/            # Deployed contract addresses
+│   └── typechain-types/        # Generated TypeScript types
+└── ai-functions/               # ✅ Chainlink Functions AI code
+    └── src/                    # Function source code
 ```
 
 ## 📊 Implementation Status
@@ -153,17 +202,6 @@ packages/
 - **TypeScript**: Full type safety with comprehensive interfaces
 - **Documentation**: Setup guides and API documentation
 
-### 🔧 **Next Steps for Production**
-1. **AWS Setup** (30 min): Configure Bedrock credentials
-2. **Chainlink Functions** (1 hour): Deploy contracts and test on-chain AI
-3. **Product Integration** (45 min): Connect real product data
-4. **Payment System** (2 hours): Implement escrow and transactions
-
-### 🎯 **Demo Ready**
-- Mock data provides full functionality without AWS setup
-- All UI components working and responsive
-- Ready for live demonstration at hackathon
-
 ## 📊 Success Metrics
 
 ### Demo KPIs
@@ -176,34 +214,6 @@ packages/
 - **Transaction fees**: 0.5% on successful purchases
 - **Premium tier**: AI-powered "ethical score" audits for brands
 - **Validator rewards**: Community members earn for maintaining quality
-
-## 🎬 Demo Narrative
-
-**"The Trust Problem"**
-> Traditional marketplaces: fake reviews, generic recommendations, payment disputes
-
-**"The AI Solution"**
-> Two users with different values (sustainability vs. price) get completely different recommendations for the same search
-
-**"The Cross-Chain Magic"**
-> Live demo: Ethereum buyer purchasing from Avalanche seller with instant USDC settlement
-
-**"The Future of Commerce"**
-> Values-driven, trustless, and truly decentralized
-
-## 📈 20-Day Development Plan
-
-- **Days 1-7**: Core contracts + Chainlink Functions integration
-- **Days 8-14**: CCIP cross-chain functionality + VRF disputes
-- **Days 15-20**: UI polish, demo preparation, pitch deck
-
-## 🎯 Why We'll Win
-
-1. **Maximum Chainlink Integration**: 6 services = bonus points
-2. **Real Problem Solving**: Addresses actual e-commerce pain points
-3. **Technical Depth**: Complex but functional architecture
-4. **Demo Appeal**: Clear value proposition with live cross-chain transactions
-5. **Market Readiness**: Post-hackathon commercialization path
 
 ---
 
