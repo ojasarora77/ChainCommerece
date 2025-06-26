@@ -4,6 +4,7 @@ import type { NextPage } from "next";
 import Image from "next/image";
 import LampDemo from "@/components/lamp-demo";
 import BentoGridDemo from "@/components/bento-grid-demo";
+import ProfileCard from "@/components/ProfileCard";
 
 const Home: NextPage = () => {
 
@@ -30,6 +31,54 @@ const Home: NextPage = () => {
             </p>
           </div>
           <BentoGridDemo />
+        </div>
+      </div>
+
+      {/* Team Profile Cards Section */}
+      <div className="py-20 px-4 bg-slate-950">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-6xl font-bold text-white mb-4">
+              Meet Our Team
+            </h2>
+            <p className="text-lg text-slate-300 max-w-2xl mx-auto">
+              The innovative minds behind ChainCommerce, building the future of decentralized commerce
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Ojas Arora Profile Card */}
+            <div className="flex justify-center">
+              <ProfileCard
+                name="Ojas Arora"
+                title="Full Stack Web3 Dev"
+                handle="ojasarora"
+                status="Building the Future"
+                contactText="Connect"
+                avatarUrl="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop&crop=face"
+                miniAvatarUrl="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face"
+                showUserInfo={true}
+                enableTilt={true}
+                onContactClick={() => window.open('https://www.linkedin.com/in/ojas-arora-b62430231/', '_blank')}
+              />
+            </div>
+
+            {/* Karan Dhillon Profile Card */}
+            <div className="flex justify-center">
+              <ProfileCard
+                name="Karan Dhillon"
+                title="AI Engineer"
+                handle="karandhillon"
+                status="AI Innovation"
+                contactText="Connect"
+                avatarUrl="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=600&fit=crop&crop=face"
+                miniAvatarUrl="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
+                showUserInfo={true}
+                enableTilt={true}
+                onContactClick={() => window.open('https://www.linkedin.com/in/karandhillon05/', '_blank')}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </>

@@ -23,11 +23,25 @@ if (isIpfs) {
   nextConfig.trailingSlash = true;
   nextConfig.images = {
     unoptimized: true,
-    domains: ['images.unsplash.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
   };
 } else {
   nextConfig.images = {
-    domains: ['images.unsplash.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
     unoptimized: false,
   };
 }
