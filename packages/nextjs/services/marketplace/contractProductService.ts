@@ -28,7 +28,13 @@ export class ContractProductService {
       // Get all products from contract
       const allProducts = await this.getAllProducts();
       console.log(`📦 Total products in contract: ${allProducts.length}`);
-      console.log(`📝 Product names: ${allProducts.map(p => p.name).join(', ')}`);
+      console.log(`📝 All product details:`);
+      allProducts.forEach(p => {
+        console.log(`   - ${p.name} (${p.category}) - ${p.description.substring(0, 50)}...`);
+        if (p.certifications) {
+          console.log(`     Certifications: ${p.certifications.join(', ')}`);
+        }
+      });
 
       // Filter by search query and category
       const filteredProducts = this.filterProducts(allProducts, query, category);
@@ -226,7 +232,7 @@ export class ContractProductService {
 
   private filterProducts(products: ContractProduct[], query: string, category?: string): ContractProduct[] {
     const queryLower = query.toLowerCase().trim();
-    console.log(`🔍 Filtering products for query: "${queryLower}"`);
+    console.log(`🔍 Filtering ${products.length} products for query: "${queryLower}"`);
 
     // Score-based matching for better relevance
     const scoredProducts = products.map(product => ({
@@ -235,17 +241,37 @@ export class ContractProductService {
     })).filter(item => {
       // Filter by category if specified
       if (category && item.product.category.toLowerCase() !== category.toLowerCase()) {
+        console.log(`   ❌ ${item.product.name}: Category mismatch (${item.product.category} != ${category})`);
         return false;
       }
-      // Only include active products with score > 0
-      return item.product.isActive && item.score > 0;
+      // Only include active products
+      if (!item.product.isActive) {
+        console.log(`   ❌ ${item.product.name}: Product inactive`);
+        return false;
+      }
+      // Include products with any positive score (lowered threshold)
+      if (item.score <= 0) {
+        console.log(`   ❌ ${item.product.name}: Score too low (${item.score})`);
+        return false;
+      }
+
+      console.log(`   ✅ ${item.product.name}: Included with score ${item.score}`);
+      return true;
+    });
+
+    console.log(`📊 Scored products summary:`);
+    scoredProducts.forEach(item => {
+      console.log(`   📈 ${item.product.name}: ${item.score} points`);
     });
 
     // Sort by relevance score (highest first)
     scoredProducts.sort((a, b) => b.score - a.score);
 
     const results = scoredProducts.map(item => item.product);
-    console.log(`📊 Scored results:`, scoredProducts.map(item => `${item.product.name}: ${item.score}`));
+    console.log(`✅ Returning ${results.length} filtered products:`);
+    results.forEach((product, index) => {
+      console.log(`   ${index + 1}. ${product.name}`);
+    });
 
     return results;
   }
@@ -256,49 +282,108 @@ export class ContractProductService {
     const productName = product.name.toLowerCase();
     const productDesc = product.description.toLowerCase();
     const productCerts = product.certifications?.join(' ').toLowerCase() || '';
+    const productCategory = product.category.toLowerCase();
 
-    // Exact phrase match in name (highest priority)
-    if (productName.includes(query)) {
+    // Combine all searchable text
+    const allText = `${productName} ${productDesc} ${productCerts} ${productCategory}`;
+
+    console.log(`🔍 Analyzing "${product.name}" for query "${query}"`);
+    console.log(`   📝 Searchable text: "${allText}"`);
+
+    // Exact phrase match in any field (highest priority)
+    if (allText.includes(query)) {
       score += 100;
+      console.log(`   ✅ Exact phrase match: +100`);
+    }
+
+    // Exact phrase match in name (very high priority)
+    if (productName.includes(query)) {
+      score += 120;
+      console.log(`   ✅ Exact phrase in name: +120`);
     }
 
     // Exact phrase match in description
     if (productDesc.includes(query)) {
+      score += 90;
+      console.log(`   ✅ Exact phrase in description: +90`);
+    }
+
+    // All query words present anywhere (high priority)
+    if (queryWords.every(word => allText.includes(word))) {
       score += 80;
+      console.log(`   ✅ All words found: +80`);
     }
 
     // All query words present in name
     if (queryWords.every(word => productName.includes(word))) {
-      score += 90;
+      score += 100;
+      console.log(`   ✅ All words in name: +100`);
     }
 
     // All query words present in description
     if (queryWords.every(word => productDesc.includes(word))) {
       score += 70;
+      console.log(`   ✅ All words in description: +70`);
     }
 
-    // Individual word matches in name
+    // Individual word matches with detailed scoring
     queryWords.forEach(word => {
+      let wordScore = 0;
       if (productName.includes(word)) {
-        score += 30;
+        wordScore += 40;
+        console.log(`   ✅ "${word}" in name: +40`);
       }
       if (productDesc.includes(word)) {
-        score += 20;
+        wordScore += 25;
+        console.log(`   ✅ "${word}" in description: +25`);
       }
       if (productCerts.includes(word)) {
-        score += 15;
+        wordScore += 30; // Increased from 15 - certifications are important
+        console.log(`   ✅ "${word}" in certifications: +30`);
       }
+      if (productCategory.includes(word)) {
+        wordScore += 20;
+        console.log(`   ✅ "${word}" in category: +20`);
+      }
+      score += wordScore;
     });
 
-    // Bonus for exact product type matches
-    const productTypes = ['t-shirt', 'tshirt', 'shirt', 'hoodie', 'bag', 'socks', 'case', 'stand', 'pad', 'organizer'];
+    // Enhanced product type matching
+    const productTypes = [
+      'smartwatch', 'smart watch', 'watch', 'tracker', 'fitness tracker',
+      't-shirt', 'tshirt', 'shirt', 'hoodie', 'bag', 'socks', 'case', 'stand', 'pad', 'organizer',
+      'phone', 'laptop', 'computer', 'tablet', 'headphones', 'speaker', 'charger'
+    ];
+
     productTypes.forEach(type => {
-      if (query.includes(type) && productName.includes(type)) {
-        score += 50;
+      if (query.includes(type) && allText.includes(type)) {
+        score += 60;
+        console.log(`   ✅ Product type "${type}" match: +60`);
       }
     });
 
-    console.log(`📈 ${product.name}: score ${score} (query: "${query}")`);
+    // Semantic matching for common synonyms
+    const synonyms = {
+      'smartwatch': ['smart watch', 'fitness tracker', 'wearable', 'tracker'],
+      'smart watch': ['smartwatch', 'fitness tracker', 'wearable', 'tracker'],
+      'ai powered': ['ai coaching', 'artificial intelligence', 'smart', 'intelligent'],
+      'fitness tracker': ['smartwatch', 'smart watch', 'wearable', 'tracker'],
+      'phone': ['mobile', 'smartphone', 'device'],
+      'laptop': ['computer', 'notebook', 'pc']
+    };
+
+    Object.entries(synonyms).forEach(([term, syns]) => {
+      if (query.includes(term)) {
+        syns.forEach(syn => {
+          if (allText.includes(syn)) {
+            score += 50;
+            console.log(`   ✅ Synonym match "${term}" → "${syn}": +50`);
+          }
+        });
+      }
+    });
+
+    console.log(`📈 ${product.name}: FINAL SCORE ${score} (query: "${query}")`);
     return score;
   }
 
