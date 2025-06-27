@@ -155,13 +155,14 @@ Focus on sustainable, eco-friendly products with detailed specifications.`;
     try {
       const response = await invokeAI(prompt);
       if (!response?.content?.[0]?.text) {
-        return this.getMockProducts(query);
+        console.log("⚠️ No AI response, returning empty results");
+        return [];
       }
 
       return this.parseAdvancedAIResponse(response.content[0].text, query);
     } catch (error) {
       console.error("AI-only fallback error:", error);
-      return this.getMockProducts(query);
+      return [];
     }
   }
 
@@ -260,23 +261,7 @@ Focus on sustainable, eco-friendly products with detailed specifications.`;
     }
   }
 
-  private getMockProducts(query: string): ProductRecommendation[] {
-    // Fallback mock products when everything fails
-    return [
-      {
-        id: `mock-${Date.now()}-1`,
-        name: `Sustainable ${query.split(' ')[0] || 'Product'}`,
-        description: "Eco-friendly product with sustainable materials",
-        sustainabilityScore: this.userPreferences.sustainabilityMin + 10,
-        price: this.generateReasonablePrice(),
-        chain: "ethereum" as const,
-        sellerAddress: "0x0000000000000000000000000000000000000000",
-        certifications: ["Eco-Certified"],
-        carbonFootprint: 2.0,
-        isRealProduct: false
-      }
-    ];
-  }
+
 
   private parseAdvancedAIResponse(aiText: string, query: string): ProductRecommendation[] {
     try {

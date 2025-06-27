@@ -96,41 +96,34 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Return trending products or category-specific recommendations
-    const mockRecommendations = [
-      {
-        id: "trending-1",
-        name: "Solar Power Bank 20000mAh",
-        description: "High-capacity solar charger with fast charging technology",
-        sustainabilityScore: 92,
-        price: 79.99,
-        chain: "ethereum",
-        sellerAddress: "0x1234567890123456789012345678901234567890",
-        certifications: ["Fair Trade", "Carbon Neutral"],
-        carbonFootprint: 3.2,
-        category: "Electronics"
-      },
-      {
-        id: "trending-2",
-        name: "Bamboo Wireless Charging Pad",
-        description: "Sustainable bamboo wireless charger",
-        sustainabilityScore: 88,
-        price: 34.99,
-        chain: "avalanche",
-        sellerAddress: "0x0987654321098765432109876543210987654321",
-        certifications: ["FSC Certified", "Biodegradable"],
-        carbonFootprint: 1.1,
-        category: "Electronics"
-      }
-    ];
+    // Get real trending products from the contract service
+    const { ContractProductService } = await import("~~/services/marketplace/contractProductService");
+    const contractService = new ContractProductService();
 
-    const filteredRecommendations = category 
-      ? mockRecommendations.filter(rec => rec.category.toLowerCase() === category.toLowerCase())
-      : mockRecommendations;
+    let recommendations;
+    if (category) {
+      recommendations = await contractService.getProductsByCategory(category);
+    } else {
+      recommendations = await contractService.getTrendingProducts(5);
+    }
+
+    // Convert to the expected format
+    const formattedRecommendations = recommendations.map(product => ({
+      id: product.id.toString(),
+      name: product.name,
+      description: product.description,
+      sustainabilityScore: product.sustainabilityScore || 75,
+      price: product.priceUSD,
+      chain: product.chain,
+      sellerAddress: product.seller,
+      certifications: product.certifications || ["Blockchain Verified"],
+      carbonFootprint: product.carbonFootprint || 2.0,
+      category: product.category
+    }));
 
     return NextResponse.json({
       success: true,
-      recommendations: filteredRecommendations,
+      recommendations: formattedRecommendations,
       category: category || "all",
       userId,
       timestamp: new Date().toISOString()

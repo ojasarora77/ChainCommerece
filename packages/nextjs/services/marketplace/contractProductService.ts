@@ -52,143 +52,64 @@ export class ContractProductService {
 
   async getAllProducts(): Promise<ContractProduct[]> {
     try {
-      // Try to get real products from blockchain first
+      // ONLY get real products from blockchain - NO MOCK DATA
       const realProducts = await this.getRealBlockchainProducts();
-
-      if (realProducts.length > 0) {
-        console.log(`📦 Found ${realProducts.length} real products from blockchain`);
-        return realProducts;
-      }
-
-      // Fallback to mock data if no real products found
-      console.log("⚠️ No real products found, using mock data");
-      return this.getMockContractProducts();
+      console.log(`📦 Found ${realProducts.length} real products from blockchain`);
+      return realProducts;
 
     } catch (error) {
-      console.error("Error getting products, falling back to mock data:", error);
-      return this.getMockContractProducts();
+      console.error("❌ Error getting real blockchain products:", error);
+      // Return empty array instead of mock data
+      return [];
     }
   }
 
   private async getRealBlockchainProducts(): Promise<ContractProduct[]> {
     try {
-      console.log("🔗 Using real products from Avalanche Fuji deployment...");
+      console.log("🔗 Fetching REAL products from blockchain...");
 
-      // These are your actual deployed products from addProductsFuji.ts
-      const realProducts = this.getFujiDeployedProducts();
+      // Import the blockchain product fetcher
+      const { productFetcher } = await import("~~/services/blockchain/productFetcher");
 
-      console.log(`✅ Found ${realProducts.length} real products from Fuji deployment`);
-      realProducts.forEach(p => console.log(`   - ${p.name} (${p.price} AVAX) - ${p.category}`));
+      // Fetch real products from the smart contract
+      const blockchainProducts = await productFetcher.fetchAllProducts();
 
-      return realProducts;
+      if (blockchainProducts.length === 0) {
+        console.log("⚠️ No products found on blockchain");
+        return [];
+      }
+
+      // Convert blockchain products to our format
+      const contractProducts: ContractProduct[] = blockchainProducts.map(product => ({
+        id: product.id,
+        name: product.name,
+        description: product.description,
+        category: product.category,
+        price: product.price, // Already in ETH/AVAX
+        priceUSD: product.priceUSD,
+        seller: product.seller,
+        averageRating: product.averageRating,
+        isActive: product.isActive,
+        sustainabilityScore: this.estimateSustainabilityScore(product.name, product.description),
+        certifications: this.generateCertifications(product.name, product.description),
+        carbonFootprint: this.estimateCarbonFootprint(product.category),
+        chain: "avalanche" // Your contract is on Avalanche Fuji
+      }));
+
+      console.log(`✅ Found ${contractProducts.length} real products from blockchain`);
+      contractProducts.forEach(p => console.log(`   - ${p.name} (${p.price} AVAX) - ${p.category}`));
+
+      return contractProducts;
 
     } catch (error) {
-      console.error("❌ Error getting real blockchain products:", error);
-      return this.getKnownProducts();
+      console.error("❌ Error fetching real blockchain products:", error);
+      return [];
     }
   }
 
-  private getFujiDeployedProducts(): ContractProduct[] {
-    // These match exactly what you deployed to Fuji in addProductsFuji.ts
-    return [
-      {
-        id: 1,
-        name: "Sustainable Bamboo Laptop Stand",
-        description: "Ergonomic laptop stand made from 100% sustainable bamboo with adjustable height",
-        category: "Electronics",
-        price: "0.05", // 0.05 AVAX from your deployment script
-        priceUSD: 2.0, // 0.05 * 40 USD/AVAX
-        seller: "0x81194315767d0524470ae715ca0284fC061C1e60",
-        averageRating: 4.5,
-        isActive: true,
-        sustainabilityScore: 95,
-        certifications: ["Blockchain Verified", "FSC Certified", "Sustainable Bamboo"],
-        carbonFootprint: 0.5,
-        chain: "avalanche"
-      },
-      {
-        id: 2,
-        name: "Eco-Friendly Water Bottle",
-        description: "Reusable water bottle made from recycled materials with smart hydration tracking",
-        category: "Health",
-        price: "0.02", // 0.02 AVAX from your deployment script
-        priceUSD: 0.8,
-        seller: "0x81194315767d0524470ae715ca0284fC061C1e60",
-        averageRating: 4.3,
-        isActive: true,
-        sustainabilityScore: 88,
-        certifications: ["Blockchain Verified", "100% Recycled", "BPA Free"],
-        carbonFootprint: 0.8,
-        chain: "avalanche"
-      },
-      {
-        id: 3,
-        name: "NFT Art Collection Guide",
-        description: "Complete digital guide to creating and selling NFT art collections",
-        category: "Digital",
-        price: "0.025", // 0.025 AVAX from your deployment script
-        priceUSD: 1.0,
-        seller: "0x81194315767d0524470ae715ca0284fC061C1e60",
-        averageRating: 4.7,
-        isActive: true,
-        sustainabilityScore: 75,
-        certifications: ["Blockchain Verified", "Digital Product"],
-        carbonFootprint: 0.1,
-        chain: "avalanche"
-      },
-      {
-        id: 4,
-        name: "Organic Hemp T-Shirt",
-        description: "Comfortable organic hemp t-shirt with blockchain authenticity verification",
-        category: "Clothing",
-        price: "0.03", // 0.03 AVAX from your deployment script - YOUR REAL HEMP T-SHIRT!
-        priceUSD: 1.2,
-        seller: "0x81194315767d0524470ae715ca0284fC061C1e60",
-        averageRating: 4.5,
-        isActive: true,
-        sustainabilityScore: 91,
-        certifications: ["Blockchain Verified", "Organic Certified", "Hemp Fiber", "Authenticity Verified"],
-        carbonFootprint: 0.8,
-        chain: "avalanche"
-      },
-      {
-        id: 5,
-        name: "Smart Fitness Tracker",
-        description: "Advanced fitness tracker with AI coaching and Web3 rewards",
-        category: "Sports",
-        price: "0.12", // 0.12 AVAX from your deployment script
-        priceUSD: 4.8,
-        seller: "0x81194315767d0524470ae715ca0284fC061C1e60",
-        averageRating: 4.4,
-        isActive: true,
-        sustainabilityScore: 82,
-        certifications: ["Blockchain Verified", "AI Powered", "Web3 Rewards"],
-        carbonFootprint: 1.8,
-        chain: "avalanche"
-      }
-    ];
-  }
 
-  private getKnownProducts(): ContractProduct[] {
-    // Products we know exist based on your screenshot and searches
-    return [
-      {
-        id: 1,
-        name: "Hemp T-Shirt",
-        description: "Comfortable organic hemp t-shirt with natural breathability and moisture-wicking properties",
-        category: "Fashion",
-        price: "0.005", // From your screenshot
-        priceUSD: 12.50,
-        seller: "0x81194315767d0524470ae715ca0284fC061C1e60", // From your screenshot
-        averageRating: 4.5, // From your screenshot
-        isActive: true,
-        sustainabilityScore: 91,
-        certifications: ["Organic Hemp", "Fair Trade", "GOTS Certified"],
-        carbonFootprint: 0.8,
-        chain: "avalanche"
-      }
-    ];
-  }
+
+
 
   private estimateSustainabilityScore(name: string, description: string): number {
     const text = (name + " " + description).toLowerCase();
@@ -249,8 +170,8 @@ export class ContractProductService {
         console.log(`   ❌ ${item.product.name}: Product inactive`);
         return false;
       }
-      // Include products with any positive score (lowered threshold)
-      if (item.score <= 0) {
+      // Only include products with meaningful relevance scores
+      if (item.score < 50) {
         console.log(`   ❌ ${item.product.name}: Score too low (${item.score})`);
         return false;
       }
@@ -267,10 +188,14 @@ export class ContractProductService {
     // Sort by relevance score (highest first)
     scoredProducts.sort((a, b) => b.score - a.score);
 
-    const results = scoredProducts.map(item => item.product);
-    console.log(`✅ Returning ${results.length} filtered products:`);
+    // Limit to top 3 most relevant results for better user experience
+    const topResults = scoredProducts.slice(0, 3);
+    const results = topResults.map(item => item.product);
+
+    console.log(`✅ Returning top ${results.length} most relevant products:`);
     results.forEach((product, index) => {
-      console.log(`   ${index + 1}. ${product.name}`);
+      const score = topResults[index].score;
+      console.log(`   ${index + 1}. ${product.name} (score: ${score})`);
     });
 
     return results;
@@ -387,191 +312,52 @@ export class ContractProductService {
     return score;
   }
 
-  private getMockContractProducts(): ContractProduct[] {
-    // This simulates products that would come from your smart contract
-    // Updated to include your actual marketplace products
-    return [
-      {
-        id: 1,
-        name: "Sustainable Bamboo Laptop Stand",
-        description: "Ergonomic laptop stand made from 100% sustainable bamboo with adjustable height and ventilation design",
-        category: "Electronics",
-        price: "0.04", // ETH
-        priceUSD: 100,
-        seller: "0x1234567890123456789012345678901234567890",
-        averageRating: 4.8,
-        isActive: true,
-        sustainabilityScore: 95,
-        certifications: ["FSC Certified", "Carbon Neutral", "Sustainable Bamboo"],
-        carbonFootprint: 0.5,
-        chain: "ethereum"
-      },
-      {
-        id: 2,
-        name: "Bamboo Wireless Charging Pad",
-        description: "Sustainable bamboo wireless charger compatible with all Qi devices",
-        category: "Electronics",
-        price: "0.025", // ETH
-        priceUSD: 62.50,
-        seller: "0x0987654321098765432109876543210987654321",
-        averageRating: 4.5,
-        isActive: true,
-        sustainabilityScore: 88,
-        certifications: ["FSC Certified", "Biodegradable"],
-        carbonFootprint: 0.8,
-        chain: "avalanche"
-      },
-      {
-        id: 3,
-        name: "EcoTech Solar Power Bank",
-        description: "20000mAh solar-powered portable charger with fast charging technology",
-        category: "Electronics",
-        price: "0.08", // ETH
-        priceUSD: 200,
-        seller: "0x1111222233334444555566667777888899990000",
-        averageRating: 4.7,
-        isActive: true,
-        sustainabilityScore: 92,
-        certifications: ["Solar Powered", "Recycled Materials"],
-        carbonFootprint: 2.1,
-        chain: "ethereum"
-      },
-      {
-        id: 4,
-        name: "Organic Cotton Smart Watch Band",
-        description: "Comfortable organic cotton watch band for Apple Watch and Samsung Galaxy Watch",
-        category: "Electronics",
-        price: "0.015", // ETH
-        priceUSD: 37.50,
-        seller: "0x2222333344445555666677778888999900001111",
-        averageRating: 4.3,
-        isActive: true,
-        sustainabilityScore: 85,
-        certifications: ["Organic Cotton", "Fair Trade"],
-        carbonFootprint: 0.3,
-        chain: "avalanche"
-      },
-      {
-        id: 5,
-        name: "Recycled Aluminum Phone Case",
-        description: "Durable phone case made from 100% recycled aluminum with impact protection",
-        category: "Electronics",
-        price: "0.02", // ETH
-        priceUSD: 50,
-        seller: "0x3333444455556666777788889999000011112222",
-        averageRating: 4.6,
-        isActive: true,
-        sustainabilityScore: 90,
-        certifications: ["100% Recycled", "Carbon Neutral"],
-        carbonFootprint: 1.2,
-        chain: "ethereum"
-      },
-      {
-        id: 6,
-        name: "Hemp Fiber Laptop Sleeve",
-        description: "Protective laptop sleeve made from sustainable hemp fiber with water resistance",
-        category: "Electronics",
-        price: "0.035", // ETH
-        priceUSD: 87.50,
-        seller: "0x4444555566667777888899990000111122223333",
-        averageRating: 4.4,
-        isActive: true,
-        sustainabilityScore: 87,
-        certifications: ["Hemp Fiber", "Water Resistant"],
-        carbonFootprint: 1.5,
-        chain: "ethereum"
-      },
-      {
-        id: 7,
-        name: "Bamboo Phone Case",
-        description: "Natural bamboo phone case with shock absorption and wireless charging compatibility",
-        category: "Electronics",
-        price: "0.018", // ETH
-        priceUSD: 45,
-        seller: "0x5555666677778888999900001111222233334444",
-        averageRating: 4.2,
-        isActive: true,
-        sustainabilityScore: 89,
-        certifications: ["Sustainable Bamboo", "Biodegradable"],
-        carbonFootprint: 0.4,
-        chain: "avalanche"
-      },
-      {
-        id: 8,
-        name: "Bamboo Desk Organizer",
-        description: "Multi-compartment desk organizer made from premium bamboo with phone stand and pen holders",
-        category: "Office",
-        price: "0.03", // ETH
-        priceUSD: 75,
-        seller: "0x6666777788889999000011112222333344445555",
-        averageRating: 4.6,
-        isActive: true,
-        sustainabilityScore: 93,
-        certifications: ["FSC Certified", "Sustainable Bamboo"],
-        carbonFootprint: 0.6,
-        chain: "ethereum"
-      },
-      {
-        id: 9,
-        name: "Hemp T-Shirt",
-        description: "Comfortable organic hemp t-shirt with natural breathability and moisture-wicking properties",
-        category: "Fashion",
-        price: "0.022", // ETH
-        priceUSD: 55,
-        seller: "0x7777888899990000111122223333444455556666",
-        averageRating: 4.7,
-        isActive: true,
-        sustainabilityScore: 91,
-        certifications: ["Organic Hemp", "Fair Trade", "GOTS Certified"],
-        carbonFootprint: 0.8,
-        chain: "avalanche"
-      },
-      {
-        id: 10,
-        name: "Hemp Fiber Hoodie",
-        description: "Warm and sustainable hemp fiber hoodie with organic cotton blend for ultimate comfort",
-        category: "Fashion",
-        price: "0.045", // ETH
-        priceUSD: 112.50,
-        seller: "0x8888999900001111222233334444555566667777",
-        averageRating: 4.5,
-        isActive: true,
-        sustainabilityScore: 89,
-        certifications: ["Hemp Fiber", "Organic Cotton", "Carbon Neutral"],
-        carbonFootprint: 1.2,
-        chain: "ethereum"
-      },
-      {
-        id: 11,
-        name: "Hemp Canvas Tote Bag",
-        description: "Durable hemp canvas tote bag perfect for shopping and daily use with reinforced handles",
-        category: "Fashion",
-        price: "0.016", // ETH
-        priceUSD: 40,
-        seller: "0x9999000011112222333344445555666677778888",
-        averageRating: 4.4,
-        isActive: true,
-        sustainabilityScore: 94,
-        certifications: ["100% Hemp", "Biodegradable", "Fair Trade"],
-        carbonFootprint: 0.3,
-        chain: "avalanche"
-      },
-      {
-        id: 12,
-        name: "Organic Hemp Socks",
-        description: "Soft organic hemp socks with antimicrobial properties and superior comfort",
-        category: "Fashion",
-        price: "0.008", // ETH
-        priceUSD: 20,
-        seller: "0x0000111122223333444455556666777788889999",
-        averageRating: 4.3,
-        isActive: true,
-        sustainabilityScore: 88,
-        certifications: ["Organic Hemp", "Antimicrobial", "OEKO-TEX"],
-        carbonFootprint: 0.2,
-        chain: "ethereum"
-      }
-    ];
+  private estimateSustainabilityScore(name: string, description: string): number {
+    let score = 50; // Base score
+    const text = `${name} ${description}`.toLowerCase();
+
+    // Positive sustainability indicators
+    if (text.includes('organic')) score += 20;
+    if (text.includes('sustainable')) score += 20;
+    if (text.includes('eco')) score += 15;
+    if (text.includes('bamboo')) score += 25;
+    if (text.includes('recycled')) score += 20;
+    if (text.includes('solar')) score += 30;
+    if (text.includes('hemp')) score += 15;
+    if (text.includes('carbon neutral')) score += 25;
+    if (text.includes('fair trade')) score += 15;
+    if (text.includes('renewable')) score += 20;
+
+    return Math.min(100, Math.max(0, score));
+  }
+
+  private generateCertifications(name: string, description: string): string[] {
+    const certs = ["Blockchain Verified"]; // All products have this
+    const text = `${name} ${description}`.toLowerCase();
+
+    if (text.includes('organic')) certs.push("Organic Certified");
+    if (text.includes('sustainable') || text.includes('bamboo')) certs.push("Sustainable Materials");
+    if (text.includes('recycled')) certs.push("100% Recycled");
+    if (text.includes('solar')) certs.push("Renewable Energy");
+    if (text.includes('hemp')) certs.push("Hemp Fiber");
+    if (text.includes('ai') || text.includes('smart')) certs.push("AI Powered");
+    if (text.includes('fitness') || text.includes('tracker')) certs.push("Health Certified");
+    if (text.includes('carbon')) certs.push("Carbon Neutral");
+    if (text.includes('fair')) certs.push("Fair Trade");
+    if (text.includes('fsc') || text.includes('bamboo')) certs.push("FSC Certified");
+
+    return certs;
+  }
+
+  private estimateCarbonFootprint(category: string): number {
+    switch (category.toLowerCase()) {
+      case "clothing": case "fashion": return 1.2;
+      case "electronics": return 2.5;
+      case "digital": return 0.1;
+      case "sports": case "health": return 1.8;
+      case "home": case "office": return 1.5;
+      default: return 2.0;
+    }
   }
 
   async getProductsByCategory(category: string): Promise<ContractProduct[]> {
