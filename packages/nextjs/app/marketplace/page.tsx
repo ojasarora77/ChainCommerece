@@ -22,6 +22,8 @@ import { MarketplaceSettings } from "~~/components/marketplace/MarketplaceSettin
 import { SellerManagement } from "~~/components/marketplace/SellerManagement";
 import MarketplaceSidebar from "~~/components/marketplace-sidebar";
 import { AIShoppingAssistant } from "~~/components/ai/AIShoppingAssistant";
+import { ProductRecommendations } from "~~/components/ai/ProductRecommendations";
+import { realProductTracker } from "~~/services/marketplace/RealProductTracker";
 
 
 
@@ -225,9 +227,18 @@ const Marketplace: NextPage = () => {
             {/* Products Grid - Uniform Size */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredProducts.map((product, index) => (
-                <div 
-                  key={`product-${product.id}-${index}`} 
-                  className="group bg-white dark:bg-slate-800 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 dark:border-slate-700 hover:border-primary/50"
+                <div
+                  key={`product-${product.id}-${index}`}
+                  className="group bg-white dark:bg-slate-800 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 dark:border-slate-700 hover:border-primary/50 cursor-pointer"
+                  onClick={() => {
+                    // Track product view
+                    realProductTracker.trackProductView(
+                      Number(product.id),
+                      product.name,
+                      connectedAddress,
+                      { category: product.category, price: product.priceUSD }
+                    );
+                  }}
                 >
                   {/* Product Image Section */}
                   <div className="relative h-48 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-600">
@@ -319,7 +330,7 @@ const Marketplace: NextPage = () => {
       case "ai-assistant":
         return <AIShoppingAssistant />;
       case "ai-recommendations":
-        return <div className="p-8 text-center text-white">AI Recommendations - Coming Soon</div>;
+        return <ProductRecommendations />;
       case "pricing-optimizer":
         return <div className="p-8 text-center text-white">Pricing Optimizer - Coming Soon</div>;
       case "dispute-resolution":

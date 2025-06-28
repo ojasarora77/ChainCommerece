@@ -1,0 +1,112 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Shopping Agent Functions",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/searchProducts": {
+      "post": {
+        "summary": "Search products",
+        "operationId": "searchProducts",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "description": "Search query"
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "Category filter"
+                  },
+                  "maxPrice": {
+                    "type": "number",
+                    "description": "Max price in USD"
+                  },
+                  "sustainabilityMin": {
+                    "type": "number",
+                    "description": "Min sustainability score"
+                  }
+                },
+                "required": [
+                  "query"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "products": {
+                      "type": "array"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/createOrder": {
+      "post": {
+        "summary": "Create order",
+        "operationId": "createOrder",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "productId": {
+                    "type": "number"
+                  },
+                  "quantity": {
+                    "type": "number"
+                  },
+                  "userAddress": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "productId",
+                  "quantity",
+                  "userAddress"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "orderId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

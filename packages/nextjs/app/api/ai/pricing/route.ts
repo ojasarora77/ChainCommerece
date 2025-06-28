@@ -3,12 +3,11 @@ import { PricingAgent } from "~~/services/bedrock/agents/pricingAgent";
 
 export async function POST(request: NextRequest) {
   try {
-    const { 
-      productId, 
-      currentPrice, 
-      marketData = {}, 
-      competitorPrices = [],
-      productDetails = {}
+    const {
+      productId,
+      currentPrice,
+      marketData = {},
+      competitorPrices = []
     } = await request.json();
 
     if (!productId || currentPrice === undefined) {
@@ -64,7 +63,6 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const category = searchParams.get('category');
-  const priceRange = searchParams.get('priceRange');
 
   try {
     // Return market pricing insights

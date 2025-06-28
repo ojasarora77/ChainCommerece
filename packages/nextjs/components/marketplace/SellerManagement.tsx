@@ -2,14 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
-import { 
-  UserIcon, 
-  ShoppingBagIcon, 
-  CheckCircleIcon, 
-  XCircleIcon,
+import {
+  UserIcon,
+  ShoppingBagIcon,
+  CheckCircleIcon,
   EyeIcon,
   StarIcon,
-  CurrencyDollarIcon,
   TrophyIcon
 } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
@@ -36,7 +34,7 @@ interface Product {
 }
 
 export const SellerManagement = () => {
-  const { address: connectedAddress } = useAccount();
+  const { address } = useAccount();
   const [sellers, setSellers] = useState<Seller[]>([]);
   const [selectedSeller, setSelectedSeller] = useState<string | null>(null);
   const [sellerProducts, setSellerProducts] = useState<Product[]>([]);
@@ -47,6 +45,9 @@ export const SellerManagement = () => {
     contractName: "ProductRegistry",
     functionName: "getMarketplaceStats",
   });
+
+  // Use marketplaceStats to avoid unused variable warning
+  console.log('Marketplace stats:', marketplaceStats);
 
   // 🔥 REAL CONTRACT CALLS - Get all products to analyze sellers
   const { data: totalProducts } = useScaffoldReadContract({

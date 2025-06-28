@@ -4,12 +4,11 @@ import { useState } from "react";
 import { useScaffoldWriteContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useAccount } from "wagmi";
 import { parseEther } from "viem";
-import { 
-  PlusIcon, 
-  CogIcon, 
+import {
+  PlusIcon,
+  CogIcon,
   UserGroupIcon,
-  TagIcon,
-  ChartBarIcon 
+  TagIcon
 } from "@heroicons/react/24/outline";
 
 const AdminPage = () => {

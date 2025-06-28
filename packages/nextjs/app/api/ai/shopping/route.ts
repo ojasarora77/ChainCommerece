@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { ShoppingAgent } from "~~/services/bedrock/agents/shoppingAgent";
 import { FraudDetectionAgent } from "~~/services/bedrock/agents/fraudDetectionAgent";
 import { ProductRecommendation } from "~~/types/bedrock";
+import { HybridProductService } from "~~/services/marketplace/hybridProductService";
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,16 +16,41 @@ export async function POST(request: NextRequest) {
     }
 
     const startTime = Date.now();
-    const agent = new ShoppingAgent(userId, preferences);
-    
-    // Get product recommendations
-    const recommendations = await agent.findProducts(query);
+
+    // Get products using the hybrid service (works in API context)
+    const hybridService = HybridProductService.getInstance();
+    const allProducts = await hybridService.getProductsForAPI();
+    console.log(`📦 API: Got ${allProducts.length} products from hybrid service`);
+
+    // Search for relevant products
+    const relevantProducts = hybridService.searchProducts(allProducts, query);
+    console.log(`🔍 API: Found ${relevantProducts.length} relevant products for "${query}"`);
+
+    // Convert to recommendation format
+    const realRecommendations: ProductRecommendation[] = relevantProducts.map(product => ({
+      id: product.id.toString(),
+      name: product.name,
+      description: product.description,
+      sustainabilityScore: product.sustainabilityScore || 75,
+      price: product.priceUSD,
+      chain: product.chain,
+      sellerAddress: product.seller,
+      certifications: product.certifications || ["Blockchain Verified"],
+      carbonFootprint: product.carbonFootprint || 2.0,
+      isRealProduct: true,
+      category: product.category,
+      averageRating: product.averageRating
+    }));
+
+    // For now, use real recommendations as the main result
+    const recommendations = realRecommendations;
     
     // Optional: Get personalized recommendations if requested
     let personalizedRecommendations: ProductRecommendation[] = [];
     if (includePersonalized) {
       try {
         // Get personalized recommendations based on user preferences
+        const agent = new ShoppingAgent(userId, preferences);
         personalizedRecommendations = await agent.findProducts(`products for ${preferences.categories.join(', ')} enthusiast`) || [];
         // Limit to top 3 personalized recommendations
         personalizedRecommendations = personalizedRecommendations.slice(0, 3);

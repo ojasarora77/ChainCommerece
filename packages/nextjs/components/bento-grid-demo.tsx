@@ -36,25 +36,7 @@ export default function BentoGridDemo() {
     </BentoGrid>
   );
 }
-const AIGradient = () => (
-  <div className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl bg-gradient-to-br from-blue-500 via-purple-500 to-cyan-500 opacity-80"></div>
-);
-
-const ShoppingGradient = () => (
-  <div className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 opacity-80"></div>
-);
-
-const AnalyticsGradient = () => (
-  <div className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 opacity-80"></div>
-);
-
-const SecurityGradient = () => (
-  <div className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-500 opacity-80"></div>
-);
-
-const DefaultGradient = () => (
-  <div className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl bg-gradient-to-br from-neutral-200 dark:from-neutral-900 dark:to-neutral-800 to-neutral-100"></div>
-);
+// Gradient components removed to fix unused variable warnings
 const items = [
   {
     title: "Smart Product Discovery",

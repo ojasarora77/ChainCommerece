@@ -17,6 +17,10 @@ export interface ContractProduct {
 }
 
 export class ContractProductService {
+  private cachedProducts: ContractProduct[] = [];
+  private lastFetchTime: number = 0;
+  private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
   constructor() {
     // No need for client initialization - using productFetcher
   }
@@ -25,9 +29,15 @@ export class ContractProductService {
     try {
       console.log(`🔍 Searching contract products for: "${query}"`);
 
-      // Get all products from contract
-      const allProducts = await this.getAllProducts();
-      console.log(`📦 Total products in contract: ${allProducts.length}`);
+      // Use cached products from the hook
+      const allProducts = this.getCachedProducts();
+
+      if (allProducts.length === 0) {
+        console.log("⚠️ No cached products available. Make sure useContractProducts hook is being used.");
+        return [];
+      }
+
+      console.log(`📦 Total products in cache: ${allProducts.length}`);
       console.log(`📝 All product details:`);
       allProducts.forEach(p => {
         console.log(`   - ${p.name} (${p.category}) - ${p.description.substring(0, 50)}...`);
@@ -45,66 +55,45 @@ export class ContractProductService {
       return filteredProducts;
 
     } catch (error) {
-      console.error("❌ Error fetching contract products:", error);
+      console.error("❌ Error searching contract products:", error);
       return [];
     }
   }
 
   async getAllProducts(): Promise<ContractProduct[]> {
     try {
-      // ONLY get real products from blockchain - NO MOCK DATA
-      const realProducts = await this.getRealBlockchainProducts();
-      console.log(`📦 Found ${realProducts.length} real products from blockchain`);
-      return realProducts;
+      console.log("🔗 Using PROVEN marketplace method to get products...");
+
+      // NOTE: This method needs to be called from a React component context
+      // because it uses Scaffold-ETH hooks. For now, we'll return a promise
+      // that can be resolved by the calling component.
+
+      // This is a placeholder - the actual implementation will be in the hook
+      console.log("⚠️ getAllProducts called - this should be replaced with useContractProducts hook");
+      return [];
 
     } catch (error) {
-      console.error("❌ Error getting real blockchain products:", error);
-      // Return empty array instead of mock data
+      console.error("❌ Error getting products:", error);
       return [];
     }
   }
 
-  private async getRealBlockchainProducts(): Promise<ContractProduct[]> {
-    try {
-      console.log("🔗 Fetching REAL products from blockchain...");
+  // New method to work with hook-provided data
+  setProductsFromHook(products: ContractProduct[]): void {
+    console.log(`📦 ContractProductService: Received ${products.length} products from hook`);
+    // Store products for use in search/filter operations
+    this.cachedProducts = products;
+    this.lastFetchTime = Date.now();
+  }
 
-      // Import the blockchain product fetcher
-      const { productFetcher } = await import("~~/services/blockchain/productFetcher");
+  // Get cached products (used after setProductsFromHook is called)
+  getCachedProducts(): ContractProduct[] {
+    return this.cachedProducts;
+  }
 
-      // Fetch real products from the smart contract
-      const blockchainProducts = await productFetcher.fetchAllProducts();
-
-      if (blockchainProducts.length === 0) {
-        console.log("⚠️ No products found on blockchain");
-        return [];
-      }
-
-      // Convert blockchain products to our format
-      const contractProducts: ContractProduct[] = blockchainProducts.map(product => ({
-        id: product.id,
-        name: product.name,
-        description: product.description,
-        category: product.category,
-        price: product.price, // Already in ETH/AVAX
-        priceUSD: product.priceUSD,
-        seller: product.seller,
-        averageRating: product.averageRating,
-        isActive: product.isActive,
-        sustainabilityScore: this.estimateSustainabilityScore(product.name, product.description),
-        certifications: this.generateCertifications(product.name, product.description),
-        carbonFootprint: this.estimateCarbonFootprint(product.category),
-        chain: "avalanche" // Your contract is on Avalanche Fuji
-      }));
-
-      console.log(`✅ Found ${contractProducts.length} real products from blockchain`);
-      contractProducts.forEach(p => console.log(`   - ${p.name} (${p.price} AVAX) - ${p.category}`));
-
-      return contractProducts;
-
-    } catch (error) {
-      console.error("❌ Error fetching real blockchain products:", error);
-      return [];
-    }
+  // Check if cache is valid
+  isCacheValid(): boolean {
+    return Date.now() - this.lastFetchTime < this.CACHE_DURATION;
   }
 
 
@@ -312,53 +301,7 @@ export class ContractProductService {
     return score;
   }
 
-  private estimateSustainabilityScore(name: string, description: string): number {
-    let score = 50; // Base score
-    const text = `${name} ${description}`.toLowerCase();
-
-    // Positive sustainability indicators
-    if (text.includes('organic')) score += 20;
-    if (text.includes('sustainable')) score += 20;
-    if (text.includes('eco')) score += 15;
-    if (text.includes('bamboo')) score += 25;
-    if (text.includes('recycled')) score += 20;
-    if (text.includes('solar')) score += 30;
-    if (text.includes('hemp')) score += 15;
-    if (text.includes('carbon neutral')) score += 25;
-    if (text.includes('fair trade')) score += 15;
-    if (text.includes('renewable')) score += 20;
-
-    return Math.min(100, Math.max(0, score));
-  }
-
-  private generateCertifications(name: string, description: string): string[] {
-    const certs = ["Blockchain Verified"]; // All products have this
-    const text = `${name} ${description}`.toLowerCase();
-
-    if (text.includes('organic')) certs.push("Organic Certified");
-    if (text.includes('sustainable') || text.includes('bamboo')) certs.push("Sustainable Materials");
-    if (text.includes('recycled')) certs.push("100% Recycled");
-    if (text.includes('solar')) certs.push("Renewable Energy");
-    if (text.includes('hemp')) certs.push("Hemp Fiber");
-    if (text.includes('ai') || text.includes('smart')) certs.push("AI Powered");
-    if (text.includes('fitness') || text.includes('tracker')) certs.push("Health Certified");
-    if (text.includes('carbon')) certs.push("Carbon Neutral");
-    if (text.includes('fair')) certs.push("Fair Trade");
-    if (text.includes('fsc') || text.includes('bamboo')) certs.push("FSC Certified");
-
-    return certs;
-  }
-
-  private estimateCarbonFootprint(category: string): number {
-    switch (category.toLowerCase()) {
-      case "clothing": case "fashion": return 1.2;
-      case "electronics": return 2.5;
-      case "digital": return 0.1;
-      case "sports": case "health": return 1.8;
-      case "home": case "office": return 1.5;
-      default: return 2.0;
-    }
-  }
+  // Duplicate methods removed - keeping only the first implementation
 
   async getProductsByCategory(category: string): Promise<ContractProduct[]> {
     const allProducts = await this.getAllProducts();

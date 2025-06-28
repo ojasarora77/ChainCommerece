@@ -30,6 +30,10 @@ export default function MarketplaceNavbar() {
       link: "/marketplace",
     },
     {
+      name: "Dashboard",
+      link: "/dashboard",
+    },
+    {
       name: "AI Preferences",
       link: "/preferences",
     },

@@ -1,9 +1,12 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useShoppingAgent } from '~~/hooks/bedrock';
+import { useContractProducts } from '~~/hooks/useContractProducts';
 import { UserPreferences } from '~~/types/bedrock';
 import { useAccount } from 'wagmi';
+import { HybridProductService } from '~~/services/marketplace/hybridProductService';
+// Icons removed since tabs are no longer needed
 
 interface AIShoppingAssistantProps {
   className?: string;
@@ -12,6 +15,21 @@ interface AIShoppingAssistantProps {
 export const AIShoppingAssistant: React.FC<AIShoppingAssistantProps> = ({ className = "" }) => {
   const { address } = useAccount();
   const { recommendations, isLoading, error, searchProducts, getTrending } = useShoppingAgent();
+
+  // 🔥 NEW: Use the proven contract products hook
+  const { products: contractProducts } = useContractProducts();
+
+  // Tab state for switching between assistant modes
+  // Removed autonomous tab - now only search assistant
+
+  // Update the hybrid service with real contract data
+  useEffect(() => {
+    if (contractProducts.length > 0) {
+      const hybridService = HybridProductService.getInstance();
+      hybridService.setProductsFromHook(contractProducts);
+      console.log(`🔥 AI Assistant: Updated hybrid service with ${contractProducts.length} real products`);
+    }
+  }, [contractProducts]);
   
   const [query, setQuery] = useState('');
   const [showPreferences, setShowPreferences] = useState(false);
@@ -34,14 +52,14 @@ export const AIShoppingAssistant: React.FC<AIShoppingAssistantProps> = ({ classN
     await getTrending();
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
+  // handleKeyPress removed - using inline onKeyDown instead
+
+  // Autonomous agent moved to floating chat widget
 
   return (
     <div className={`bg-slate-800 rounded-lg p-6 ${className}`}>
+      {/* Note: Autonomous Agent now available via floating chat widget */}
+
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-white flex items-center">
@@ -150,7 +168,7 @@ export const AIShoppingAssistant: React.FC<AIShoppingAssistantProps> = ({ classN
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             placeholder="Ask me to find sustainable products... (e.g., 'eco-friendly phone chargers under $50')"
             className="flex-1 bg-slate-700 text-white rounded-lg px-4 py-3 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             disabled={isLoading}

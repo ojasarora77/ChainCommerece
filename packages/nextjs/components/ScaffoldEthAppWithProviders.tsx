@@ -10,6 +10,7 @@ import { WagmiProvider } from "wagmi";
 import { Footer } from "~~/components/Footer";
 import MarketplaceNavbar from "~~/components/marketplace-navbar";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
+import { FloatingChatWidget } from "~~/components/ai/FloatingChatWidget";
 import { useInitializeNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 
@@ -23,6 +24,7 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
         <main className="relative flex flex-col flex-1">{children}</main>
         <Footer />
       </div>
+      <FloatingChatWidget />
       <Toaster />
     </>
   );

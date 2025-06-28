@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useScaffoldWriteContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useAccount } from "wagmi";
 import { parseEther } from "viem";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+// ConnectButton import removed as it's not used in this component
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { 
   PlusIcon, 
