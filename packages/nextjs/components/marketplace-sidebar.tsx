@@ -12,6 +12,7 @@ import {
   IconSettings,
   IconSparkles,
   IconShield,
+  IconLock,
 } from "@tabler/icons-react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
@@ -53,6 +54,12 @@ export default function MarketplaceSidebar({
       href: "#pricing-optimizer",
       icon: <IconCurrencyDollar className="h-5 w-5 shrink-0 text-green-500" />,
       section: "pricing-optimizer"
+    },
+    {
+      label: "Escrow Manager",
+      href: "#escrow-manager",
+      icon: <IconLock className="h-5 w-5 shrink-0 text-emerald-500" />,
+      section: "escrow-manager"
     },
     {
       label: "Dispute Resolution",
