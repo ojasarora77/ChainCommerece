@@ -45,89 +45,11 @@ export class HybridProductService {
         return realProducts;
       }
 
-      console.log("⚠️ No real products found, falling back to basic products");
+      console.log("⚠️ No real products found from smart contract");
 
-      // Fallback to basic products only if contract reading fails
-      const basicProducts: ContractProduct[] = [
-        {
-          id: 1,
-          name: "Sustainable Bamboo Laptop Stand",
-          description: "Ergonomic laptop stand made from 100% sustainable bamboo with adjustable height",
-          category: "Electronics",
-          price: "0.050000", // 0.05 AVAX
-          priceUSD: 2.0,
-          seller: "0x81194315767d0524470ae715ca0284fC061C1e60",
-          averageRating: 4.5,
-          isActive: true,
-          sustainabilityScore: 95,
-          certifications: ["Blockchain Verified", "FSC Certified", "Sustainable Materials"],
-          carbonFootprint: 0.5,
-          chain: "avalanche"
-        },
-        {
-          id: 2,
-          name: "Eco-Friendly Water Bottle",
-          description: "Reusable water bottle made from recycled materials with smart hydration tracking",
-          category: "Health",
-          price: "0.020000", // 0.02 AVAX
-          priceUSD: 0.8,
-          seller: "0x81194315767d0524470ae715ca0284fC061C1e60",
-          averageRating: 4.3,
-          isActive: true,
-          sustainabilityScore: 88,
-          certifications: ["Blockchain Verified", "100% Recycled"],
-          carbonFootprint: 0.8,
-          chain: "avalanche"
-        },
-        {
-          id: 3,
-          name: "NFT Art Collection Guide",
-          description: "Complete digital guide to creating and selling NFT art collections",
-          category: "Digital",
-          price: "0.025000", // 0.025 AVAX
-          priceUSD: 1.0,
-          seller: "0x81194315767d0524470ae715ca0284fC061C1e60",
-          averageRating: 4.7,
-          isActive: true,
-          sustainabilityScore: 75,
-          certifications: ["Blockchain Verified", "Digital Product"],
-          carbonFootprint: 0.1,
-          chain: "avalanche"
-        },
-        {
-          id: 4,
-          name: "Organic Hemp T-Shirt",
-          description: "Comfortable organic hemp t-shirt with blockchain authenticity verification",
-          category: "Clothing",
-          price: "0.030000", // 0.03 AVAX
-          priceUSD: 1.2,
-          seller: "0x81194315767d0524470ae715ca0284fC061C1e60",
-          averageRating: 4.5,
-          isActive: true,
-          sustainabilityScore: 91,
-          certifications: ["Blockchain Verified", "Organic Certified", "Hemp Fiber"],
-          carbonFootprint: 0.8,
-          chain: "avalanche"
-        },
-        {
-          id: 5,
-          name: "Smart Fitness Tracker",
-          description: "Advanced fitness tracker with AI coaching and Web3 rewards",
-          category: "Sports",
-          price: "0.120000", // 0.12 AVAX
-          priceUSD: 4.8,
-          seller: "0x81194315767d0524470ae715ca0284fC061C1e60",
-          averageRating: 4.4,
-          isActive: true,
-          sustainabilityScore: 82,
-          certifications: ["Blockchain Verified", "AI Powered", "Web3 Rewards"],
-          carbonFootprint: 1.8,
-          chain: "avalanche"
-        }
-      ];
-
-      console.log(`✅ Returning ${basicProducts.length} basic products for API`);
-      return basicProducts;
+      // Return empty array if no real products are available
+      // This ensures we only use real data from smart contracts
+      return [];
 
     } catch (error) {
       console.error("❌ Error getting products for API:", error);
