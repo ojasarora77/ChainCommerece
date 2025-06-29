@@ -12,10 +12,10 @@ const Home: NextPage = () => {
     <>
       <div className="flex justify-center py-8 bg-base-300">
         <Image
-          src="/chaincommerce_logo.png"
+          src="/Newlogo.png"
           alt="ChainCommerce Logo"
-          width={300}
-          height={100}
+          width={150}
+          height={50}
           priority
         />
       </div>

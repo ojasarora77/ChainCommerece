@@ -267,9 +267,9 @@ export const NavbarLogo = () => {
           />
         </svg>
       </div>
-      <img 
-        src="/chaincommerce_logo.png" 
-        alt="ChainCommerce Logo" 
+      <img
+        src="/Newlogo.png"
+        alt="ChainCommerce Logo"
         className="h-8"
       />
     </a>

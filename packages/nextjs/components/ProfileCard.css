@@ -308,11 +308,10 @@
   margin: 0;
   font-size: min(5svh, 3em);
   margin: 0;
-  background-image: linear-gradient(to bottom, hsl(var(--bc) / 0.9), hsl(var(--bc) / 0.6));
-  background-size: 1em 1.5em;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  -webkit-background-clip: text;
+  color: white !important;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
+  z-index: 999;
+  position: relative;
 }
 
 .pc-details p {
@@ -323,11 +322,9 @@
   font-size: 16px;
   margin: 0 auto;
   width: min-content;
-  background-image: linear-gradient(to bottom, hsl(var(--bc) / 0.8), hsl(var(--bc) / 0.5));
-  background-size: 1em 1.5em;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  -webkit-background-clip: text;
+  color: #cccccc !important;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 1);
+  z-index: 999;
 }
 
 @keyframes glow-bg {
