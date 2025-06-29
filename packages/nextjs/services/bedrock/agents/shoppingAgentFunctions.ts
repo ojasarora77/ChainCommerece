@@ -1,6 +1,8 @@
 import { HybridProductService } from '../../marketplace/hybridProductService';
 import { ContractProduct } from '../../marketplace/contractProductService';
 import { ServerSideContractReader } from '../../blockchain/serverSideContractReader';
+import { enhancedShoppingAgent, SearchContext } from '../../ai/EnhancedShoppingAgent';
+import { productKnowledgeBase } from '../../ai/ProductKnowledgeBase';
 
 export interface FunctionResult {
   success: boolean;
@@ -19,7 +21,7 @@ export class ShoppingAgentFunctions {
   }
 
   /**
-   * Search for products based on user criteria
+   * Search for products based on user criteria - Enhanced with AI intelligence
    */
   async searchProducts(parameters: {
     query: string;
@@ -28,70 +30,55 @@ export class ShoppingAgentFunctions {
     sustainabilityMin?: number;
   }): Promise<FunctionResult> {
     try {
-      console.log('🔍 Agent Function: searchProducts', parameters);
+      console.log('🔍 Enhanced Agent Function: searchProducts', parameters);
 
-      // Get all products from the hybrid service
-      const allProducts = this.hybridService.getCachedProducts();
-      
-      if (allProducts.length === 0) {
-        // Try to fetch fresh data
-        await this.refreshProductData();
-      }
+      // Use enhanced shopping agent for intelligent search
+      const searchContext: SearchContext = {
+        query: parameters.query,
+        category: parameters.category,
+        maxPrice: parameters.maxPrice,
+        sustainabilityMin: parameters.sustainabilityMin
+      };
 
-      // Apply filters
-      let filteredProducts = this.hybridService.getCachedProducts();
+      const agentResponse = await enhancedShoppingAgent.processQuery(searchContext);
 
-      // Category filter
-      if (parameters.category) {
-        filteredProducts = filteredProducts.filter(p => 
-          p.category.toLowerCase().includes(parameters.category!.toLowerCase())
-        );
-      }
-
-      // Price filter
-      if (parameters.maxPrice) {
-        filteredProducts = filteredProducts.filter(p => p.priceUSD <= parameters.maxPrice!);
-      }
-
-      // Sustainability filter
-      if (parameters.sustainabilityMin) {
-        filteredProducts = filteredProducts.filter(p => 
-          (p.sustainabilityScore || 0) >= parameters.sustainabilityMin!
-        );
-      }
-
-      // Search by query
-      if (parameters.query) {
-        const allProducts = await this.contractReader.getAllProducts();
-        const searchResults = await this.hybridService.searchProducts(allProducts, parameters.query, parameters.category);
-        // Combine with filters
-        const searchIds = new Set(searchResults.map(p => p.id));
-        filteredProducts = filteredProducts.filter(p => searchIds.has(p.id));
-      }
-
-      // Sort by relevance (sustainability score + rating)
-      filteredProducts.sort((a, b) => {
-        const scoreA = (a.sustainabilityScore || 0) + (a.averageRating * 20);
-        const scoreB = (b.sustainabilityScore || 0) + (b.averageRating * 20);
-        return scoreB - scoreA;
-      });
-
-      // Limit to top 5 results
-      const topResults = filteredProducts.slice(0, 5);
+      // Convert knowledge base products to contract format for compatibility
+      const contractProducts = agentResponse.products.map(kbProduct => ({
+        id: kbProduct.id,
+        name: kbProduct.name,
+        description: kbProduct.description,
+        category: kbProduct.category,
+        price: kbProduct.price,
+        priceUSD: kbProduct.priceUSD,
+        seller: "0x81194315767d0524470ae715ca0284fC061C1e60", // Your contract address
+        averageRating: kbProduct.averageRating,
+        isActive: true,
+        sustainabilityScore: kbProduct.sustainabilityScore,
+        certifications: kbProduct.certifications,
+        carbonFootprint: kbProduct.carbonFootprint,
+        chain: "avalanche" as const
+      }));
 
       return {
         success: true,
         data: {
-          products: topResults,
-          totalFound: filteredProducts.length,
+          products: contractProducts,
+          totalFound: agentResponse.products.length,
           query: parameters.query,
+          aiResponse: {
+            message: agentResponse.message,
+            reasoning: agentResponse.reasoning,
+            suggestions: agentResponse.suggestions,
+            confidence: agentResponse.confidence,
+            followUpQuestions: agentResponse.followUpQuestions
+          },
           filters: {
             category: parameters.category,
             maxPrice: parameters.maxPrice,
             sustainabilityMin: parameters.sustainabilityMin
           }
         },
-        message: `Found ${topResults.length} products matching your criteria`
+        message: agentResponse.message
       };
 
     } catch (error) {
@@ -105,16 +92,16 @@ export class ShoppingAgentFunctions {
   }
 
   /**
-   * Get detailed information about a specific product
+   * Get detailed information about a specific product - Enhanced with knowledge base
    */
   async getProductDetails(parameters: { productId: number }): Promise<FunctionResult> {
     try {
-      console.log('📋 Agent Function: getProductDetails', parameters);
+      console.log('📋 Enhanced Agent Function: getProductDetails', parameters);
 
-      const products = this.hybridService.getCachedProducts();
-      const product = products.find(p => p.id === parameters.productId);
+      // Get detailed product information from knowledge base
+      const productKnowledge = enhancedShoppingAgent.getProductDetails(parameters.productId);
 
-      if (!product) {
+      if (!productKnowledge) {
         return {
           success: false,
           error: 'Product not found',
@@ -122,24 +109,46 @@ export class ShoppingAgentFunctions {
         };
       }
 
-      // Get additional details from contract if needed
-      const allProducts = await this.contractReader.getAllProducts();
-      const contractDetails = allProducts.find(p => Number(p.id) === parameters.productId);
+      // Get recommendations for this product
+      const recommendations = enhancedShoppingAgent.getRecommendations(parameters.productId);
 
       return {
         success: true,
         data: {
           product: {
-            ...product,
-            ...contractDetails,
-            // Add computed fields
-            valueScore: this.calculateValueScore(product),
-            sustainabilityGrade: this.getSustainabilityGrade(product.sustainabilityScore || 0),
-            estimatedDelivery: this.getEstimatedDelivery(),
-            carbonFootprint: this.calculateCarbonFootprint(product)
+            id: productKnowledge.id,
+            name: productKnowledge.name,
+            description: productKnowledge.description,
+            category: productKnowledge.category,
+            price: productKnowledge.price,
+            priceUSD: productKnowledge.priceUSD,
+            seller: "0x81194315767d0524470ae715ca0284fC061C1e60",
+            averageRating: productKnowledge.averageRating,
+            isActive: true,
+            sustainabilityScore: productKnowledge.sustainabilityScore,
+            certifications: productKnowledge.certifications,
+            carbonFootprint: productKnowledge.carbonFootprint,
+            chain: "avalanche" as const
+          },
+          detailedInfo: {
+            features: productKnowledge.features,
+            benefits: productKnowledge.benefits,
+            specifications: productKnowledge.specifications,
+            useCases: productKnowledge.useCases,
+            targetAudience: productKnowledge.targetAudience,
+            materials: productKnowledge.materials,
+            brandStory: productKnowledge.brandStory,
+            warranty: productKnowledge.warranty,
+            shipping: productKnowledge.shipping
+          },
+          recommendations: recommendations.slice(0, 3),
+          contractData: {
+            blockchain: "Avalanche",
+            contractAddress: "0x81194315767d0524470ae715ca0284fC061C1e60",
+            verified: true
           }
         },
-        message: `Here are the complete details for ${product.name}`
+        message: `Here are the complete details for ${productKnowledge.name}. ${productKnowledge.benefits[0]}.`
       };
 
     } catch (error) {

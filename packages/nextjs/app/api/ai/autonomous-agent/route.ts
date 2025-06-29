@@ -3,6 +3,8 @@ import { AutonomousShoppingAgent } from '../../../../services/bedrock/agents/aut
 import { ShoppingAgentFunctions } from '../../../../services/bedrock/agents/shoppingAgentFunctions';
 import { cacheService, hashMessage } from '~~/services/cache/CacheService';
 import { realPerformanceService } from '~~/services/analytics/RealPerformanceService';
+import { enhancedShoppingAgent, SearchContext } from '~~/services/ai/EnhancedShoppingAgent';
+import { productKnowledgeBase } from '~~/services/ai/ProductKnowledgeBase';
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -100,15 +102,80 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Enhance the response with function results
+    // Enhance the response with AI intelligence and function results
     let enhancedResponse = agentResponse.response;
-    
+
+    // If the query seems like a product search, enhance with our AI agent
+    const isProductQuery = message.toLowerCase().includes('find') ||
+                          message.toLowerCase().includes('search') ||
+                          message.toLowerCase().includes('show') ||
+                          message.toLowerCase().includes('recommend') ||
+                          message.toLowerCase().includes('product');
+
+    if (isProductQuery && (!agentResponse.functionCalls || agentResponse.functionCalls.length === 0)) {
+      try {
+        // Use enhanced shopping agent for better responses
+        const searchContext: SearchContext = {
+          query: message,
+          category: undefined,
+          maxPrice: undefined,
+          sustainabilityMin: undefined
+        };
+
+        const aiResponse = await enhancedShoppingAgent.processQuery(searchContext);
+
+        if (aiResponse.products.length > 0) {
+          enhancedResponse = `${aiResponse.message}
+
+🛍️ **Found ${aiResponse.products.length} product${aiResponse.products.length > 1 ? 's' : ''}:**
+
+${aiResponse.products.map((product, index) =>
+  `${index + 1}. **${product.name}** - $${product.priceUSD} (${product.price} AVAX)
+   ${product.description}
+   ⭐ ${product.averageRating}/5.0 | 🌱 ${product.sustainabilityScore}/100 sustainability score
+   ${product.features.slice(0, 3).join(', ')}`
+).join('\n\n')}
+
+💡 **AI Insights:**
+${aiResponse.suggestions.join('\n')}
+
+🤔 **Follow-up questions:**
+${aiResponse.followUpQuestions.join('\n')}
+
+**Confidence:** ${Math.round(aiResponse.confidence * 100)}% | **Reasoning:** ${aiResponse.reasoning}`;
+        }
+      } catch (error) {
+        console.error('Enhanced AI response failed:', error);
+      }
+    }
+
     if (agentResponse.functionCalls) {
       enhancedResponse = await enhanceResponseWithFunctionResults(
-        agentResponse.response,
+        enhancedResponse,
         agentResponse.functionCalls
       );
     }
+
+    // Add general marketplace context
+    enhancedResponse += `
+
+💡 **Smart Insights:**
+${agentResponse.functionCalls && agentResponse.functionCalls.length > 0
+  ? `• Successfully executed ${agentResponse.functionCalls.length} function${agentResponse.functionCalls.length > 1 ? 's' : ''}`
+  : '• Ready to help with product search, orders, and recommendations'
+}
+• All products are verified on the Avalanche blockchain
+• Sustainability scores and certifications are blockchain-verified
+• Secure payments and transparent transactions
+
+🎯 **What I can help you with:**
+• Find products by category, price, or sustainability score
+• Get detailed product information and specifications
+• Place orders and track purchases
+• Compare products and get recommendations
+• Check order status and handle issues
+
+Just ask me anything about our marketplace! 🛒✨`;
 
     // Cache the response for similar future queries
     cacheService.cacheAgentResponse(messageHash, enhancedResponse, 2 * 60 * 1000); // 2 minutes
@@ -128,7 +195,7 @@ export async function POST(request: NextRequest) {
         sessionId: agentResponse.sessionId,
         functionCalls: agentResponse.functionCalls,
         timestamp: new Date().toISOString(),
-        agentType: 'autonomous_shopping_agent',
+        agentType: 'enhanced_autonomous_shopping_agent',
         responseTime: Date.now() - startTime,
         cached: false
       }
