@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
+import { parseEther } from "viem";
 import { useEscrow } from "~~/hooks/useEscrow";
 import EscrowStatus from "~~/components/marketplace/EscrowStatus";
 import DisputeResolution from "~~/components/marketplace/DisputeResolution";
@@ -25,12 +27,47 @@ const mockProduct = {
 };
 
 const EscrowPage: React.FC = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { address, isConnected } = useAccount();
   const { userEscrows, sellerEscrows, refetchUserEscrows, refetchSellerEscrows } = useEscrow();
   
   const [selectedEscrowId, setSelectedEscrowId] = useState<bigint | null>(null);
   const [selectedDisputeId, setSelectedDisputeId] = useState<bigint | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+
+  // Parse URL parameters to get product information
+  useEffect(() => {
+    const productId = searchParams.get('productId');
+    const productName = searchParams.get('productName');
+    const productPrice = searchParams.get('productPrice');
+    const seller = searchParams.get('seller');
+    const category = searchParams.get('category');
+    const description = searchParams.get('description');
+    const action = searchParams.get('action');
+
+    if (productId && productName && productPrice && seller && action === 'create') {
+      const product = {
+        id: BigInt(productId),
+        name: productName,
+        description: description || "Product from marketplace",
+        category: category || "General",
+        price: parseEther(productPrice),
+        seller: seller,
+        imageHash: "QmExample123",
+        metadataHash: "QmMetadata456",
+        isActive: true,
+        createdAt: BigInt(Math.floor(Date.now() / 1000)),
+        totalSales: 0n,
+        totalReviews: 0n,
+        averageRating: 0n,
+      };
+
+      setSelectedProduct(product);
+      setShowPaymentModal(true); // Automatically show payment modal
+    }
+  }, [searchParams]);
   const [activeTab, setActiveTab] = useState<'overview' | 'escrows' | 'disputes'>('overview');
 
   const handlePaymentSuccess = (escrowId: bigint) => {
@@ -78,6 +115,37 @@ const EscrowPage: React.FC = () => {
           Create Test Purchase
         </button>
       </div>
+
+      {/* Product Purchase Banner */}
+      {selectedProduct && (
+        <div className="alert alert-info mb-6">
+          <div className="flex items-center gap-4 w-full">
+            <div className="flex-shrink-0">
+              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="flex-grow">
+              <h3 className="font-semibold">Creating Escrow for Purchase</h3>
+              <div className="text-sm opacity-90">
+                <span className="font-medium">{selectedProduct.name}</span> - {selectedProduct.category} - {(Number(selectedProduct.price) / 1e18).toFixed(4)} ETH
+              </div>
+            </div>
+            <div className="flex-shrink-0">
+              <button 
+                onClick={() => {
+                  setSelectedProduct(null);
+                  setShowPaymentModal(false);
+                  router.push('/marketplace');
+                }}
+                className="btn btn-sm btn-outline"
+              >
+                ← Back to Marketplace
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Navigation Tabs */}
       <div className="tabs tabs-lifted mb-6">
@@ -280,7 +348,7 @@ const EscrowPage: React.FC = () => {
       <PaymentModal
         isOpen={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}
-        product={mockProduct}
+        product={selectedProduct || mockProduct}
         onSuccess={handlePaymentSuccess}
       />
     </div>

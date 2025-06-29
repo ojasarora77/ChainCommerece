@@ -8,6 +8,8 @@ import {VRFConsumerBaseV2} from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBa
 import {VRFCoordinatorV2Interface} from "@chainlink/contracts/src/v0.8/vrf/interfaces/VRFCoordinatorV2Interface.sol";
 import {CCIPReceiver} from "@chainlink/contracts-ccip/contracts/applications/CCIPReceiver.sol";
 import {Client} from "@chainlink/contracts-ccip/contracts/libraries/Client.sol";
+import {IRouterClient} from "@chainlink/contracts-ccip/contracts/interfaces/IRouterClient.sol";
+import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
@@ -178,6 +180,13 @@ contract EscrowManager is
         uint256 amount
     );
 
+    event CCIPEscrowCreated(
+        uint256 indexed escrowId,
+        uint64 destinationChainSelector,
+        bytes32 indexed messageId,
+        uint256 amount
+    );
+
     event AIDisputeAnalysisRequested(
         uint256 indexed disputeId,
         bytes32 requestId
@@ -212,6 +221,16 @@ contract EscrowManager is
     mapping(uint256 => Dispute) public disputes;
     mapping(address => uint256[]) public userEscrows;
     mapping(address => uint256[]) public sellerEscrows;
+    
+    // Chainlink CCIP configuration  
+    LinkTokenInterface private immutable i_linkToken;
+    
+    // Supported destination chains for CCIP
+    mapping(uint64 => bool) public supportedDestinationChains;
+    mapping(uint64 => address) public destinationEscrowManagers;
+    
+    // CCIP fee configuration
+    uint256 public ccipGasLimit = 200_000;
     
     // Chainlink VRF configuration
     VRFCoordinatorV2Interface private immutable i_vrfCoordinator;
@@ -258,6 +277,7 @@ contract EscrowManager is
         bytes32 _gasLane,
         uint32 _callbackGasLimit,
         address _ccipRouter,
+        address _linkToken,
         address _feeRecipient
     ) 
         FunctionsClient(_functionsRouter)
@@ -276,6 +296,9 @@ contract EscrowManager is
         i_subscriptionId = _vrfSubscriptionId;
         i_gasLane = _gasLane;
         i_callbackGasLimit = _callbackGasLimit;
+        
+        // Initialize CCIP components
+        i_linkToken = LinkTokenInterface(_linkToken);
         
         feeRecipient = _feeRecipient;
         lastUpkeepTimestamp = block.timestamp;
@@ -675,6 +698,120 @@ contract EscrowManager is
     }
 
     // CCIP integration for cross-chain payments
+
+    /**
+     * @dev Create a cross-chain escrow by sending payment to destination chain
+     * @param destinationChainSelector The CCIP chain selector for destination
+     * @param productId The product ID to purchase
+     * @param seller The seller address on destination chain
+     * @param amount The amount to escrow in USDC
+     */
+    function createCrossChainEscrow(
+        uint64 destinationChainSelector,
+        uint256 productId,
+        address seller,
+        uint256 amount
+    ) external payable nonReentrant whenNotPaused {
+        require(supportedDestinationChains[destinationChainSelector], "Unsupported destination chain");
+        require(destinationEscrowManagers[destinationChainSelector] != address(0), "No escrow manager on destination");
+        require(amount > 0, "Amount must be greater than 0");
+
+        // Transfer USDC from user
+        usdcToken.safeTransferFrom(msg.sender, address(this), amount);
+
+        // Prepare CCIP message
+        Client.EVM2AnyMessage memory evm2AnyMessage = _buildCCIPMessage(
+            destinationEscrowManagers[destinationChainSelector],
+            abi.encode(msg.sender, seller, productId, amount),
+            address(usdcToken),
+            amount
+        );
+
+        // Calculate CCIP fee
+        IRouterClient router = IRouterClient(i_ccipRouter);
+        uint256 fees = router.getFee(destinationChainSelector, evm2AnyMessage);
+        
+        // Check if user sent enough ETH to cover fees
+        require(msg.value >= fees, "Insufficient fee payment");
+
+        // Approve USDC for CCIP router
+        usdcToken.approve(address(router), amount);
+
+        // Send CCIP message
+        bytes32 messageId = router.ccipSend{value: fees}(
+            destinationChainSelector,
+            evm2AnyMessage
+        );
+
+        // Create local escrow record for tracking
+        uint256 escrowId = _createEscrow(msg.sender, seller, productId, amount, address(usdcToken), destinationChainSelector);
+        
+        escrows[escrowId].sourceChainSelector = destinationChainSelector;
+        
+        // Refund excess ETH
+        if (msg.value > fees) {
+            payable(msg.sender).transfer(msg.value - fees);
+        }
+
+        emit CCIPEscrowCreated(escrowId, destinationChainSelector, messageId, amount);
+    }
+
+    /**
+     * @dev Build CCIP message for cross-chain escrow creation
+     */
+    function _buildCCIPMessage(
+        address receiver,
+        bytes memory data,
+        address token,
+        uint256 amount
+    ) internal view returns (Client.EVM2AnyMessage memory) {
+        Client.EVMTokenAmount[] memory tokenAmounts = new Client.EVMTokenAmount[](1);
+        tokenAmounts[0] = Client.EVMTokenAmount({
+            token: token,
+            amount: amount
+        });
+
+        return Client.EVM2AnyMessage({
+            receiver: abi.encode(receiver),
+            data: data,
+            tokenAmounts: tokenAmounts,
+            extraArgs: Client._argsToBytes(Client.EVMExtraArgsV1({gasLimit: ccipGasLimit})),
+            feeToken: address(0) // Pay fees in ETH
+        });
+    }
+
+    /**
+     * @dev Get the fee required for cross-chain escrow creation
+     */
+    function getCrossChainEscrowFee(
+        uint64 destinationChainSelector,
+        uint256 amount
+    ) external view returns (uint256) {
+        require(supportedDestinationChains[destinationChainSelector], "Unsupported destination chain");
+        
+        Client.EVM2AnyMessage memory evm2AnyMessage = _buildCCIPMessage(
+            destinationEscrowManagers[destinationChainSelector],
+            abi.encode(msg.sender, address(0), 0, amount),
+            address(usdcToken),
+            amount
+        );
+
+        return IRouterClient(i_ccipRouter).getFee(destinationChainSelector, evm2AnyMessage);
+    }
+
+    /**
+     * @dev Configure supported destination chains (Admin only)
+     */
+    function setSupportedDestinationChain(
+        uint64 chainSelector,
+        bool supported,
+        address escrowManagerAddress
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        supportedDestinationChains[chainSelector] = supported;
+        if (supported) {
+            destinationEscrowManagers[chainSelector] = escrowManagerAddress;
+        }
+    }
 
     /**
      * @dev Handle cross-chain messages

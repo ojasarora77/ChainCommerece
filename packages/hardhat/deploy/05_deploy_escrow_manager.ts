@@ -28,15 +28,17 @@ const deployEscrowManager: DeployFunction = async function (hre: HardhatRuntimeE
   
   // Get previously deployed contract addresses
   const productRegistryDeployment = await get("ProductRegistry");
-  const aiRecommendationsDeployment = await get("AIRecommendations");
+  
+  // Use known AIRecommendations address since it's deployed but not in deployments
+  const aiRecommendationsAddress = "0xe97babe1401F29921D421E5294c017D63Ff12B36";
   
   log(`📦 ProductRegistry found at: ${productRegistryDeployment.address}`);
-  log(`🤖 AIRecommendations found at: ${aiRecommendationsDeployment.address}`);
+  log(`🤖 AIRecommendations using address: ${aiRecommendationsAddress}`);
 
   // Constructor arguments for EscrowManager
   const constructorArgs = [
     productRegistryDeployment.address,      // ProductRegistry contract
-    aiRecommendationsDeployment.address,    // AIRecommendations contract  
+    aiRecommendationsAddress,                // AIRecommendations contract  
     networkConfig.usdcToken,                // USDC token address
     networkConfig.functionsRouter,          // Chainlink Functions router
     networkConfig.vrfCoordinator,           // VRF Coordinator
@@ -44,6 +46,7 @@ const deployEscrowManager: DeployFunction = async function (hre: HardhatRuntimeE
     networkConfig.gasLane,                  // VRF Gas Lane (Key Hash)
     500000,                                 // VRF Callback Gas Limit
     networkConfig.ccipRouter,               // CCIP Router
+    networkConfig.linkToken,                // LINK token address
     deployer                                // Fee recipient
   ];
 
@@ -57,7 +60,8 @@ const deployEscrowManager: DeployFunction = async function (hre: HardhatRuntimeE
   log(`  Gas Lane: ${constructorArgs[6]}`);
   log(`  VRF Callback Gas Limit: ${constructorArgs[7]}`);
   log(`  CCIP Router: ${constructorArgs[8]}`);
-  log(`  Fee Recipient: ${constructorArgs[9]}`);
+  log(`  LINK Token: ${constructorArgs[9]}`);
+  log(`  Fee Recipient: ${constructorArgs[10]}`);
 
   // Deploy the EscrowManager contract
   const escrowManagerDeployment = await deploy("EscrowManager", {
@@ -280,6 +284,7 @@ function getNetworkConfig(chainId: string) {
       functionsRouter: "0xb83E47C2bC239B3bf370bc41e1459A34b41238D0",
       vrfCoordinator: "0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625",
       ccipRouter: "0x0BF3dE8c5D3e8A2B34D2BEeB17ABfCeBaf363A59",
+      linkToken: "0x779877A7B0D9E8603169DdbD7836e478b4624789",
       usdcToken: "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
       donId: "0x66756e2d657468657265756d2d7365706f6c69612d3100000000000000000000",
       gasLane: "0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c",
@@ -294,6 +299,7 @@ function getNetworkConfig(chainId: string) {
       functionsRouter: "0xb83E47C2bC239B3bf370bc41e1459A34b41238D0",
       vrfCoordinator: "0x2eD832Ba664535e5886b75D64C46EB9a228C2610",
       ccipRouter: "0xF694E193200268f9a4868e4Aa017A0118C9a8177",
+      linkToken: "0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846",
       usdcToken: "0x5425890298aed601595a70AB815c96711a31Bc65",
       donId: "0x66756e2d6176616c616e6368652d66756a692d31000000000000000000000000",
       gasLane: "0x354d2f95da55398f44b7cff77da56283d9c6c829a4bdf1bbcaf2ad6a4d081f61",
@@ -308,6 +314,7 @@ function getNetworkConfig(chainId: string) {
       functionsRouter: "0x0000000000000000000000000000000000000000",
       vrfCoordinator: "0x0000000000000000000000000000000000000000",
       ccipRouter: "0x0000000000000000000000000000000000000000",
+      linkToken: "0x0000000000000000000000000000000000000000",
       usdcToken: "0x0000000000000000000000000000000000000000",
       donId: "0x0000000000000000000000000000000000000000000000000000000000000000",
       gasLane: "0x0000000000000000000000000000000000000000000000000000000000000000",
@@ -328,4 +335,4 @@ deployEscrowManager.id = "deploy_escrow_manager";
 deployEscrowManager.tags = ["EscrowManager", "Chainlink", "Complete"];
 
 // Dependencies
-deployEscrowManager.dependencies = ["ProductRegistry", "AIRecommendations"];
+deployEscrowManager.dependencies = ["ProductRegistry"];

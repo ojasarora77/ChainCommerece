@@ -6,7 +6,7 @@ async function main() {
   console.log("📍 Network:", hre.network.name);
 
   // Your deployed contract addresses on Fuji
-  const PRODUCT_REGISTRY_ADDRESS = "0x328118233e846e9c629480F4DE1444cbE7b7189e";
+  const PRODUCT_REGISTRY_ADDRESS = "0x09e9F0D5EfCb521Bf76B94E4Fa3c6499985E2878";
 
   // Get the contract instance
   const ProductRegistry = await ethers.getContractFactory("ProductRegistry");

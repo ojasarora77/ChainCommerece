@@ -30,7 +30,7 @@ function getDirectories(path: string) {
 function getContractNames(path: string) {
   return fs
     .readdirSync(path, { withFileTypes: true })
-    .filter(dirent => dirent.isFile() && dirent.name.endsWith(".json"))
+    .filter(dirent => dirent.isFile() && dirent.name.endsWith(".json") && !dirent.name.startsWith("."))
     .map(dirent => dirent.name.split(".")[0]);
 }
 

@@ -115,6 +115,14 @@ function getNetworkConfig(chainId: string) {
       donId: "0x66756e2d6176616c616e6368652d66756a692d31000000000000000000000000",
       functionsSubscriptionId: process.env.CHAINLINK_SUBSCRIPTION_ID_FUJI || 1,
     },
+     "84532": {
+      name: "baseSepolia",
+      verify: true,
+      blockConfirmations: 6,
+      functionsRouter: "0xb83E47C2bC239B3bf370bc41e1459A34b41238D0",
+      donId: "0x66756e2d6176616c616e6368652d66756a692d31000000000000000000000000",
+      functionsSubscriptionId: 390,
+    },
     // Local Hardhat
     "31337": {
       name: "localhost",

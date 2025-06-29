@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { parseEther } from "viem";
@@ -33,10 +34,12 @@ import EscrowStatus from "~~/components/marketplace/EscrowStatus";
 import DisputeResolution from "~~/components/marketplace/DisputeResolution";
 import PaymentModal from "~~/components/marketplace/PaymentModal";
 import { useEscrow } from "~~/hooks/useEscrow";
+import { useCCIP, SUPPORTED_CHAINS } from "~~/hooks/useCCIP";
 
 
 
 const Marketplace: NextPage = () => {
+  const router = useRouter();
   const { address: connectedAddress } = useAccount();
   const [products, setProducts] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -48,6 +51,7 @@ const Marketplace: NextPage = () => {
   const [selectedProductForPurchase, setSelectedProductForPurchase] = useState<any>(null);
   
   const { userEscrows, sellerEscrows, refetchUserEscrows, refetchSellerEscrows } = useEscrow();
+  const { createCrossChainEscrow, isCreatingCrossChainEscrow, SUPPORTED_CHAINS } = useCCIP();
 
   // 🔥 REAL CONTRACT CALLS - Get marketplace stats
   const { data: marketplaceStats } = useScaffoldReadContract({
@@ -192,25 +196,42 @@ const Marketplace: NextPage = () => {
   };
 
   const handleBuyNow = (product: any) => {
-    // Convert the marketplace product to the expected format
-    const formattedProduct = {
-      id: BigInt(product.id),
-      name: product.name,
-      description: product.description,
-      category: product.category,
-      price: parseEther(product.price.replace(' ETH', '')), // Convert price string to bigint
+    if (!connectedAddress) {
+      // If not connected, show connection prompt
+      return;
+    }
+
+    // Redirect to escrow page with product information
+    const productParams = new URLSearchParams({
+      productId: product.id.toString(),
+      productName: product.name,
+      productPrice: product.price.replace(' ETH', ''),
       seller: product.seller,
-      imageHash: "QmExample123",
-      metadataHash: "QmMetadata456",
-      isActive: true,
-      createdAt: BigInt(Math.floor(Date.now() / 1000)),
-      totalSales: 0n,
-      totalReviews: 0n,
-      averageRating: BigInt(Math.floor(product.rating * 100)), // Convert to scaled rating
-    };
-    
-    setSelectedProductForPurchase(formattedProduct);
-    setShowPaymentModal(true);
+      category: product.category,
+      description: product.description,
+      action: 'create'
+    });
+
+    router.push(`/escrow?${productParams.toString()}`);
+  };
+
+  // Handle cross-chain purchase
+  const handleCrossChainPurchase = async (product: any, destinationChain: keyof typeof SUPPORTED_CHAINS) => {
+    try {
+      if (!connectedAddress) return;
+      
+      const amount = parseEther(product.price.replace(' ETH', ''));
+      
+      await createCrossChainEscrow(
+        destinationChain,
+        Number(product.id),
+        product.seller,
+        amount
+      );
+      
+    } catch (error) {
+      console.error("Cross-chain purchase failed:", error);
+    }
   };
 
   // Mock dispute data
@@ -451,14 +472,57 @@ const Marketplace: NextPage = () => {
                           {product.price}
                         </span>
                       </div>
-                      <button 
-                        onClick={() => handleBuyNow(product)}
-                        className="btn btn-primary hover:btn-secondary transition-all group-hover:scale-105 shadow-lg"
-                        disabled={!connectedAddress}
-                      >
-                        {!connectedAddress ? 'Connect Wallet' : 'Buy Now'}
-                        <ArrowRightIcon className="h-4 w-4" />
-                      </button>
+                      <div className="flex gap-2">
+                        <button 
+                          onClick={() => handleBuyNow(product)}
+                          className="btn btn-primary hover:btn-secondary transition-all group-hover:scale-105 shadow-lg"
+                          disabled={!connectedAddress}
+                        >
+                          {!connectedAddress ? 'Connect Wallet' : 'Buy Now'}
+                          <ArrowRightIcon className="h-4 w-4" />
+                        </button>
+                        
+                        {/* Cross-Chain Purchase Dropdown */}
+                        {connectedAddress && (
+                          <div className="dropdown dropdown-end">
+                            <div tabIndex={0} role="button" className="btn btn-outline btn-primary tooltip" data-tip="Cross-Chain Purchase">
+                              <span className="text-xs">⛓️</span>
+                            </div>
+                            <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-64 p-2 shadow-xl border border-base-300">
+                              <li className="menu-title text-xs text-base-content/60 px-3 py-1">Buy on Other Chains</li>
+                              {Object.entries(SUPPORTED_CHAINS).map(([key, chain]) => {
+                                const isCurrentChain = chain.chainId === 43113; // Avalanche Fuji
+                                const isSupported = isCurrentChain; // Only Fuji supported for now
+                                
+                                return (
+                                  <li key={key}>
+                                    <button 
+                                      onClick={() => handleCrossChainPurchase(product, key as keyof typeof SUPPORTED_CHAINS)}
+                                      className={`flex items-center gap-2 text-sm ${
+                                        isCurrentChain ? 'bg-primary/20 text-primary' : 
+                                        isSupported ? '' : 'opacity-50'
+                                      }`}
+                                      disabled={isCreatingCrossChainEscrow}
+                                    >
+                                      <span className={`w-2 h-2 rounded-full ${
+                                        isCurrentChain ? 'bg-primary' :
+                                        isSupported ? 'bg-success' : 'bg-warning'
+                                      }`}></span>
+                                      <div className="flex flex-col items-start">
+                                        <span>{chain.name}</span>
+                                        <span className="text-xs opacity-70">
+                                          {isCurrentChain ? 'Current Chain' : 
+                                           isSupported ? 'Available' : 'Coming Soon'}
+                                        </span>
+                                      </div>
+                                    </button>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

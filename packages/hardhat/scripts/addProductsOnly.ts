@@ -2,37 +2,52 @@ import { ethers } from "hardhat";
 import hre from "hardhat";
 
 async function main() {
-  console.log("🚀 Adding products to Avalanche Fuji marketplace...");
+  console.log("🚀 Adding products only (no categories)...");
   console.log("📍 Network:", hre.network.name);
 
-  // Your deployed contract addresses on Fuji
-  const PRODUCT_REGISTRY_ADDRESS = "0x09e9F0D5EfCb521Bf76B94E4Fa3c6499985E2878";
-  const AI_RECOMMENDATIONS_ADDRESS = "0xe97babe1401F29921D421E5294c017D63Ff12B36";
+  // Network-specific contract addresses
+  const networkAddresses: { [key: string]: { productRegistry: string, aiRecommendations?: string } } = {
+    "avalancheFuji": {
+      productRegistry: "0x09e9F0D5EfCb521Bf76B94E4Fa3c6499985E2878",
+      aiRecommendations: "0xe97babe1401F29921D421E5294c017D63Ff12B36"
+    },
+    "baseSepolia": {
+      productRegistry: "0x8aF3507ccEbB20579196b11e1Ad11FCAb6bae760",
+      // Add AIRecommendations address when deployed on Base
+    }
+  };
 
+  const addresses = networkAddresses[hre.network.name];
+  if (!addresses) {
+    throw new Error(`No addresses configured for network: ${hre.network.name}`);
+  }
+
+  console.log(`📦 Using ProductRegistry: ${addresses.productRegistry}`);
+  
   // Get the contract instance
   const ProductRegistry = await ethers.getContractFactory("ProductRegistry");
-  const productRegistry = ProductRegistry.attach(PRODUCT_REGISTRY_ADDRESS) as any;
+  const productRegistry = ProductRegistry.attach(addresses.productRegistry) as any;
 
-  // Get deployer account (your address)
+  // Get deployer account
   const [deployer] = await ethers.getSigners();
   console.log("👤 Deployer address:", deployer.address);
-  console.log("💰 Balance:", ethers.formatEther(await ethers.provider.getBalance(deployer.address)), "AVAX");
+  console.log("💰 Balance:", ethers.formatEther(await ethers.provider.getBalance(deployer.address)));
 
-  // Sample products to add
+  // Sample products to add (same as before)
   const products = [
     {
       name: "AI-Powered Smart Watch",
       description: "Advanced smartwatch with AI health monitoring and blockchain integration",
       category: "Electronics",
-      price: ethers.parseEther("0.15"), // 0.15 AVAX
+      price: ethers.parseEther("0.15"),
       imageHash: "QmSmartWatch123",
       metadataHash: "QmSmartWatchMeta123"
     },
     {
       name: "Sustainable Bamboo Laptop Stand",
       description: "Eco-friendly laptop stand made from sustainable bamboo with ergonomic design",
-      category: "Electronics",
-      price: ethers.parseEther("0.04"), // 0.04 AVAX
+      category: "Electronics", 
+      price: ethers.parseEther("0.04"),
       imageHash: "QmLaptopStand456",
       metadataHash: "QmLaptopStandMeta456"
     },
@@ -40,15 +55,15 @@ async function main() {
       name: "NFT Art Collection Guide",
       description: "Complete digital guide to creating and selling NFT art collections",
       category: "Digital",
-      price: ethers.parseEther("0.025"), // 0.025 AVAX
+      price: ethers.parseEther("0.025"),
       imageHash: "QmNFTGuide789",
       metadataHash: "QmNFTGuideMeta789"
     },
     {
-      name: "Organic Hemp T-Shirt",
+      name: "Organic Hemp T-Shirt", 
       description: "Comfortable organic hemp t-shirt with blockchain authenticity verification",
       category: "Clothing",
-      price: ethers.parseEther("0.03"), // 0.03 AVAX
+      price: ethers.parseEther("0.03"),
       imageHash: "QmHempShirt101",
       metadataHash: "QmHempShirtMeta101"
     },
@@ -56,8 +71,8 @@ async function main() {
       name: "Smart Fitness Tracker",
       description: "Advanced fitness tracker with AI coaching and Web3 rewards",
       category: "Sports",
-      price: ethers.parseEther("0.12"), // 0.12 AVAX
-      imageHash: "QmFitnessTracker202",
+      price: ethers.parseEther("0.12"),
+      imageHash: "QmFitnessTracker202", 
       metadataHash: "QmFitnessTrackerMeta202"
     }
   ];
@@ -66,50 +81,23 @@ async function main() {
   try {
     console.log("🔍 Checking seller registration...");
     const sellerInfo = await productRegistry.sellers(deployer.address);
-    console.log("📊 Seller info:", {
-      name: sellerInfo.name,
-      isVerified: sellerInfo.isVerified,
-      totalProducts: sellerInfo.totalProducts.toString()
-    });
-
+    
     if (!sellerInfo.name) {
       console.log("📝 Registering as seller...");
       const registerTx = await productRegistry.registerSeller(
-        "AI Marketplace Owner", 
-        "Official marketplace administrator"
+        "Cross-Chain Marketplace", 
+        "Multi-chain product seller"
       );
       await registerTx.wait();
       console.log("✅ Seller registered successfully!");
+    } else {
+      console.log("✅ Already registered as seller:", sellerInfo.name);
     }
   } catch (error) {
-    console.log("⚠️ Error checking seller status, will try to register:", (error as Error).message);
-    try {
-      const registerTx = await productRegistry.registerSeller(
-        "AI Marketplace Owner", 
-        "Official marketplace administrator"
-      );
-      await registerTx.wait();
-      console.log("✅ Seller registered successfully!");
-    } catch (regError) {
-      console.log("❌ Registration failed:", (regError as Error).message);
-    }
+    console.log("⚠️ Error with seller registration:", (error as Error).message);
   }
 
-  // Add categories first (if they don't exist)
-  const categories = ["Electronics", "Digital", "Clothing", "Sports"];
-  
-  for (const category of categories) {
-    try {
-      console.log(`📂 Adding category: ${category}`);
-      const tx = await productRegistry.addCategory(category);
-      await tx.wait();
-      console.log(`✅ Category added: ${category}`);
-    } catch (error) {
-      console.log(`⚠️ Category ${category} might already exist or error:`, (error as Error).message);
-    }
-  }
-
-  // Get current marketplace stats before adding products
+  // Get current marketplace stats
   try {
     const [totalProducts, totalSellers, activeProducts] = await productRegistry.getMarketplaceStats();
     console.log("\n📊 Current Marketplace Stats:");
@@ -120,16 +108,18 @@ async function main() {
     console.log("⚠️ Could not get marketplace stats:", (error as Error).message);
   }
 
-  // Add products
+  // Add products (skip categories since they already exist)
   console.log("\n🛒 Adding products...");
+  let successCount = 0;
+  
   for (let i = 0; i < products.length; i++) {
     const product = products[i];
-    console.log(`📦 Adding product ${i + 1}: ${product.name}`);
+    console.log(`📦 Adding product ${i + 1}/${products.length}: ${product.name}`);
 
     try {
       const tx = await productRegistry.listProduct(
         product.name,
-        product.description,
+        product.description, 
         product.category,
         product.price,
         product.imageHash,
@@ -137,33 +127,29 @@ async function main() {
       );
       
       const receipt = await tx.wait();
-      console.log(`✅ Product added: ${product.name} (${product.category})`);
+      console.log(`✅ Success: ${product.name}`);
       console.log(`   Gas used: ${receipt.gasUsed.toString()}`);
-      console.log(`   Transaction hash: ${receipt.hash}`);
+      successCount++;
     } catch (error) {
-      console.error(`❌ Error adding product ${product.name}:`, (error as Error).message);
+      console.error(`❌ Failed: ${product.name} - ${(error as Error).message}`);
     }
   }
 
-  // Get updated marketplace stats
+  // Final stats
   try {
     const [totalProducts, totalSellers, activeProducts] = await productRegistry.getMarketplaceStats();
-    console.log("\n📊 Updated Marketplace Stats:");
+    console.log("\n📊 Final Marketplace Stats:");
     console.log(`   Total Products: ${totalProducts}`);
     console.log(`   Total Sellers: ${totalSellers}`);
     console.log(`   Active Products: ${activeProducts}`);
-
-    // Get categories
-    const contractCategories = await productRegistry.getCategories();
-    console.log(`   Categories: ${contractCategories.join(", ")}`);
   } catch (error) {
-    console.error("Error getting updated marketplace stats:", (error as Error).message);
+    console.error("Error getting final stats:", (error as Error).message);
   }
 
   console.log("\n🎉 Product addition completed!");
-  console.log("🔗 Contract address:", PRODUCT_REGISTRY_ADDRESS);
-  console.log("🌐 Network: Avalanche Fuji");
-  console.log("📱 You can now check your frontend to see the new products!");
+  console.log(`✅ Successfully added: ${successCount}/${products.length} products`);
+  console.log(`🔗 ProductRegistry: ${addresses.productRegistry}`);
+  console.log(`🌐 Network: ${hre.network.name}`);
 }
 
 main()
