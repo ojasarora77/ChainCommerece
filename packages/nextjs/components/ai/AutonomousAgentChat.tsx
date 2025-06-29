@@ -21,6 +21,7 @@ interface ChatMessage {
   content: string;
   timestamp: Date;
   functionCalls?: any[];
+  knowledgeBaseUsed?: boolean;
 }
 
 interface AutonomousAgentChatProps {
@@ -53,8 +54,9 @@ export const AutonomousAgentChat: React.FC<AutonomousAgentChatProps> = ({
       const welcomeMessage: ChatMessage = {
         id: 'welcome',
         type: 'agent',
-        content: `🤖 **Welcome to your Autonomous Shopping Agent!**\n\nI'm an AI agent that can:\n🔍 **Search** for products automatically\n🛒 **Place orders** on your command\n💳 **Process payments** securely\n📦 **Track deliveries** and handle issues\n\n**Try saying:**\n• "Find sustainable electronics under $100"\n• "Order the bamboo laptop stand"\n• "Pay with ETH for my order"\n• "Check my order status"\n\nI'll handle everything autonomously! What can I help you with?`,
-        timestamp: new Date()
+        content: `🤖 **Welcome to ChainCommerce AI Shopping Assistant!**\n\nI can help you find and order products from our blockchain marketplace. I have access to real product data and can:\n\n🔍 **Search** our complete product catalog\n🛒 **Place orders** directly through smart contracts\n💳 **Process payments** with crypto (ETH, AVAX, USDC)\n📦 **Track orders** and handle support\n\n**Just tell me what you're looking for!**\n\nExample: "I want to order a dash cam" or "Find electronics under $200"`,
+        timestamp: new Date(),
+        knowledgeBaseUsed: false
       };
       setMessages([welcomeMessage]);
     }
@@ -88,18 +90,43 @@ export const AutonomousAgentChat: React.FC<AutonomousAgentChatProps> = ({
     setIsTyping(true);
 
     try {
-      // Call the autonomous agent API
-      const response = await fetch('/api/ai/autonomous-agent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: inputMessage.trim(),
-          sessionId: sessionId,
-          userId: address || `guest-${Date.now()}`
-        }),
-      });
+      // Determine if this is a knowledge-based query
+      const isKnowledgeQuery = isKnowledgeBasedQuery(messageContent);
+
+      let response;
+
+      if (isKnowledgeQuery) {
+        // Use enhanced agent with Knowledge Base integration
+        response = await fetch('/api/ai/enhanced-agent', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: messageContent,
+            sessionId: sessionId,
+            useKnowledgeBase: true,
+            userId: address || `guest-${Date.now()}`
+          }),
+        });
+      } else {
+        // Use regular autonomous agent for transactional queries
+        response = await fetch('/api/ai/autonomous-agent', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: messageContent,
+            sessionId: sessionId,
+            userId: address || `guest-${Date.now()}`
+          }),
+        });
+      }
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
       const data = await response.json();
 
@@ -110,30 +137,38 @@ export const AutonomousAgentChat: React.FC<AutonomousAgentChatProps> = ({
         userTrackingService.trackAgentInteraction(
           messageContent.length,
           endTime - startTime,
-          !!data.data.functionCalls
+          !!(data.data?.functionCalls || data.knowledgeBaseUsed)
         );
+
+        let agentContent = data.data?.message || data.response;
+
+        // Add Knowledge Base context indicator if used
+        if (data.knowledgeBaseUsed && data.knowledgeBaseContext) {
+          agentContent += `\n\n💡 *Enhanced with platform knowledge*`;
+        }
 
         const agentMessage: ChatMessage = {
           id: `agent-${Date.now()}`,
           type: 'agent',
-          content: data.data.message,
+          content: agentContent,
           timestamp: new Date(),
-          functionCalls: data.data.functionCalls
+          functionCalls: data.data?.functionCalls,
+          knowledgeBaseUsed: data.knowledgeBaseUsed
         };
 
         setMessages(prev => [...prev, agentMessage]);
-        setSessionId(data.data.sessionId);
+        setSessionId(data.sessionId || data.data?.sessionId);
       } else {
         throw new Error(data.error || 'Failed to get response');
       }
 
     } catch (error) {
-      console.error('Error calling autonomous agent:', error);
+      console.error('Error calling agent:', error);
 
       // Track error with real analytics
       userTrackingService.trackError(
         error instanceof Error ? error.message : 'Unknown error',
-        'autonomous_agent_chat'
+        'enhanced_agent_chat'
       );
 
       const errorMessage: ChatMessage = {
@@ -147,6 +182,19 @@ export const AutonomousAgentChat: React.FC<AutonomousAgentChatProps> = ({
     } finally {
       setIsTyping(false);
     }
+  };
+
+  // Helper function to determine if query should use Knowledge Base
+  const isKnowledgeBasedQuery = (message: string): boolean => {
+    const knowledgeKeywords = [
+      'what', 'how', 'explain', 'tell me about', 'information',
+      'products available', 'catalog', 'categories', 'features',
+      'escrow', 'dispute', 'platform', 'sustainability',
+      'compare', 'difference', 'recommend', 'suggest'
+    ];
+
+    const messageLower = message.toLowerCase();
+    return knowledgeKeywords.some(keyword => messageLower.includes(keyword));
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -202,8 +250,8 @@ export const AutonomousAgentChat: React.FC<AutonomousAgentChatProps> = ({
           <CpuChipIcon className="h-5 w-5 text-white" />
         </div>
         <div className="flex-1">
-          <h3 className="font-bold text-white">Autonomous Shopping Agent</h3>
-          <p className="text-sm text-slate-300">AI that can search, order, and pay automatically</p>
+          <h3 className="font-bold text-white">Enhanced AI Shopping Agent</h3>
+          <p className="text-sm text-slate-300">AI with Knowledge Base + autonomous shopping capabilities</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 text-xs text-slate-400">
@@ -249,6 +297,16 @@ export const AutonomousAgentChat: React.FC<AutonomousAgentChatProps> = ({
                   {message.content}
                 </div>
                 
+                {/* Knowledge Base Indicator */}
+                {message.knowledgeBaseUsed && (
+                  <div className="mt-2 flex items-center gap-1 text-xs text-blue-300">
+                    <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Enhanced with Knowledge Base
+                  </div>
+                )}
+
                 {/* Function Calls Display */}
                 {message.functionCalls && message.functionCalls.length > 0 && (
                   <div className="mt-3 pt-3 border-t border-slate-600">

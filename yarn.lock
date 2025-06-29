@@ -122,24 +122,24 @@ __metadata:
   linkType: hard
 
 "@aws-sdk/client-bedrock-agent-runtime@npm:^3.826.0, @aws-sdk/client-bedrock-agent-runtime@npm:^3.830.0":
-  version: 3.839.0
-  resolution: "@aws-sdk/client-bedrock-agent-runtime@npm:3.839.0"
+  version: 3.830.0
+  resolution: "@aws-sdk/client-bedrock-agent-runtime@npm:3.830.0"
   dependencies:
     "@aws-crypto/sha256-browser": 5.2.0
     "@aws-crypto/sha256-js": 5.2.0
-    "@aws-sdk/core": 3.839.0
-    "@aws-sdk/credential-provider-node": 3.839.0
+    "@aws-sdk/core": 3.826.0
+    "@aws-sdk/credential-provider-node": 3.830.0
     "@aws-sdk/middleware-host-header": 3.821.0
     "@aws-sdk/middleware-logger": 3.821.0
     "@aws-sdk/middleware-recursion-detection": 3.821.0
-    "@aws-sdk/middleware-user-agent": 3.839.0
+    "@aws-sdk/middleware-user-agent": 3.828.0
     "@aws-sdk/region-config-resolver": 3.821.0
     "@aws-sdk/types": 3.821.0
     "@aws-sdk/util-endpoints": 3.828.0
     "@aws-sdk/util-user-agent-browser": 3.821.0
-    "@aws-sdk/util-user-agent-node": 3.839.0
+    "@aws-sdk/util-user-agent-node": 3.828.0
     "@smithy/config-resolver": ^4.1.4
-    "@smithy/core": ^3.6.0
+    "@smithy/core": ^3.5.3
     "@smithy/eventstream-serde-browser": ^4.0.4
     "@smithy/eventstream-serde-config-resolver": ^4.1.2
     "@smithy/eventstream-serde-node": ^4.0.4
@@ -147,27 +147,27 @@ __metadata:
     "@smithy/hash-node": ^4.0.4
     "@smithy/invalid-dependency": ^4.0.4
     "@smithy/middleware-content-length": ^4.0.4
-    "@smithy/middleware-endpoint": ^4.1.13
-    "@smithy/middleware-retry": ^4.1.14
+    "@smithy/middleware-endpoint": ^4.1.11
+    "@smithy/middleware-retry": ^4.1.12
     "@smithy/middleware-serde": ^4.0.8
     "@smithy/middleware-stack": ^4.0.4
     "@smithy/node-config-provider": ^4.1.3
     "@smithy/node-http-handler": ^4.0.6
     "@smithy/protocol-http": ^5.1.2
-    "@smithy/smithy-client": ^4.4.5
+    "@smithy/smithy-client": ^4.4.3
     "@smithy/types": ^4.3.1
     "@smithy/url-parser": ^4.0.4
     "@smithy/util-base64": ^4.0.0
     "@smithy/util-body-length-browser": ^4.0.0
     "@smithy/util-body-length-node": ^4.0.0
-    "@smithy/util-defaults-mode-browser": ^4.0.21
-    "@smithy/util-defaults-mode-node": ^4.0.21
+    "@smithy/util-defaults-mode-browser": ^4.0.19
+    "@smithy/util-defaults-mode-node": ^4.0.19
     "@smithy/util-endpoints": ^3.0.6
     "@smithy/util-middleware": ^4.0.4
-    "@smithy/util-retry": ^4.0.6
+    "@smithy/util-retry": ^4.0.5
     "@smithy/util-utf8": ^4.0.0
     tslib: ^2.6.2
-  checksum: e222633a7d46f2d8a181ae9961f5f9bed94f22c859847cd2bca063abba27f88dc42f9f48b2aa35326342245b9a18e4445a6d9849dda58380e01a806c69989ccb
+  checksum: 450992402e68306d22761f685fa0be10717002a4163609542a6b277dc9e837583152cb9575813368e1c73abd9216a5c738c7ecbc0b1dad5ec406c0cef8b2008a
   languageName: node
   linkType: hard
 
@@ -221,26 +221,26 @@ __metadata:
   linkType: hard
 
 "@aws-sdk/client-bedrock-runtime@npm:^3.826.0, @aws-sdk/client-bedrock-runtime@npm:^3.830.0":
-  version: 3.839.0
-  resolution: "@aws-sdk/client-bedrock-runtime@npm:3.839.0"
+  version: 3.830.0
+  resolution: "@aws-sdk/client-bedrock-runtime@npm:3.830.0"
   dependencies:
     "@aws-crypto/sha256-browser": 5.2.0
     "@aws-crypto/sha256-js": 5.2.0
-    "@aws-sdk/core": 3.839.0
-    "@aws-sdk/credential-provider-node": 3.839.0
+    "@aws-sdk/core": 3.826.0
+    "@aws-sdk/credential-provider-node": 3.830.0
     "@aws-sdk/eventstream-handler-node": 3.821.0
     "@aws-sdk/middleware-eventstream": 3.821.0
     "@aws-sdk/middleware-host-header": 3.821.0
     "@aws-sdk/middleware-logger": 3.821.0
     "@aws-sdk/middleware-recursion-detection": 3.821.0
-    "@aws-sdk/middleware-user-agent": 3.839.0
+    "@aws-sdk/middleware-user-agent": 3.828.0
     "@aws-sdk/region-config-resolver": 3.821.0
     "@aws-sdk/types": 3.821.0
     "@aws-sdk/util-endpoints": 3.828.0
     "@aws-sdk/util-user-agent-browser": 3.821.0
-    "@aws-sdk/util-user-agent-node": 3.839.0
+    "@aws-sdk/util-user-agent-node": 3.828.0
     "@smithy/config-resolver": ^4.1.4
-    "@smithy/core": ^3.6.0
+    "@smithy/core": ^3.5.3
     "@smithy/eventstream-serde-browser": ^4.0.4
     "@smithy/eventstream-serde-config-resolver": ^4.1.2
     "@smithy/eventstream-serde-node": ^4.0.4
@@ -248,30 +248,30 @@ __metadata:
     "@smithy/hash-node": ^4.0.4
     "@smithy/invalid-dependency": ^4.0.4
     "@smithy/middleware-content-length": ^4.0.4
-    "@smithy/middleware-endpoint": ^4.1.13
-    "@smithy/middleware-retry": ^4.1.14
+    "@smithy/middleware-endpoint": ^4.1.11
+    "@smithy/middleware-retry": ^4.1.12
     "@smithy/middleware-serde": ^4.0.8
     "@smithy/middleware-stack": ^4.0.4
     "@smithy/node-config-provider": ^4.1.3
     "@smithy/node-http-handler": ^4.0.6
     "@smithy/protocol-http": ^5.1.2
-    "@smithy/smithy-client": ^4.4.5
+    "@smithy/smithy-client": ^4.4.3
     "@smithy/types": ^4.3.1
     "@smithy/url-parser": ^4.0.4
     "@smithy/util-base64": ^4.0.0
     "@smithy/util-body-length-browser": ^4.0.0
     "@smithy/util-body-length-node": ^4.0.0
-    "@smithy/util-defaults-mode-browser": ^4.0.21
-    "@smithy/util-defaults-mode-node": ^4.0.21
+    "@smithy/util-defaults-mode-browser": ^4.0.19
+    "@smithy/util-defaults-mode-node": ^4.0.19
     "@smithy/util-endpoints": ^3.0.6
     "@smithy/util-middleware": ^4.0.4
-    "@smithy/util-retry": ^4.0.6
+    "@smithy/util-retry": ^4.0.5
     "@smithy/util-stream": ^4.2.2
     "@smithy/util-utf8": ^4.0.0
     "@types/uuid": ^9.0.1
     tslib: ^2.6.2
     uuid: ^9.0.1
-  checksum: cafe098a84f9ea849710ee25726236f7a80b0abb1765e73f587c490afade9fbe5e4bddb243941a6627c9f775e8136c1f666aad784a58fd0b63c0d88675219e4b
+  checksum: afd38e52c127a738accdc493761b913d805a7f0f6caff6cdf39756b1b2935e0f8683f39dd6fedb6eb4ece962f4c1f7ab2c2d1afc3499b3e730eea3869420e34f
   languageName: node
   linkType: hard
 
@@ -439,6 +439,52 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/client-sso@npm:3.830.0":
+  version: 3.830.0
+  resolution: "@aws-sdk/client-sso@npm:3.830.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": 5.2.0
+    "@aws-crypto/sha256-js": 5.2.0
+    "@aws-sdk/core": 3.826.0
+    "@aws-sdk/middleware-host-header": 3.821.0
+    "@aws-sdk/middleware-logger": 3.821.0
+    "@aws-sdk/middleware-recursion-detection": 3.821.0
+    "@aws-sdk/middleware-user-agent": 3.828.0
+    "@aws-sdk/region-config-resolver": 3.821.0
+    "@aws-sdk/types": 3.821.0
+    "@aws-sdk/util-endpoints": 3.828.0
+    "@aws-sdk/util-user-agent-browser": 3.821.0
+    "@aws-sdk/util-user-agent-node": 3.828.0
+    "@smithy/config-resolver": ^4.1.4
+    "@smithy/core": ^3.5.3
+    "@smithy/fetch-http-handler": ^5.0.4
+    "@smithy/hash-node": ^4.0.4
+    "@smithy/invalid-dependency": ^4.0.4
+    "@smithy/middleware-content-length": ^4.0.4
+    "@smithy/middleware-endpoint": ^4.1.11
+    "@smithy/middleware-retry": ^4.1.12
+    "@smithy/middleware-serde": ^4.0.8
+    "@smithy/middleware-stack": ^4.0.4
+    "@smithy/node-config-provider": ^4.1.3
+    "@smithy/node-http-handler": ^4.0.6
+    "@smithy/protocol-http": ^5.1.2
+    "@smithy/smithy-client": ^4.4.3
+    "@smithy/types": ^4.3.1
+    "@smithy/url-parser": ^4.0.4
+    "@smithy/util-base64": ^4.0.0
+    "@smithy/util-body-length-browser": ^4.0.0
+    "@smithy/util-body-length-node": ^4.0.0
+    "@smithy/util-defaults-mode-browser": ^4.0.19
+    "@smithy/util-defaults-mode-node": ^4.0.19
+    "@smithy/util-endpoints": ^3.0.6
+    "@smithy/util-middleware": ^4.0.4
+    "@smithy/util-retry": ^4.0.5
+    "@smithy/util-utf8": ^4.0.0
+    tslib: ^2.6.2
+  checksum: 7171831e47374963d0cc1af33319fcc5f0a2ad3c71bd3602422e13bba0c84dcbf55e032bc5907cab996e21f76fcc45e8865bffa7acf6c7e72503e4a0df297d3f
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/client-sso@npm:3.839.0":
   version: 3.839.0
   resolution: "@aws-sdk/client-sso@npm:3.839.0"
@@ -485,6 +531,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/core@npm:3.826.0":
+  version: 3.826.0
+  resolution: "@aws-sdk/core@npm:3.826.0"
+  dependencies:
+    "@aws-sdk/types": 3.821.0
+    "@aws-sdk/xml-builder": 3.821.0
+    "@smithy/core": ^3.5.3
+    "@smithy/node-config-provider": ^4.1.3
+    "@smithy/property-provider": ^4.0.4
+    "@smithy/protocol-http": ^5.1.2
+    "@smithy/signature-v4": ^5.1.2
+    "@smithy/smithy-client": ^4.4.3
+    "@smithy/types": ^4.3.1
+    "@smithy/util-base64": ^4.0.0
+    "@smithy/util-body-length-browser": ^4.0.0
+    "@smithy/util-middleware": ^4.0.4
+    "@smithy/util-utf8": ^4.0.0
+    fast-xml-parser: 4.4.1
+    tslib: ^2.6.2
+  checksum: 9e46a3c904ae8f690008e4cc71409fba676914ede6dede3924cc9381daaf4a3c6ba1b98514ec37b2d2e387411a3e94dba4e0e5b4a0dcb2369fbca803e9465fdd
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/core@npm:3.839.0":
   version: 3.839.0
   resolution: "@aws-sdk/core@npm:3.839.0"
@@ -521,6 +590,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/credential-provider-env@npm:3.826.0":
+  version: 3.826.0
+  resolution: "@aws-sdk/credential-provider-env@npm:3.826.0"
+  dependencies:
+    "@aws-sdk/core": 3.826.0
+    "@aws-sdk/types": 3.821.0
+    "@smithy/property-provider": ^4.0.4
+    "@smithy/types": ^4.3.1
+    tslib: ^2.6.2
+  checksum: ee336310c20cdf60dcce01f9073787286cda52800d102b323b41d9eedc701aa22cdd9aef1c4fb467d765fcb6cf957c87a835a8c431ac98ce8954e8df7f433305
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/credential-provider-env@npm:3.839.0":
   version: 3.839.0
   resolution: "@aws-sdk/credential-provider-env@npm:3.839.0"
@@ -531,6 +613,24 @@ __metadata:
     "@smithy/types": ^4.3.1
     tslib: ^2.6.2
   checksum: 000e544c63a6e38a608e14d97c2996e33ef429f8306b7381b888e53ab666b00b7eebb79ed40487d50f6c4ade4f3fe1e98d32f7f7dd66fc758d152b3bfbb61a59
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-http@npm:3.826.0":
+  version: 3.826.0
+  resolution: "@aws-sdk/credential-provider-http@npm:3.826.0"
+  dependencies:
+    "@aws-sdk/core": 3.826.0
+    "@aws-sdk/types": 3.821.0
+    "@smithy/fetch-http-handler": ^5.0.4
+    "@smithy/node-http-handler": ^4.0.6
+    "@smithy/property-provider": ^4.0.4
+    "@smithy/protocol-http": ^5.1.2
+    "@smithy/smithy-client": ^4.4.3
+    "@smithy/types": ^4.3.1
+    "@smithy/util-stream": ^4.2.2
+    tslib: ^2.6.2
+  checksum: 3fa44637b42b33d35ad03bdd690bd3e6d86999547d3a9862e580a3ead1e997d85283845d9c5e878d5df830e01eab7a12b6e9facd10bff1fe00757447e43b4eaf
   languageName: node
   linkType: hard
 
@@ -549,6 +649,27 @@ __metadata:
     "@smithy/util-stream": ^4.2.2
     tslib: ^2.6.2
   checksum: 4f4e9855f05305ec52b8e465365f07369c2b073871ffdd744d94e9176fc419d0da9e6195a907d0ac4d758172b04d23ba781d81c7404d07be7db52a78b8ba9b98
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-ini@npm:3.830.0":
+  version: 3.830.0
+  resolution: "@aws-sdk/credential-provider-ini@npm:3.830.0"
+  dependencies:
+    "@aws-sdk/core": 3.826.0
+    "@aws-sdk/credential-provider-env": 3.826.0
+    "@aws-sdk/credential-provider-http": 3.826.0
+    "@aws-sdk/credential-provider-process": 3.826.0
+    "@aws-sdk/credential-provider-sso": 3.830.0
+    "@aws-sdk/credential-provider-web-identity": 3.830.0
+    "@aws-sdk/nested-clients": 3.830.0
+    "@aws-sdk/types": 3.821.0
+    "@smithy/credential-provider-imds": ^4.0.6
+    "@smithy/property-provider": ^4.0.4
+    "@smithy/shared-ini-file-loader": ^4.0.4
+    "@smithy/types": ^4.3.1
+    tslib: ^2.6.2
+  checksum: 517859540491263c424e7620f31b326fb125c27d30045d75c84fa1ccd515ac4a7a46e5e05e215470296d62352ce01a875ece7b36e1cefb08d6f648f75c882750
   languageName: node
   linkType: hard
 
@@ -573,6 +694,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/credential-provider-node@npm:3.830.0":
+  version: 3.830.0
+  resolution: "@aws-sdk/credential-provider-node@npm:3.830.0"
+  dependencies:
+    "@aws-sdk/credential-provider-env": 3.826.0
+    "@aws-sdk/credential-provider-http": 3.826.0
+    "@aws-sdk/credential-provider-ini": 3.830.0
+    "@aws-sdk/credential-provider-process": 3.826.0
+    "@aws-sdk/credential-provider-sso": 3.830.0
+    "@aws-sdk/credential-provider-web-identity": 3.830.0
+    "@aws-sdk/types": 3.821.0
+    "@smithy/credential-provider-imds": ^4.0.6
+    "@smithy/property-provider": ^4.0.4
+    "@smithy/shared-ini-file-loader": ^4.0.4
+    "@smithy/types": ^4.3.1
+    tslib: ^2.6.2
+  checksum: 78671b0a2517c76e638ce366ac20bc3d5abc9f9a1073eb555f0cb028b3f0fe436a5cf5c908d2ee7e49b38bc61ed957b3c86b4d862edf92af003fdf9875282a9d
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/credential-provider-node@npm:3.839.0":
   version: 3.839.0
   resolution: "@aws-sdk/credential-provider-node@npm:3.839.0"
@@ -593,6 +734,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/credential-provider-process@npm:3.826.0":
+  version: 3.826.0
+  resolution: "@aws-sdk/credential-provider-process@npm:3.826.0"
+  dependencies:
+    "@aws-sdk/core": 3.826.0
+    "@aws-sdk/types": 3.821.0
+    "@smithy/property-provider": ^4.0.4
+    "@smithy/shared-ini-file-loader": ^4.0.4
+    "@smithy/types": ^4.3.1
+    tslib: ^2.6.2
+  checksum: a063c0c7e62232afe5c756797b7b6254c18aaba546a342107985e61d459c41f5d4666f225c2e57efd8eb15dfd41a00957826b09ad3d7467c502b315884cd7715
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/credential-provider-process@npm:3.839.0":
   version: 3.839.0
   resolution: "@aws-sdk/credential-provider-process@npm:3.839.0"
@@ -604,6 +759,22 @@ __metadata:
     "@smithy/types": ^4.3.1
     tslib: ^2.6.2
   checksum: 7eee4b1d5c2e31b136102b7ac6cefe78960f78d6e00c7f3f30ee07dba30d633a738003699e82b4a8bfb521a44ae1478592eb67c786e4d3fffb0e0a0c7c93fe44
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-sso@npm:3.830.0":
+  version: 3.830.0
+  resolution: "@aws-sdk/credential-provider-sso@npm:3.830.0"
+  dependencies:
+    "@aws-sdk/client-sso": 3.830.0
+    "@aws-sdk/core": 3.826.0
+    "@aws-sdk/token-providers": 3.830.0
+    "@aws-sdk/types": 3.821.0
+    "@smithy/property-provider": ^4.0.4
+    "@smithy/shared-ini-file-loader": ^4.0.4
+    "@smithy/types": ^4.3.1
+    tslib: ^2.6.2
+  checksum: a06c80d268d4543d2c2d36b90d6a378df761a16ec96e3a1e59b6d4e91108267ef4561cc754408d644ee34391dff66f9129bad10b08a850635dc2fac6a78a82d3
   languageName: node
   linkType: hard
 
@@ -620,6 +791,20 @@ __metadata:
     "@smithy/types": ^4.3.1
     tslib: ^2.6.2
   checksum: 26cc83f66a0812bfa37d86ac1842b2dbc6533a9221078bed9481a152e7853ffad9c453d622dd795fd594858a1e79b28f192c5107d2bc9d674113182cade17546
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-web-identity@npm:3.830.0":
+  version: 3.830.0
+  resolution: "@aws-sdk/credential-provider-web-identity@npm:3.830.0"
+  dependencies:
+    "@aws-sdk/core": 3.826.0
+    "@aws-sdk/nested-clients": 3.830.0
+    "@aws-sdk/types": 3.821.0
+    "@smithy/property-provider": ^4.0.4
+    "@smithy/types": ^4.3.1
+    tslib: ^2.6.2
+  checksum: a1291869c3eb8e7ba7ed8c4865846b220b7f12c5809045ce863d838e1ee085d868122bd9e8dae707630caafab02b2dd5c805bf37a8ce65f945aef889ec09b479
   languageName: node
   linkType: hard
 
@@ -855,6 +1040,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/middleware-user-agent@npm:3.828.0":
+  version: 3.828.0
+  resolution: "@aws-sdk/middleware-user-agent@npm:3.828.0"
+  dependencies:
+    "@aws-sdk/core": 3.826.0
+    "@aws-sdk/types": 3.821.0
+    "@aws-sdk/util-endpoints": 3.828.0
+    "@smithy/core": ^3.5.3
+    "@smithy/protocol-http": ^5.1.2
+    "@smithy/types": ^4.3.1
+    tslib: ^2.6.2
+  checksum: 7856fed617d28f1ba6004d378cce0a68d878d26719873778d6c5f1895c33269ce091e980b60267b4a256ca4d6612b58c796b198d28e3c7181d8f281bd1ee12f9
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/middleware-user-agent@npm:3.839.0":
   version: 3.839.0
   resolution: "@aws-sdk/middleware-user-agent@npm:3.839.0"
@@ -867,6 +1067,52 @@ __metadata:
     "@smithy/types": ^4.3.1
     tslib: ^2.6.2
   checksum: 17b47c856f0b8a90d36828fe814c194adc88af0ec44d9e6cce61261a7de11c03b9ed4f7e29e3ddba6083d259909f2c540e5c17f9d91c99d6c56613ef50b6e9f1
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/nested-clients@npm:3.830.0":
+  version: 3.830.0
+  resolution: "@aws-sdk/nested-clients@npm:3.830.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": 5.2.0
+    "@aws-crypto/sha256-js": 5.2.0
+    "@aws-sdk/core": 3.826.0
+    "@aws-sdk/middleware-host-header": 3.821.0
+    "@aws-sdk/middleware-logger": 3.821.0
+    "@aws-sdk/middleware-recursion-detection": 3.821.0
+    "@aws-sdk/middleware-user-agent": 3.828.0
+    "@aws-sdk/region-config-resolver": 3.821.0
+    "@aws-sdk/types": 3.821.0
+    "@aws-sdk/util-endpoints": 3.828.0
+    "@aws-sdk/util-user-agent-browser": 3.821.0
+    "@aws-sdk/util-user-agent-node": 3.828.0
+    "@smithy/config-resolver": ^4.1.4
+    "@smithy/core": ^3.5.3
+    "@smithy/fetch-http-handler": ^5.0.4
+    "@smithy/hash-node": ^4.0.4
+    "@smithy/invalid-dependency": ^4.0.4
+    "@smithy/middleware-content-length": ^4.0.4
+    "@smithy/middleware-endpoint": ^4.1.11
+    "@smithy/middleware-retry": ^4.1.12
+    "@smithy/middleware-serde": ^4.0.8
+    "@smithy/middleware-stack": ^4.0.4
+    "@smithy/node-config-provider": ^4.1.3
+    "@smithy/node-http-handler": ^4.0.6
+    "@smithy/protocol-http": ^5.1.2
+    "@smithy/smithy-client": ^4.4.3
+    "@smithy/types": ^4.3.1
+    "@smithy/url-parser": ^4.0.4
+    "@smithy/util-base64": ^4.0.0
+    "@smithy/util-body-length-browser": ^4.0.0
+    "@smithy/util-body-length-node": ^4.0.0
+    "@smithy/util-defaults-mode-browser": ^4.0.19
+    "@smithy/util-defaults-mode-node": ^4.0.19
+    "@smithy/util-endpoints": ^3.0.6
+    "@smithy/util-middleware": ^4.0.4
+    "@smithy/util-retry": ^4.0.5
+    "@smithy/util-utf8": ^4.0.0
+    tslib: ^2.6.2
+  checksum: d9ce3b965905eaebf69fd9e2186acd263da063c05cb6dd72379fe3f72ff955dc35fd23a3ab2719da06f32dc2b7fbaf476c58ae26a538afcc28ebcff425bc3e53
   languageName: node
   linkType: hard
 
@@ -941,6 +1187,21 @@ __metadata:
     "@smithy/types": ^4.3.1
     tslib: ^2.6.2
   checksum: 236b38ebc9c6e8d07b4e0bb0bd81db27c6c77c2d4836be1f5e1e48e7a23b792f2ae0aa55b69f8da3728c3a0519127b4cd657d6a52e265358df4d30ea1ec00ba0
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/token-providers@npm:3.830.0":
+  version: 3.830.0
+  resolution: "@aws-sdk/token-providers@npm:3.830.0"
+  dependencies:
+    "@aws-sdk/core": 3.826.0
+    "@aws-sdk/nested-clients": 3.830.0
+    "@aws-sdk/types": 3.821.0
+    "@smithy/property-provider": ^4.0.4
+    "@smithy/shared-ini-file-loader": ^4.0.4
+    "@smithy/types": ^4.3.1
+    tslib: ^2.6.2
+  checksum: fe8681e65621f5d422ba63dfd4f76fc351314e29e1e31fa0a72a2b7e1133d78a3f7e194c4b319b3636e8200914c3c05c75ebcee8674a54f9ef73b3af4baad800
   languageName: node
   linkType: hard
 
@@ -1019,6 +1280,24 @@ __metadata:
     bowser: ^2.11.0
     tslib: ^2.6.2
   checksum: 8817cc00dcc032af0a7e270dd9954b7b5f598448d8804a430456276ef560a6b4781aea4ad84377fddff3684417ac4e5925de5574d9a8b0f08832002948c4a508
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-user-agent-node@npm:3.828.0":
+  version: 3.828.0
+  resolution: "@aws-sdk/util-user-agent-node@npm:3.828.0"
+  dependencies:
+    "@aws-sdk/middleware-user-agent": 3.828.0
+    "@aws-sdk/types": 3.821.0
+    "@smithy/node-config-provider": ^4.1.3
+    "@smithy/types": ^4.3.1
+    tslib: ^2.6.2
+  peerDependencies:
+    aws-crt: ">=1.0.0"
+  peerDependenciesMeta:
+    aws-crt:
+      optional: true
+  checksum: 370c64d532a0a2c5bdac7dd7cc45070542a116c5e2061a59e60f8a14df849be25d1cfedd2d4561d57f239b7beb3190a239cb3d774fca6536a27247e535ddbae8
   languageName: node
   linkType: hard
 
@@ -4421,13 +4700,13 @@ __metadata:
   linkType: hard
 
 "@oclif/plugin-plugins@npm:^5":
-  version: 5.4.42
-  resolution: "@oclif/plugin-plugins@npm:5.4.42"
+  version: 5.4.43
+  resolution: "@oclif/plugin-plugins@npm:5.4.43"
   dependencies:
     "@oclif/core": ^4.4.0
     ansis: ^3.17.0
     debug: ^4.4.0
-    npm: ^10.9.2
+    npm: ^10.9.3
     npm-package-arg: ^11.0.3
     npm-run-path: ^5.3.0
     object-treeify: ^4.0.1
@@ -4435,7 +4714,7 @@ __metadata:
     validate-npm-package-name: ^5.0.1
     which: ^4.0.0
     yarn: ^1.22.22
-  checksum: 9817d2c0ed27a0daa16a59a54be1aca06f7d5dece5082dfe16163316bcb7d85b128851ccd6bd34bbc340324659d00b80e125846eaa262ce0218d5041fd23349f
+  checksum: 3195c824fe90235bef81c1f82aff2072ff467ef2418ee40e73e7af8dd7abf634378427d8d0295ba973d8606d29fc2782e815017e46c63daf8716ae721bc6d99d
   languageName: node
   linkType: hard
 
@@ -5186,7 +5465,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/core@npm:^3.6.0":
+"@smithy/core@npm:^3.5.3, @smithy/core@npm:^3.6.0":
   version: 3.6.0
   resolution: "@smithy/core@npm:3.6.0"
   dependencies:
@@ -5369,7 +5648,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/middleware-endpoint@npm:^4.1.13":
+"@smithy/middleware-endpoint@npm:^4.1.11, @smithy/middleware-endpoint@npm:^4.1.13":
   version: 4.1.13
   resolution: "@smithy/middleware-endpoint@npm:4.1.13"
   dependencies:
@@ -5385,7 +5664,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/middleware-retry@npm:^4.1.14":
+"@smithy/middleware-retry@npm:^4.1.12, @smithy/middleware-retry@npm:^4.1.14":
   version: 4.1.14
   resolution: "@smithy/middleware-retry@npm:4.1.14"
   dependencies:
@@ -5524,7 +5803,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/smithy-client@npm:^4.4.5":
+"@smithy/smithy-client@npm:^4.4.3, @smithy/smithy-client@npm:^4.4.5":
   version: 4.4.5
   resolution: "@smithy/smithy-client@npm:4.4.5"
   dependencies:
@@ -5617,7 +5896,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/util-defaults-mode-browser@npm:^4.0.21":
+"@smithy/util-defaults-mode-browser@npm:^4.0.19, @smithy/util-defaults-mode-browser@npm:^4.0.21":
   version: 4.0.21
   resolution: "@smithy/util-defaults-mode-browser@npm:4.0.21"
   dependencies:
@@ -5630,7 +5909,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/util-defaults-mode-node@npm:^4.0.21":
+"@smithy/util-defaults-mode-node@npm:^4.0.19, @smithy/util-defaults-mode-node@npm:^4.0.21":
   version: 4.0.21
   resolution: "@smithy/util-defaults-mode-node@npm:4.0.21"
   dependencies:
@@ -5675,7 +5954,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/util-retry@npm:^4.0.6":
+"@smithy/util-retry@npm:^4.0.5, @smithy/util-retry@npm:^4.0.6":
   version: 4.0.6
   resolution: "@smithy/util-retry@npm:4.0.6"
   dependencies:
@@ -11581,12 +11860,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^12.19.2":
-  version: 12.19.2
-  resolution: "framer-motion@npm:12.19.2"
+"framer-motion@npm:^12.18.1":
+  version: 12.18.1
+  resolution: "framer-motion@npm:12.18.1"
   dependencies:
-    motion-dom: ^12.19.0
-    motion-utils: ^12.19.0
+    motion-dom: ^12.18.1
+    motion-utils: ^12.18.1
     tslib: ^2.4.0
   peerDependencies:
     "@emotion/is-prop-valid": "*"
@@ -11599,7 +11878,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: d5d0d0ba02bc19bd2034d6f8eb22dc7d53cc868f43931c733cc0126b3b5bda2215fba1a7c53824bbacfccdfa1e252ef8de1b19c424f1e77d110fc89f4a759c8e
+  checksum: a07259ee22cee91138677d9fe89cc9e20b7ad85310f33945c695e67255a975c7546dc2ccf70cf047b893aea19c08a777e57589f5fc549d0e5af42009409cba3e
   languageName: node
   linkType: hard
 
@@ -12585,14 +12864,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ieee754@npm:1.1.13":
+"ieee754@npm:1.1.13, ieee754@npm:^1.1.4":
   version: 1.1.13
   resolution: "ieee754@npm:1.1.13"
   checksum: 102df1ba662e316e6160f7ce29c7c7fa3e04f2014c288336c5a9ff40bbcc2a27d209fa2a81ebfb33f28b1941021343d30e9ad8ee85a2d61f79f5936c35edc33d
   languageName: node
   linkType: hard
 
-"ieee754@npm:^1.1.4, ieee754@npm:^1.2.1":
+"ieee754@npm:^1.2.1":
   version: 1.2.1
   resolution: "ieee754@npm:1.2.1"
   checksum: 5144c0c9815e54ada181d80a0b810221a253562422e7c6c3a60b1901154184f49326ec239d618c416c1c5945a2e197107aee8d986a3dd836b53dffefd99b5e7e
@@ -14890,27 +15169,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"motion-dom@npm:^12.19.0":
-  version: 12.19.0
-  resolution: "motion-dom@npm:12.19.0"
+"motion-dom@npm:^12.18.1":
+  version: 12.18.1
+  resolution: "motion-dom@npm:12.18.1"
   dependencies:
-    motion-utils: ^12.19.0
-  checksum: c2c9c427287af6f3c538a220fe7a7ad1cc0d584916e9081816eed45c152615b77fcd821934a7b442397a620a67010d209ce31c979fc83d15621a39c94b2944cf
+    motion-utils: ^12.18.1
+  checksum: d080403855d2afb73d0d120e67eb6e27f425e4c03ab3dbdaa21fe4096c81c70be4c2e4687f2fa219d4b9d2f90293345708272f64a53698eb078bb460666feaee
   languageName: node
   linkType: hard
 
-"motion-utils@npm:^12.19.0":
-  version: 12.19.0
-  resolution: "motion-utils@npm:12.19.0"
-  checksum: f0e6a10b0fbc65db10d537c91dd2dd2928fadedd9c45f69c24f2be9d5123e200e109467580d248fb6b4d983877377e0cec8aa8cc167a4c0416679ea6648f4db5
+"motion-utils@npm:^12.18.1":
+  version: 12.18.1
+  resolution: "motion-utils@npm:12.18.1"
+  checksum: 789a10c6ddadaa0bcac9e49ecaad88b7543f25d11ac2362ac0d480a378bee2aa28ce27dfb0fe98d3cd95dc9df428b95eb0974c5821dd5981016e76d40022f50a
   languageName: node
   linkType: hard
 
 "motion@npm:^12.18.1":
-  version: 12.19.2
-  resolution: "motion@npm:12.19.2"
+  version: 12.18.1
+  resolution: "motion@npm:12.18.1"
   dependencies:
-    framer-motion: ^12.19.2
+    framer-motion: ^12.18.1
     tslib: ^2.4.0
   peerDependencies:
     "@emotion/is-prop-valid": "*"
@@ -14923,7 +15202,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: ee113652145d120aedfcd2ed4482dc9a1c9d6fd0ddbc49bcf943cf11a1b55ba913ab8bbb0fa27e2fd5c85ad6bcf4a81fddb86cedde605f4bbb244366f924e1d4
+  checksum: 78746964d0ed81781615fa88086f3a15c3a25dcd6186f585017f6e9be2cce469e27e348ff1e6261fc3af647f8223014d9fc57dcdd8a97d663f5e71a07badbfa6
   languageName: node
   linkType: hard
 
@@ -15473,7 +15752,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npm@npm:^10.9.2":
+"npm@npm:^10.9.3":
   version: 10.9.3
   resolution: "npm@npm:10.9.3"
   dependencies:
@@ -17447,17 +17726,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sax@npm:1.2.1":
+"sax@npm:1.2.1, sax@npm:>=0.6.0":
   version: 1.2.1
   resolution: "sax@npm:1.2.1"
   checksum: 8dca7d5e1cd7d612f98ac50bdf0b9f63fbc964b85f0c4e2eb271f8b9b47fd3bf344c4d6a592e69ecf726d1485ca62cd8a52e603bbc332d18a66af25a9a1045ad
-  languageName: node
-  linkType: hard
-
-"sax@npm:>=0.6.0":
-  version: 1.4.1
-  resolution: "sax@npm:1.4.1"
-  checksum: 3ad64df16b743f0f2eb7c38ced9692a6d924f1cd07bbe45c39576c2cf50de8290d9d04e7b2228f924c7d05fecc4ec5cf651423278e0c7b63d260c387ef3af84a
   languageName: node
   linkType: hard
 

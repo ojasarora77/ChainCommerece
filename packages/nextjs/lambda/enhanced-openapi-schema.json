@@ -1,0 +1,412 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "AI Marketplace Shopping Agent Functions",
+    "description": "Enhanced function definitions for autonomous shopping operations with comprehensive parameter validation and response schemas",
+    "version": "2.0.0"
+  },
+  "paths": {
+    "/searchProducts": {
+      "post": {
+        "summary": "Search for products in the marketplace",
+        "description": "Search through all 21+ verified sustainable products using natural language queries with advanced filtering capabilities",
+        "operationId": "searchProducts",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "description": "Natural language search query for products (e.g., 'sustainable electronics', 'bamboo products', 'AI-powered devices')",
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "examples": ["sustainable electronics", "bamboo laptop stand", "AI-powered smart watch"]
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "Product category filter",
+                    "enum": ["Electronics", "Clothing", "Digital", "Sports", "Books", "Home & Garden", "Beauty", "Automotive"],
+                    "examples": ["Electronics", "Clothing"]
+                  },
+                  "maxPrice": {
+                    "type": "number",
+                    "description": "Maximum price in USD",
+                    "minimum": 0,
+                    "maximum": 10000,
+                    "examples": [50, 100, 500]
+                  },
+                  "sustainabilityMin": {
+                    "type": "number",
+                    "description": "Minimum sustainability score (0-100 scale, recommend 80+ for eco-conscious buyers)",
+                    "minimum": 0,
+                    "maximum": 100,
+                    "default": 80,
+                    "examples": [80, 90, 95]
+                  }
+                },
+                "required": ["query"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "products": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": { "type": "number" },
+                              "name": { "type": "string" },
+                              "description": { "type": "string" },
+                              "category": { "type": "string" },
+                              "price": { "type": "string" },
+                              "priceUSD": { "type": "number" },
+                              "sustainabilityScore": { "type": "number" },
+                              "averageRating": { "type": "number" },
+                              "certifications": { "type": "array", "items": { "type": "string" } }
+                            }
+                          }
+                        },
+                        "totalFound": { "type": "number" },
+                        "totalAvailable": { "type": "number" },
+                        "source": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/createOrder": {
+      "post": {
+        "summary": "Create a new order for a product",
+        "description": "Create a secure escrow-protected order for a specific product with automatic 7-day release and dispute protection",
+        "operationId": "createOrder",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "productId": {
+                    "type": "number",
+                    "description": "Unique product ID from the marketplace",
+                    "minimum": 1,
+                    "examples": [1, 5, 12]
+                  },
+                  "quantity": {
+                    "type": "number",
+                    "description": "Number of items to order",
+                    "minimum": 1,
+                    "maximum": 100,
+                    "default": 1,
+                    "examples": [1, 2, 5]
+                  },
+                  "userAddress": {
+                    "type": "string",
+                    "description": "Buyer's wallet address (Ethereum format)",
+                    "pattern": "^0x[a-fA-F0-9]{40}$",
+                    "examples": ["0x742d35Cc6634C0532925a3b8D4C9db96590c6C87"]
+                  }
+                },
+                "required": ["productId", "quantity", "userAddress"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "order": {
+                          "type": "object",
+                          "properties": {
+                            "orderId": { "type": "string" },
+                            "productId": { "type": "number" },
+                            "productName": { "type": "string" },
+                            "quantity": { "type": "number" },
+                            "subtotal": { "type": "number" },
+                            "platformFee": { "type": "number" },
+                            "total": { "type": "number" },
+                            "status": { "type": "string" },
+                            "estimatedDelivery": { "type": "string" }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/processPayment": {
+      "post": {
+        "summary": "Process payment for an order",
+        "description": "Process cryptocurrency payment (ETH, AVAX, USDC) with smart contract escrow protection and cross-chain support",
+        "operationId": "processPayment",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "orderId": {
+                    "type": "string",
+                    "description": "Order ID to process payment for",
+                    "examples": ["ORD-1735456789-ABC123"]
+                  },
+                  "paymentMethod": {
+                    "type": "string",
+                    "description": "Cryptocurrency payment method",
+                    "enum": ["ETH", "AVAX", "USDC"],
+                    "examples": ["ETH", "AVAX", "USDC"]
+                  },
+                  "userAddress": {
+                    "type": "string",
+                    "description": "Payer's wallet address",
+                    "pattern": "^0x[a-fA-F0-9]{40}$",
+                    "examples": ["0x742d35Cc6634C0532925a3b8D4C9db96590c6C87"]
+                  },
+                  "transactionHash": {
+                    "type": "string",
+                    "description": "Blockchain transaction hash (optional for verification)",
+                    "pattern": "^0x[a-fA-F0-9]{64}$",
+                    "examples": ["0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"]
+                  }
+                },
+                "required": ["orderId", "paymentMethod", "userAddress"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Payment processed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "paymentId": { "type": "string" },
+                        "escrowId": { "type": "string" },
+                        "transactionHash": { "type": "string" },
+                        "status": { "type": "string" },
+                        "autoReleaseDate": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/checkOrderStatus": {
+      "post": {
+        "summary": "Check the status of an order",
+        "description": "Get detailed order status including escrow information, delivery tracking, and dispute status",
+        "operationId": "checkOrderStatus",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "orderId": {
+                    "type": "string",
+                    "description": "Order ID to check status for",
+                    "examples": ["ORD-1735456789-ABC123"]
+                  },
+                  "userAddress": {
+                    "type": "string",
+                    "description": "User's wallet address for verification",
+                    "pattern": "^0x[a-fA-F0-9]{40}$",
+                    "examples": ["0x742d35Cc6634C0532925a3b8D4C9db96590c6C87"]
+                  }
+                },
+                "required": ["orderId", "userAddress"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order status information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "order": {
+                          "type": "object",
+                          "properties": {
+                            "orderId": { "type": "string" },
+                            "status": { "type": "string" },
+                            "escrowStatus": { "type": "string" },
+                            "autoReleaseDate": { "type": "string" },
+                            "canDispute": { "type": "boolean" },
+                            "trackingInfo": { "type": "string" }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getUserRecommendations": {
+      "post": {
+        "summary": "Get personalized product recommendations",
+        "description": "Get AI-powered product recommendations based on user preferences, purchase history, and sustainability goals",
+        "operationId": "getUserRecommendations",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userAddress": {
+                    "type": "string",
+                    "description": "User's wallet address for personalization",
+                    "pattern": "^0x[a-fA-F0-9]{40}$",
+                    "examples": ["0x742d35Cc6634C0532925a3b8D4C9db96590c6C87"]
+                  },
+                  "preferences": {
+                    "type": "object",
+                    "description": "User preferences for recommendations",
+                    "properties": {
+                      "sustainabilityMin": { "type": "number", "minimum": 0, "maximum": 100 },
+                      "maxPrice": { "type": "number", "minimum": 0 },
+                      "categories": { "type": "array", "items": { "type": "string" } },
+                      "excludeOwned": { "type": "boolean", "default": true }
+                    }
+                  }
+                },
+                "required": ["userAddress"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Personalized product recommendations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "recommendations": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "product": { "type": "object" },
+                              "reason": { "type": "string" },
+                              "matchScore": { "type": "number" }
+                            }
+                          }
+                        },
+                        "totalRecommendations": { "type": "number" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "number" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "category": { "type": "string" },
+          "price": { "type": "string" },
+          "priceUSD": { "type": "number" },
+          "seller": { "type": "string" },
+          "averageRating": { "type": "number" },
+          "sustainabilityScore": { "type": "number" },
+          "certifications": { "type": "array", "items": { "type": "string" } },
+          "carbonFootprint": { "type": "number" },
+          "isActive": { "type": "boolean" }
+        }
+      },
+      "Order": {
+        "type": "object",
+        "properties": {
+          "orderId": { "type": "string" },
+          "productId": { "type": "number" },
+          "productName": { "type": "string" },
+          "quantity": { "type": "number" },
+          "subtotal": { "type": "number" },
+          "platformFee": { "type": "number" },
+          "total": { "type": "number" },
+          "userAddress": { "type": "string" },
+          "status": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "estimatedDelivery": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -32,9 +32,14 @@ export default function AIAgentTestPage() {
         },
         body: JSON.stringify({
           message: query,
-          userAddress: '0x1234567890123456789012345678901234567890'
+          sessionId: `test-session-${Date.now()}`,
+          userId: '0x1234567890123456789012345678901234567890'
         }),
       });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
 
       const data = await res.json();
       setResponse(data);
@@ -42,7 +47,7 @@ export default function AIAgentTestPage() {
       console.error('Error:', error);
       setResponse({
         success: false,
-        error: 'Failed to get response'
+        error: `Failed to get response: ${error instanceof Error ? error.message : 'Unknown error'}`
       });
     } finally {
       setLoading(false);

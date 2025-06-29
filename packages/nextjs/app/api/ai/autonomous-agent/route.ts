@@ -21,29 +21,36 @@ export async function POST(request: NextRequest) {
 
     console.log(`🤖 Autonomous Agent API: Processing message from user ${userId}`);
 
-    // Check cache for similar messages
-    const messageHash = hashMessage(message);
-    const cachedResponse = cacheService.getCachedAgentResponse(messageHash);
+    // Create more specific cache key that includes query type and context
+    const queryType = determineQueryType(message);
+    const contextualCacheKey = `${hashMessage(message)}_${queryType}_${userId}`;
 
-    if (cachedResponse) {
-      console.log('📦 Returning cached response');
+    // Only cache non-personalized, non-transactional queries
+    const shouldCache = !isPersonalizedQuery(message, queryType);
 
-      // Track cache hit
-      realPerformanceService.trackCacheHit(messageHash, Date.now() - startTime);
+    if (shouldCache) {
+      const cachedResponse = cacheService.getCachedAgentResponse(contextualCacheKey);
 
-      return NextResponse.json({
-        success: true,
-        data: {
-          message: cachedResponse,
-          sessionId: sessionId || `session-${Date.now()}`,
-          cached: true,
-          responseTime: Date.now() - startTime
-        }
-      });
+      if (cachedResponse) {
+        console.log('📦 Returning cached response for query type:', queryType);
+
+        // Track cache hit
+        realPerformanceService.trackCacheHit(contextualCacheKey, Date.now() - startTime);
+
+        return NextResponse.json({
+          success: true,
+          data: {
+            message: cachedResponse,
+            sessionId: sessionId || `session-${Date.now()}`,
+            cached: true,
+            responseTime: Date.now() - startTime
+          }
+        });
+      }
     }
 
     // Track cache miss
-    realPerformanceService.trackCacheMiss(messageHash, Date.now() - startTime);
+    realPerformanceService.trackCacheMiss(contextualCacheKey, Date.now() - startTime);
 
     // Initialize the autonomous shopping agent
     const agent = new AutonomousShoppingAgent();
@@ -177,8 +184,12 @@ ${agentResponse.functionCalls && agentResponse.functionCalls.length > 0
 
 Just ask me anything about our marketplace! 🛒✨`;
 
-    // Cache the response for similar future queries
-    cacheService.cacheAgentResponse(messageHash, enhancedResponse, 2 * 60 * 1000); // 2 minutes
+    // Cache the response with appropriate TTL based on query type
+    if (shouldCache) {
+      const cacheTTL = getCacheTTL(queryType);
+      cacheService.cacheAgentResponse(contextualCacheKey, enhancedResponse, cacheTTL);
+      console.log(`💾 Cached response for ${queryType} with TTL: ${cacheTTL}ms`);
+    }
 
     // Track successful response
     realPerformanceService.trackResponseTime('autonomous_agent', startTime, Date.now(), {
@@ -223,6 +234,59 @@ Just ask me anything about our marketplace! 🛒✨`;
       { status: 500 }
     );
   }
+}
+
+/**
+ * Determine the type of query for better caching and response handling
+ */
+function determineQueryType(message: string): string {
+  const messageLower = message.toLowerCase();
+
+  if (messageLower.includes('order') || messageLower.includes('buy') || messageLower.includes('purchase')) {
+    return 'order_intent';
+  }
+  if (messageLower.includes('pay') || messageLower.includes('payment') || messageLower.includes('checkout')) {
+    return 'payment_intent';
+  }
+  if (messageLower.includes('search') || messageLower.includes('find') || messageLower.includes('show')) {
+    return 'product_search';
+  }
+  if (messageLower.includes('status') || messageLower.includes('track') || messageLower.includes('order')) {
+    return 'order_status';
+  }
+  if (messageLower.includes('dispute') || messageLower.includes('problem') || messageLower.includes('issue')) {
+    return 'dispute_resolution';
+  }
+  if (messageLower.includes('help') || messageLower.includes('how') || messageLower.includes('what')) {
+    return 'general_inquiry';
+  }
+
+  return 'general_chat';
+}
+
+/**
+ * Check if a query is personalized and shouldn't be cached
+ */
+function isPersonalizedQuery(message: string, queryType: string): boolean {
+  const personalizedTypes = ['order_intent', 'payment_intent', 'order_status', 'dispute_resolution'];
+  return personalizedTypes.includes(queryType);
+}
+
+/**
+ * Get appropriate cache TTL based on query type
+ */
+function getCacheTTL(queryType: string): number {
+  const ttlMap = {
+    'product_search': 5 * 60 * 1000,      // 5 minutes for product searches
+    'general_inquiry': 10 * 60 * 1000,    // 10 minutes for general info
+    'general_chat': 2 * 60 * 1000,        // 2 minutes for general chat
+    'order_intent': 0,                     // No caching for order intents
+    'payment_intent': 0,                   // No caching for payment intents
+    'order_status': 0,                     // No caching for order status
+    'dispute_resolution': 0                // No caching for disputes
+  };
+
+  return ttlMap[queryType] || 1 * 60 * 1000; // Default 1 minute
 }
 
 /**

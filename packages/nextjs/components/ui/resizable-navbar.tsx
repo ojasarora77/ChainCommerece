@@ -270,7 +270,7 @@ export const NavbarLogo = () => {
       <img
         src="/Newlogo.png"
         alt="ChainCommerce Logo"
-        className="h-8"
+        className="h-10"
       />
     </a>
   );
