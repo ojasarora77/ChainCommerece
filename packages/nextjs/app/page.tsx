@@ -55,10 +55,11 @@ const Home: NextPage = () => {
                 handle="ojasarora"
                 status="Building the Future"
                 contactText="Connect"
-                avatarUrl="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop&crop=face"
-                miniAvatarUrl="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face"
+                avatarUrl="/ojas-avatar.jpg"
+                miniAvatarUrl="/ojas-avatar.jpg"
                 showUserInfo={true}
                 enableTilt={true}
+                className="ojas-card"
                 onContactClick={() => window.open('https://www.linkedin.com/in/ojas-arora-b62430231/', '_blank')}
               />
             </div>
@@ -71,8 +72,8 @@ const Home: NextPage = () => {
                 handle="karandhillon"
                 status="AI Innovation"
                 contactText="Connect"
-                avatarUrl="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=600&fit=crop&crop=face"
-                miniAvatarUrl="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
+                avatarUrl="/karan-avatar.jpg"
+                miniAvatarUrl="/karan-avatar.jpg"
                 showUserInfo={true}
                 enableTilt={true}
                 onContactClick={() => window.open('https://www.linkedin.com/in/karandhillon05/', '_blank')}
