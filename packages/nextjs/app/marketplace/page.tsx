@@ -318,8 +318,8 @@ const Marketplace: NextPage = () => {
                       <SparklesIcon className="h-8 w-8 text-primary" />
                     </div>
                     <div>
-                      <h1 className="text-2xl font-bold text-slate-900 dark:text-white">ChainCommerce</h1>
-                      <p className="text-sm text-slate-600 dark:text-slate-300">Blockchain Marketplace</p>
+                      <h1 className="text-2xl font-bold text-base-content">ChainCommerce</h1>
+                      <p className="text-sm text-base-content/70">Blockchain Marketplace</p>
                     </div>
                   </div>
                 </div>
@@ -332,13 +332,13 @@ const Marketplace: NextPage = () => {
                       <div className="text-xl font-bold text-primary">
                         {marketplaceStats ? Number(marketplaceStats[0]) : products.length}
                       </div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400">Products</div>
+                      <div className="text-xs text-base-content/60">Products</div>
                     </div>
                     <div className="text-center">
                       <div className="text-xl font-bold text-secondary">
                         {marketplaceStats ? Number(marketplaceStats[1]) : "0"}
                       </div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400">Sellers</div>
+                      <div className="text-xs text-base-content/60">Sellers</div>
                     </div>
                   </div>
 
@@ -383,7 +383,7 @@ const Marketplace: NextPage = () => {
               {filteredProducts.map((product, index) => (
                 <div
                   key={`product-${product.id}-${index}`}
-                  className="group bg-white dark:bg-slate-800 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 dark:border-slate-700 hover:border-primary/50 cursor-pointer"
+                  className="group bg-base-100 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-base-300 hover:border-primary/50 cursor-pointer"
                   onClick={() => {
                     // Track product view
                     realProductTracker.trackProductView(
@@ -395,7 +395,7 @@ const Marketplace: NextPage = () => {
                   }}
                 >
                   {/* Product Image Section */}
-                  <div className="relative h-48 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-600">
+                  <div className="relative h-48 bg-gradient-to-br from-base-200 to-base-300">
                     {product.image && product.image.trim() !== "" ? (
                       <img 
                         src={product.image} 
@@ -429,24 +429,24 @@ const Marketplace: NextPage = () => {
                   {/* Product Info Section */}
                   <div className="p-4 space-y-3">
                     {/* Product Name */}
-                    <h3 className="font-bold text-lg text-slate-900 dark:text-white group-hover:text-primary transition-colors line-clamp-2">
+                    <h3 className="font-bold text-lg text-base-content group-hover:text-primary transition-colors line-clamp-2">
                       {product.name}
                     </h3>
-                    
+
                     {/* Description */}
-                    <p className="text-sm text-slate-600 dark:text-slate-300 line-clamp-2">
+                    <p className="text-sm text-base-content/70 line-clamp-2">
                       {product.description}
                     </p>
-                    
+
                     {/* Seller Info */}
-                    <div className="text-xs text-slate-500 dark:text-slate-400">
+                    <div className="text-xs text-base-content/60">
                       Seller: <Address address={product.seller} size="xs" />
                     </div>
                     
                     {/* Price and Buy Button */}
-                    <div className="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-slate-600">
+                    <div className="flex items-center justify-between pt-3 border-t border-base-300">
                       <div className="flex flex-col">
-                        <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Price</span>
+                        <span className="text-xs text-base-content/60 font-medium">Price</span>
                         <span className="text-2xl font-black text-white bg-primary px-2 py-1 rounded-lg">
                           {product.price}
                         </span>
@@ -1221,7 +1221,7 @@ const Marketplace: NextPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 pt-20 sm:pt-24">
+    <div className="min-h-screen bg-base-300 pt-20 sm:pt-24">
       <MarketplaceSidebar
         activeSection={activeSection}
         onSectionChange={setActiveSection}

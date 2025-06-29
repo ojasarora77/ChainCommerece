@@ -10,7 +10,7 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <div className="flex justify-center py-8 bg-slate-950">
+      <div className="flex justify-center py-8 bg-base-300">
         <Image
           src="/chaincommerce_logo.png"
           alt="ChainCommerce Logo"
@@ -20,13 +20,13 @@ const Home: NextPage = () => {
         />
       </div>
       <LampDemo />
-      <div className="py-20 px-4 bg-slate-950">
+      <div className="py-20 px-4 bg-base-300">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-6xl font-bold text-white mb-4">
+            <h2 className="text-4xl md:text-6xl font-bold text-base-content mb-4">
               Explore Our Features
             </h2>
-            <p className="text-lg text-slate-300 max-w-2xl mx-auto">
+            <p className="text-lg text-base-content/70 max-w-2xl mx-auto">
               Discover the power of blockchain technology and innovative decentralized shopping experiences
             </p>
           </div>
@@ -35,13 +35,13 @@ const Home: NextPage = () => {
       </div>
 
       {/* Team Profile Cards Section */}
-      <div className="py-20 px-4 bg-slate-950">
+      <div className="py-20 px-4 bg-base-200">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-6xl font-bold text-white mb-4">
+            <h2 className="text-4xl md:text-6xl font-bold text-base-content mb-4">
               Meet Our Team
             </h2>
-            <p className="text-lg text-slate-300 max-w-2xl mx-auto">
+            <p className="text-lg text-base-content/70 max-w-2xl mx-auto">
               The innovative minds behind ChainCommerce, building the future of decentralized commerce
             </p>
           </div>
