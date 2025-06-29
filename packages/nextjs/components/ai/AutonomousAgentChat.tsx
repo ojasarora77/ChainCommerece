@@ -37,6 +37,7 @@ export const AutonomousAgentChat: React.FC<AutonomousAgentChatProps> = ({
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [sessionId, setSessionId] = useState<string>('');
+  const [showQuickActions, setShowQuickActions] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -190,13 +191,13 @@ export const AutonomousAgentChat: React.FC<AutonomousAgentChatProps> = ({
   };
 
   return (
-    <div className={`flex flex-col bg-slate-800 rounded-lg border border-slate-700 ${
+    <div className={`flex flex-col bg-slate-800 rounded-lg border border-slate-700 relative ${
       isWidget
-        ? 'h-[500px] w-[400px] shadow-2xl'
+        ? 'h-[600px] w-[420px] shadow-2xl'
         : 'h-full max-h-[800px]'
     }`}>
       {/* Header */}
-      <div className="flex items-center gap-3 p-4 border-b border-slate-700 bg-gradient-to-r from-purple-900/50 to-blue-900/50 rounded-t-lg">
+      <div className="flex items-center gap-3 p-4 border-b border-slate-700 bg-gradient-to-r from-purple-900/50 to-blue-900/50 rounded-t-lg relative z-10">
         <div className="p-2 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg">
           <CpuChipIcon className="h-5 w-5 text-white" />
         </div>
@@ -224,7 +225,7 @@ export const AutonomousAgentChat: React.FC<AutonomousAgentChatProps> = ({
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0 relative z-0">
         {messages.map((message) => (
           <div
             key={message.id}
@@ -303,28 +304,58 @@ export const AutonomousAgentChat: React.FC<AutonomousAgentChatProps> = ({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Quick Actions */}
-      {messages.length <= 1 && (
-        <div className="p-4 border-t border-slate-700">
-          <p className="text-sm text-slate-400 mb-3">Quick actions to get started:</p>
-          <div className="grid grid-cols-2 gap-2">
-            {quickActions.map((action, index) => (
+      {/* Quick Actions Popup */}
+      {showQuickActions && (
+        <div className="absolute bottom-20 left-4 right-4 bg-slate-700 rounded-lg border border-slate-600 shadow-xl z-20 animate-in slide-in-from-bottom-2 duration-300">
+          <div className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-sm text-slate-300 font-medium">Quick actions to get started:</p>
               <button
-                key={index}
-                onClick={() => setInputMessage(action.query)}
-                className="flex items-center gap-2 p-3 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm text-slate-300 transition-colors"
+                onClick={() => setShowQuickActions(false)}
+                className="text-slate-400 hover:text-white transition-colors"
               >
-                {action.icon}
-                <span>{action.label}</span>
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
-            ))}
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {quickActions.map((action, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setInputMessage(action.query);
+                    setShowQuickActions(false);
+                  }}
+                  className="flex items-center gap-2 p-3 bg-slate-600 hover:bg-slate-500 rounded-lg text-sm text-slate-200 transition-colors"
+                >
+                  {action.icon}
+                  <span>{action.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}
 
       {/* Input Area */}
-      <div className="p-4 border-t border-slate-700">
-        <div className="flex gap-3">
+      <div className="p-4 border-t border-slate-700 relative z-5">
+        <div className="flex gap-2">
+          {/* Quick Actions Toggle Button */}
+          <button
+            onClick={() => setShowQuickActions(!showQuickActions)}
+            className={`p-3 rounded-lg transition-colors ${
+              showQuickActions
+                ? 'bg-purple-600 text-white'
+                : 'bg-slate-700 text-slate-400 hover:bg-slate-600 hover:text-white'
+            }`}
+            title="Quick Actions"
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+            </svg>
+          </button>
+
           <input
             ref={inputRef}
             type="text"
