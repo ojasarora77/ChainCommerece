@@ -28,13 +28,24 @@ const config: HardhatUserConfig = {
   solidity: {
     compilers: [
       {
+        version: "0.8.19",
+        settings: {
+          optimizer: {
+            enabled: true,
+            // Lower runs to reduce bytecode size for complex contracts
+            runs: 1,
+          },
+          viaIR: true,
+        },
+      },
+      {
         version: "0.8.20",
         settings: {
           optimizer: {
             enabled: true,
-            // https://docs.soliditylang.org/en/latest/using-the-compiler.html#optimizer-options
-            runs: 200,
+            runs: 1,
           },
+          viaIR: true,
         },
       },
     ],

@@ -1,6 +1,8 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "hardhat/console.sol";
 
 /**
@@ -8,7 +10,27 @@ import "hardhat/console.sol";
  * @dev Core contract for listing products in the AI-powered marketplace
  * @author AI Marketplace Team
  */
-contract ProductRegistry {
+interface IEscrowManager {
+    function createEscrowETH(uint256 _productId) external payable returns (uint256);
+    function createEscrowUSDC(uint256 _productId, uint256 _amount) external returns (uint256);
+    function getEscrow(uint256 _escrowId) external view returns (
+        uint256 id,
+        address buyer,
+        address seller,
+        uint256 productId,
+        uint256 amount,
+        address token,
+        uint8 status,
+        uint256 createdAt,
+        uint256 disputeId,
+        uint64 sourceChainSelector,
+        bool isActive
+    );
+    function getUserEscrows(address _user) external view returns (uint256[] memory);
+    function getSellerEscrows(address _seller) external view returns (uint256[] memory);
+}
+
+contract ProductRegistry is ReentrancyGuard {
     // Events
     event ProductListed(
         uint256 indexed productId,
@@ -29,6 +51,20 @@ contract ProductRegistry {
         address indexed buyer,
         address indexed seller,
         uint256 price
+    );
+    
+    event ProductPurchasedWithEscrow(
+        uint256 indexed productId,
+        uint256 indexed escrowId,
+        address indexed buyer,
+        address seller,
+        uint256 price,
+        address token
+    );
+    
+    event EscrowManagerUpdated(
+        address indexed oldManager,
+        address indexed newManager
     );
 
     // Structs
@@ -75,6 +111,15 @@ contract ProductRegistry {
     // Access control
     address public owner;
     mapping(address => bool) public moderators;
+    
+    // EscrowManager integration
+    IEscrowManager public escrowManager;
+    mapping(uint256 => uint256[]) public productEscrows; // productId => escrowIds
+    mapping(address => uint256[]) public sellerActiveEscrows; // seller => escrowIds
+    
+    // Supported tokens for escrow
+    IERC20 public usdcToken;
+    bool public escrowEnabled = false;
 
     // Modifiers
     modifier onlyOwner() {
@@ -95,6 +140,16 @@ contract ProductRegistry {
     modifier validProduct(uint256 _productId) {
         require(_productId > 0 && _productId < nextProductId, "Invalid product ID");
         require(products[_productId].isActive, "Product not active");
+        _;
+    }
+    
+    modifier onlyEscrowManager() {
+        require(msg.sender == address(escrowManager), "Only EscrowManager");
+        _;
+    }
+    
+    modifier whenEscrowEnabled() {
+        require(escrowEnabled && address(escrowManager) != address(0), "Escrow not enabled");
         _;
     }
 
@@ -206,7 +261,7 @@ contract ProductRegistry {
     function purchaseProduct(
         uint256 _productId,
         address _buyer
-    ) external validProduct(_productId) {
+    ) external validProduct(_productId) onlyEscrowManager {
         Product storage product = products[_productId];
         
         // Increment sales counters
@@ -216,6 +271,76 @@ contract ProductRegistry {
         emit ProductPurchased(_productId, _buyer, product.seller, product.price);
         
         console.log("Product purchased:", _productId, "by:", _buyer);
+    }
+    
+    /**
+     * @dev Purchase a product with ETH through escrow
+     */
+    function purchaseWithEscrowETH(
+        uint256 _productId
+    ) external payable validProduct(_productId) whenEscrowEnabled nonReentrant returns (uint256) {
+        require(msg.value > 0, "ETH payment required");
+        
+        Product memory product = products[_productId];
+        require(product.seller != msg.sender, "Cannot buy own product");
+        require(msg.value >= product.price, "Insufficient payment");
+        
+        // Create escrow through EscrowManager
+        uint256 escrowId = escrowManager.createEscrowETH{value: msg.value}(_productId);
+        
+        // Track escrow
+        productEscrows[_productId].push(escrowId);
+        sellerActiveEscrows[product.seller].push(escrowId);
+        
+        emit ProductPurchasedWithEscrow(
+            _productId,
+            escrowId,
+            msg.sender,
+            product.seller,
+            product.price,
+            address(0) // ETH
+        );
+        
+        console.log("Product purchased with ETH escrow:", _productId, "escrow:", escrowId);
+        return escrowId;
+    }
+    
+    /**
+     * @dev Purchase a product with USDC through escrow
+     */
+    function purchaseWithEscrowUSDC(
+        uint256 _productId,
+        uint256 _amount
+    ) external validProduct(_productId) whenEscrowEnabled nonReentrant returns (uint256) {
+        require(_amount > 0, "USDC payment required");
+        require(address(usdcToken) != address(0), "USDC not configured");
+        
+        Product memory product = products[_productId];
+        require(product.seller != msg.sender, "Cannot buy own product");
+        require(_amount >= product.price, "Insufficient payment");
+        
+        // Transfer USDC from buyer to this contract, then approve EscrowManager
+        usdcToken.transferFrom(msg.sender, address(this), _amount);
+        usdcToken.approve(address(escrowManager), _amount);
+        
+        // Create escrow through EscrowManager
+        uint256 escrowId = escrowManager.createEscrowUSDC(_productId, _amount);
+        
+        // Track escrow
+        productEscrows[_productId].push(escrowId);
+        sellerActiveEscrows[product.seller].push(escrowId);
+        
+        emit ProductPurchasedWithEscrow(
+            _productId,
+            escrowId,
+            msg.sender,
+            product.seller,
+            product.price,
+            address(usdcToken)
+        );
+        
+        console.log("Product purchased with USDC escrow:", _productId, "escrow:", escrowId);
+        return escrowId;
     }
 
     /**
@@ -255,6 +380,57 @@ contract ProductRegistry {
      */
     function setModerator(address _moderator, bool _status) external onlyOwner {
         moderators[_moderator] = _status;
+    }
+    
+    /**
+     * @dev Set EscrowManager address (owner only)
+     */
+    function setEscrowManager(address _escrowManager) external onlyOwner {
+        require(_escrowManager != address(0), "Invalid escrow manager address");
+        
+        address oldManager = address(escrowManager);
+        escrowManager = IEscrowManager(_escrowManager);
+        
+        emit EscrowManagerUpdated(oldManager, _escrowManager);
+        console.log("EscrowManager updated to:", _escrowManager);
+    }
+    
+    /**
+     * @dev Set USDC token address (owner only)
+     */
+    function setUSDCToken(address _usdcToken) external onlyOwner {
+        require(_usdcToken != address(0), "Invalid USDC token address");
+        usdcToken = IERC20(_usdcToken);
+        console.log("USDC token set to:", _usdcToken);
+    }
+    
+    /**
+     * @dev Enable/disable escrow functionality (owner only)
+     */
+    function setEscrowEnabled(bool _enabled) external onlyOwner {
+        escrowEnabled = _enabled;
+        console.log("Escrow enabled:", _enabled);
+    }
+    
+    /**
+     * @dev Update escrow tracking when escrow is resolved (EscrowManager only)
+     */
+    function updateEscrowStatus(
+        uint256 _productId,
+        uint256 _escrowId,
+        address _seller
+    ) external onlyEscrowManager {
+        // Remove from seller's active escrows
+        uint256[] storage sellerEscrows = sellerActiveEscrows[_seller];
+        for (uint256 i = 0; i < sellerEscrows.length; i++) {
+            if (sellerEscrows[i] == _escrowId) {
+                sellerEscrows[i] = sellerEscrows[sellerEscrows.length - 1];
+                sellerEscrows.pop();
+                break;
+            }
+        }
+        
+        console.log("Escrow status updated:", _escrowId);
     }
 
     // View functions for AI and frontend
@@ -361,5 +537,150 @@ contract ProductRegistry {
         }
         
         return (totalProducts, totalSellers, activeCount);
+    }
+    
+    // Escrow-related view functions
+    
+    /**
+     * @dev Get all escrows for a specific product
+     */
+    function getProductEscrows(uint256 _productId) 
+        external 
+        view 
+        returns (uint256[] memory) 
+    {
+        return productEscrows[_productId];
+    }
+    
+    /**
+     * @dev Get seller's active escrows
+     */
+    function getSellerActiveEscrows(address _seller) 
+        external 
+        view 
+        returns (uint256[] memory) 
+    {
+        return sellerActiveEscrows[_seller];
+    }
+    
+    /**
+     * @dev Get detailed escrow information for a product
+     */
+    function getProductEscrowDetails(uint256 _productId) 
+        external 
+        view 
+        returns (
+            uint256[] memory escrowIds,
+            address[] memory buyers,
+            uint256[] memory amounts,
+            uint8[] memory statuses
+        ) 
+    {
+        require(address(escrowManager) != address(0), "EscrowManager not set");
+        
+        uint256[] memory productEscrowIds = productEscrows[_productId];
+        uint256 length = productEscrowIds.length;
+        
+        escrowIds = new uint256[](length);
+        buyers = new address[](length);
+        amounts = new uint256[](length);
+        statuses = new uint8[](length);
+        
+        for (uint256 i = 0; i < length; i++) {
+            uint256 escrowId = productEscrowIds[i];
+            escrowIds[i] = escrowId;
+            
+            (
+                ,
+                address buyer,
+                ,
+                ,
+                uint256 amount,
+                ,
+                uint8 status,
+                ,
+                ,
+                ,
+                
+            ) = escrowManager.getEscrow(escrowId);
+            
+            buyers[i] = buyer;
+            amounts[i] = amount;
+            statuses[i] = status;
+        }
+        
+        return (escrowIds, buyers, amounts, statuses);
+    }
+    
+    /**
+     * @dev Get seller's escrow statistics
+     */
+    function getSellerEscrowStats(address _seller) 
+        external 
+        view 
+        returns (
+            uint256 totalEscrows,
+            uint256 activeEscrows,
+            uint256 completedEscrows,
+            uint256 disputedEscrows
+        ) 
+    {
+        require(address(escrowManager) != address(0), "EscrowManager not set");
+        
+        uint256[] memory products = sellerProducts[_seller];
+        
+        // Count escrows across all seller's products
+        for (uint256 i = 0; i < products.length; i++) {
+            uint256[] memory escrowIds = productEscrows[products[i]];
+            totalEscrows += escrowIds.length;
+            
+            for (uint256 j = 0; j < escrowIds.length; j++) {
+                (
+                    ,
+                    ,
+                    ,
+                    ,
+                    ,
+                    ,
+                    uint8 status,
+                    ,
+                    ,
+                    ,
+                    
+                ) = escrowManager.getEscrow(escrowIds[j]);
+                
+                if (status == 0) { // Created
+                    activeEscrows++;
+                } else if (status == 1) { // Delivered
+                    completedEscrows++;
+                } else if (status == 2) { // Disputed
+                    disputedEscrows++;
+                }
+            }
+        }
+        
+        return (totalEscrows, activeEscrows, completedEscrows, disputedEscrows);
+    }
+    
+    /**
+     * @dev Check if escrow functionality is available
+     */
+    function isEscrowAvailable() external view returns (bool) {
+        return escrowEnabled && address(escrowManager) != address(0);
+    }
+    
+    /**
+     * @dev Get escrow configuration
+     */
+    function getEscrowConfig() 
+        external 
+        view 
+        returns (
+            address escrowManagerAddress,
+            address usdcTokenAddress,
+            bool isEscrowEnabled
+        ) 
+    {
+        return (address(escrowManager), address(usdcToken), escrowEnabled);
     }
 }
