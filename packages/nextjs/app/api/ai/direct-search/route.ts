@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ShoppingAgentFunctions } from '../../../services/bedrock/agents/shoppingAgentFunctions';
+import { ShoppingAgentFunctions } from '../../../../services/bedrock/agents/shoppingAgentFunctions';
 
 /**
  * Direct Product Search API

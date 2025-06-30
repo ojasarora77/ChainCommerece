@@ -353,6 +353,10 @@ export class ShoppingAgentFunctions {
       // Query real order status from the system
       // For now, return a realistic status based on order ID pattern
       let status = 'pending_payment';
+      
+      // Define possible statuses and randomly select one
+      const possibleStatuses = ['pending_payment', 'payment_confirmed', 'processing', 'shipped', 'delivered'];
+      const randomStatus = possibleStatuses[Math.floor(Math.random() * possibleStatuses.length)];
 
       if (parameters.orderId.includes('order-')) {
         // This is a real order from our system

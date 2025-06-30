@@ -142,8 +142,9 @@ async function searchProducts(query: string, filters: SearchFilters, maxResults:
         })),
       })) || [],
     };
-  } catch (error) {
-    console.log('KB search failed, using fallback:', error.message);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.log('KB search failed, using fallback:', errorMessage);
     return getFallbackProductSearch(query, filters);
   }
 }

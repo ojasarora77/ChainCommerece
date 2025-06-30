@@ -172,7 +172,7 @@ export class SemanticSearchEngine {
   }
 
   private extractFeatures(product: any): string[] {
-    const features = [];
+    const features: string[] = [];
     const text = `${product.name} ${product.description}`.toLowerCase();
     
     // Common feature patterns
@@ -238,7 +238,7 @@ export class SemanticSearchEngine {
     }
 
     const cacheKey = hashMessage(`semantic-search-${JSON.stringify(context)}`);
-    const cached = await cacheService.get(cacheKey);
+    const cached = await cacheService.get(cacheKey) as SearchResult[] | null;
     if (cached) {
       return cached;
     }
@@ -422,7 +422,7 @@ export class SemanticSearchEngine {
 
   // Get search suggestions based on partial input
   async getSearchSuggestions(partialQuery: string): Promise<string[]> {
-    const suggestions = [];
+    const suggestions: string[] = [];
     const queryLower = partialQuery.toLowerCase();
     
     // Add product name suggestions

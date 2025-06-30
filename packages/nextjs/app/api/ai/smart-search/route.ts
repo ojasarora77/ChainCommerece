@@ -85,9 +85,9 @@ export async function POST(request: NextRequest) {
 
     // Check cache first
     const cacheKey = hashMessage(`smart-search-${query}-${maxResults}-${includeOutOfStock}`);
-    const cached = await cacheService.get(cacheKey);
+    const cached = await cacheService.get(cacheKey) as SmartSearchResponse | null;
     if (cached) {
-      trackKBQuery(query, 'smart_search_cached', Date.now() - startTime, cached.query.confidence, ['cache'], true, { userId, cacheHit: true });
+      trackKBQuery(query, 'smart_search_cached', Date.now() - startTime, cached.query?.confidence || 0.5, ['cache'], true, { userId, cacheHit: true });
       return NextResponse.json({ ...cached, cached: true });
     }
 
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
     let products = searchResults.products || [];
     
     if (!includeOutOfStock) {
-      products = products.filter(product => product.isActive);
+      products = products.filter((product: any) => product.isActive);
     }
     
     // Apply intelligent ranking
@@ -245,8 +245,9 @@ function processQuery(query: string, intentAnalysis: any): string {
   }
 
   // Use intent mappings as final fallback
-  if (intentAnalysis.matched && SEARCH_MAPPINGS.productMappings[intentAnalysis.intent]) {
-    const mappedTerms = SEARCH_MAPPINGS.productMappings[intentAnalysis.intent];
+  if (intentAnalysis.matched && intentAnalysis.intent && 
+      intentAnalysis.intent in SEARCH_MAPPINGS.productMappings) {
+    const mappedTerms = SEARCH_MAPPINGS.productMappings[intentAnalysis.intent as keyof typeof SEARCH_MAPPINGS.productMappings];
     return mappedTerms[0];
   }
 

@@ -61,7 +61,7 @@ interface RankedProduct {
 
 export class AdvancedRankingAlgorithm {
   private defaultWeights: RankingWeights;
-  private intentBasedWeights: Map<string, Partial<RankingWeights>>;
+  private intentBasedWeights: Map<string, Partial<RankingWeights>> = new Map();
 
   constructor() {
     // Default ranking weights (sum should equal 1.0)
@@ -437,7 +437,7 @@ export class AdvancedRankingAlgorithm {
   }
 
   private getRelatedCategories(category: string): string[] {
-    const relations = {
+    const relations: Record<string, string[]> = {
       'electronics': ['automotive', 'wearables', 'home'],
       'automotive': ['electronics'],
       'wearables': ['electronics', 'sports'],
@@ -449,7 +449,7 @@ export class AdvancedRankingAlgorithm {
   }
 
   private getCategoryPopularity(category: string): number {
-    const popularity = {
+    const popularity: Record<string, number> = {
       'electronics': 0.9,
       'automotive': 0.7,
       'wearables': 0.8,

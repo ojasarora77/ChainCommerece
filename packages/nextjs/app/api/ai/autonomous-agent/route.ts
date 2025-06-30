@@ -276,7 +276,7 @@ function isPersonalizedQuery(message: string, queryType: string): boolean {
  * Get appropriate cache TTL based on query type
  */
 function getCacheTTL(queryType: string): number {
-  const ttlMap = {
+  const ttlMap: Record<string, number> = {
     'product_search': 5 * 60 * 1000,      // 5 minutes for product searches
     'general_inquiry': 10 * 60 * 1000,    // 10 minutes for general info
     'general_chat': 2 * 60 * 1000,        // 2 minutes for general chat

@@ -137,14 +137,14 @@ export async function POST(request: NextRequest) {
     // Check cache first
     const cacheKey = hashMessage(`intelligent-search-${query}-${JSON.stringify(userPreferences)}-${JSON.stringify(options)}`);
     if (options.useCache) {
-      const cached = await cacheService.get(cacheKey);
+      const cached = await cacheService.get(cacheKey) as IntelligentSearchResponse | null;
       if (cached) {
         // Track analytics for cached result
         trackKBQuery(
           query,
           'intelligent_search_cached',
           Date.now() - startTime,
-          cached.query.confidence,
+          cached.query?.confidence || 0.5,
           ['cache', 'semantic_search'],
           true,
           { userId, sessionId, cacheHit: true }
@@ -179,8 +179,9 @@ export async function POST(request: NextRequest) {
         const semanticResults = await searchEngine.semanticSearch({
           query: processedQuery.expandedQuery,
           userId,
-          userPreferences,
-          category: userIntent.extractedEntities.category
+          category: userIntent.extractedEntities?.category,
+          priceRange: userPreferences.maxPrice ? { max: userPreferences.maxPrice } : undefined,
+          sustainabilityMin: userPreferences.minSustainabilityScore
         });
         
         products = semanticResults.map(result => result.product);
@@ -350,10 +351,10 @@ function applySorting(products: any[], sortBy: string): any[] {
 
 async function generateSuggestions(processedQuery: any, userIntent: any, products: any[]) {
   const suggestions = {
-    queryCorrections: processedQuery.suggestions,
-    relatedSearches: [],
-    categoryFilters: [],
-    priceFilters: []
+    queryCorrections: processedQuery.suggestions || [],
+    relatedSearches: [] as string[],
+    categoryFilters: [] as string[],
+    priceFilters: [] as string[]
   };
 
   // Generate related searches based on found products
@@ -375,7 +376,7 @@ async function generateSuggestions(processedQuery: any, userIntent: any, product
   }
 
   // Generate related searches
-  if (userIntent.extractedEntities.category) {
+  if (userIntent.extractedEntities?.category) {
     suggestions.relatedSearches.push(`Best ${userIntent.extractedEntities.category}`);
     suggestions.relatedSearches.push(`Sustainable ${userIntent.extractedEntities.category}`);
   }

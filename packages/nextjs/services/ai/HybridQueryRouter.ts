@@ -70,11 +70,11 @@ export class HybridQueryRouter {
     const cacheKey = hashMessage(`hybrid-${context.userQuery}-${context.userId}`);
 
     // Check cache first
-    const cached = await cacheService.get(cacheKey);
+    const cached = await cacheService.get(cacheKey) as QueryResult | null;
     if (cached) {
       return {
         ...cached,
-        sources: [...cached.sources, 'cache'],
+        sources: [...(cached.sources || []), 'cache'],
         processingTime: Date.now() - startTime,
       };
     }
@@ -215,7 +215,8 @@ export class HybridQueryRouter {
         suggestions: this.generateSuggestions(analysis.queryType),
       };
     } catch (error) {
-      console.log('KB primary failed, falling back to agent:', error.message);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.log('KB primary failed, falling back to agent:', errorMessage);
       return this.handleAgentPrimary(context, analysis);
     }
   }
@@ -251,7 +252,8 @@ export class HybridQueryRouter {
         suggestions: this.generateSuggestions(analysis.queryType),
       };
     } catch (error) {
-      console.log('Agent primary failed:', error.message);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.log('Agent primary failed:', errorMessage);
       return this.handleFallback(context, analysis);
     }
   }
@@ -357,12 +359,18 @@ export class HybridQueryRouter {
   }
 
   private generateSuggestions(queryType: QueryType): string[] {
-    const suggestions = {
+    const suggestions: Record<QueryType, string[]> = {
       product_search: [
         'Compare these products',
         'Show me similar items',
         'What are the sustainability scores?',
         'Add to cart'
+      ],
+      product_info: [
+        'Tell me more details',
+        'What are the specifications?',
+        'Show me reviews',
+        'Compare with similar products'
       ],
       platform_info: [
         'How do I place an order?',
@@ -375,6 +383,36 @@ export class HybridQueryRouter {
         'What are the shipping options?',
         'Can I pay with crypto?',
         'What is your return policy?'
+      ],
+      payment_intent: [
+        'What payment methods are accepted?',
+        'How secure is the payment?',
+        'Can I pay with cryptocurrency?',
+        'What about transaction fees?'
+      ],
+      order_status: [
+        'Track my order',
+        'Update shipping address',
+        'Cancel my order',
+        'Get delivery estimate'
+      ],
+      dispute_resolution: [
+        'How to file a dispute',
+        'What is the resolution process?',
+        'Contact seller directly',
+        'Escalate to platform'
+      ],
+      comparison: [
+        'Show detailed comparison',
+        'What are the key differences?',
+        'Which one is better value?',
+        'Compare sustainability scores'
+      ],
+      recommendation: [
+        'Show me more like this',
+        'What do others buy together?',
+        'Personalized recommendations',
+        'Popular in this category'
       ],
       general_chat: [
         'What products do you have?',

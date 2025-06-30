@@ -129,8 +129,17 @@ async function handleDirectFunctionCall(message: string, userId?: string): Promi
 }
 
 export async function POST(request: NextRequest) {
+  const startTime = Date.now();
+  let message: string = '';
+  let sessionId: string = '';
+  let userId: string = '';
+  
   try {
-    const { message, sessionId, useKnowledgeBase = true, userId } = await request.json();
+    const requestData = await request.json();
+    message = requestData.message;
+    sessionId = requestData.sessionId;
+    const useKnowledgeBase = requestData.useKnowledgeBase ?? true;
+    userId = requestData.userId;
 
     if (!message) {
       return NextResponse.json(
@@ -146,7 +155,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const startTime = Date.now();
     const currentSessionId = sessionId || `enhanced-session-${Date.now()}`;
 
     let enhancedMessage = message;
@@ -192,8 +200,9 @@ USER QUESTION: ${message}
 
 Please provide a comprehensive answer using the knowledge base information above, and if you need to perform any actions (like searching products or placing orders), use your available functions.`;
         }
-      } catch (kbError) {
-        console.log('⚠️ Knowledge Base retrieval failed, proceeding with agent only:', kbError.message);
+      } catch (kbError: unknown) {
+        const errorMessage = kbError instanceof Error ? kbError.message : 'Unknown error';
+        console.log('⚠️ Knowledge Base retrieval failed, proceeding with agent only:', errorMessage);
         // Continue without KB context if it fails
       }
     }
@@ -416,8 +425,8 @@ What type of product are you looking for? I can show you specific options in any
       [],
       false,
       {
-        userId,
-        sessionId,
+        userId: userId || 'unknown',
+        sessionId: sessionId || 'unknown',
         knowledgeBaseUsed: false,
         cacheHit: false,
         errorMessage: error instanceof Error ? error.message : 'Unknown error',

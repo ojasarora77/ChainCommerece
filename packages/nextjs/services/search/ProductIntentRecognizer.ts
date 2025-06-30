@@ -27,9 +27,9 @@ interface IntentPattern {
 
 export class ProductIntentRecognizer {
   private bedrockClient: BedrockRuntimeClient;
-  private intentPatterns: IntentPattern[];
-  private categoryMappings: Map<string, string[]>;
-  private featureMappings: Map<string, string[]>;
+  private intentPatterns: IntentPattern[] = [];
+  private categoryMappings: Map<string, string[]> = new Map();
+  private featureMappings: Map<string, string[]> = new Map();
 
   constructor() {
     this.bedrockClient = new BedrockRuntimeClient({
@@ -144,7 +144,7 @@ export class ProductIntentRecognizer {
 
   async recognizeIntent(query: string): Promise<UserIntent> {
     const cacheKey = hashMessage(`intent-${query}`);
-    const cached = await cacheService.get(cacheKey);
+    const cached = await cacheService.get(cacheKey) as UserIntent | null;
     if (cached) {
       return cached;
     }

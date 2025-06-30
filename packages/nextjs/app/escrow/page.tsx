@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import { parseEther } from "viem";
@@ -26,7 +26,7 @@ const mockProduct = {
   averageRating: 0n,
 };
 
-const EscrowPage: React.FC = () => {
+const EscrowPageContent: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { address, isConnected } = useAccount();
@@ -352,6 +352,21 @@ const EscrowPage: React.FC = () => {
         onSuccess={handlePaymentSuccess}
       />
     </div>
+  );
+};
+
+const EscrowPage: React.FC = () => {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-base-200 flex items-center justify-center">
+        <div className="text-center">
+          <div className="loading loading-spinner loading-lg"></div>
+          <p className="mt-2 text-base-content">Loading escrow page...</p>
+        </div>
+      </div>
+    }>
+      <EscrowPageContent />
+    </Suspense>
   );
 };
 

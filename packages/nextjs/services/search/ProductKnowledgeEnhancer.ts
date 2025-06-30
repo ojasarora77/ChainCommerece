@@ -47,7 +47,12 @@ interface FeatureExtractor {
 
 export class ProductKnowledgeEnhancer {
   private bedrockClient: BedrockRuntimeClient;
-  private enhancementRules: ProductEnhancementRules;
+  private enhancementRules: ProductEnhancementRules = {
+    categoryRules: new Map(),
+    featureExtractors: [],
+    synonymMappings: new Map(),
+    useCaseMappings: new Map()
+  };
   private enhancedProducts: Map<number, EnhancedProduct> = new Map();
 
   constructor() {
@@ -200,7 +205,7 @@ export class ProductKnowledgeEnhancer {
 
   async enhanceProduct(product: any): Promise<EnhancedProduct> {
     const cacheKey = hashMessage(`product-enhancement-${product.id}-${JSON.stringify(product)}`);
-    const cached = await cacheService.get(cacheKey);
+    const cached = await cacheService.get(cacheKey) as EnhancedProduct | null;
     if (cached) {
       return cached;
     }
@@ -374,7 +379,7 @@ export class ProductKnowledgeEnhancer {
     const keywords = new Set<string>();
 
     // Add product name words
-    product.name.toLowerCase().split(' ').forEach(word => {
+    product.name.toLowerCase().split(' ').forEach((word: string) => {
       if (word.length > 2) keywords.add(word);
     });
 

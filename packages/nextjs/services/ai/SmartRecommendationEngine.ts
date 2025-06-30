@@ -55,11 +55,18 @@ export class SmartRecommendationEngine {
     confidence: number;
     alternativeOptions: Product[];
     knowledgeBaseUsed: boolean;
+    cached?: boolean;
   }> {
     const cacheKey = hashMessage(`smart-rec-${JSON.stringify(context)}-${availableProducts.length}`);
     
     // Check cache first
-    const cached = await cacheService.get(cacheKey);
+    const cached = await cacheService.get(cacheKey) as {
+      recommendations: Product[];
+      reasoning: string;
+      confidence: number;
+      alternativeOptions: Product[];
+      knowledgeBaseUsed: boolean;
+    } | null;
     if (cached) {
       return { ...cached, cached: true };
     }
@@ -123,7 +130,8 @@ export class SmartRecommendationEngine {
         categoryRecommendations: this.extractCategories(response.output?.text || ''),
       };
     } catch (error) {
-      console.log('KB insights failed, using fallback:', error.message);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.log('KB insights failed, using fallback:', errorMessage);
       return {
         insights: 'Knowledge base temporarily unavailable',
         productMatches: [],

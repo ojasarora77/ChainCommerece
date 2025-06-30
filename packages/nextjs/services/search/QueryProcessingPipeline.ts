@@ -32,10 +32,10 @@ interface SpellCorrection {
 
 export class QueryProcessingPipeline {
   private bedrockClient: BedrockRuntimeClient;
-  private synonymDictionary: Map<string, string[]>;
-  private categoryMappings: Map<string, string[]>;
-  private commonTypos: Map<string, string>;
-  private stopWords: Set<string>;
+  private synonymDictionary: Map<string, string[]> = new Map();
+  private categoryMappings: Map<string, string[]> = new Map();
+  private commonTypos: Map<string, string> = new Map();
+  private stopWords: Set<string> = new Set();
 
   constructor() {
     this.bedrockClient = new BedrockRuntimeClient({
@@ -122,7 +122,7 @@ export class QueryProcessingPipeline {
 
   async processQuery(query: string): Promise<ProcessedQuery> {
     const cacheKey = hashMessage(`query-processing-${query}`);
-    const cached = await cacheService.get(cacheKey);
+    const cached = await cacheService.get(cacheKey) as ProcessedQuery | null;
     if (cached) {
       return cached;
     }
